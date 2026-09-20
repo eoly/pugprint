@@ -5,8 +5,11 @@
   Confirmed UUIDs, byte-exact print sequence, density values, BLE block-size limit, and a
   successful image print from `bleak`. See `docs/PRINTER_PROTOCOL.md`, `docs/PHASE0_SPIKE.md`,
   `docs/adr/0005-ble-uart-not-rfcomm.md`.
-- **Phase 1 — Skeleton + CI:** Gradle project, version catalog, modules, ktlint/detekt,
-  GitHub Actions green.
+- **Phase 1 — Skeleton + CI: ✅ DONE 2026-09-20.** Gradle 8.13 wrapper, version catalog,
+  `:app` + `:core:printer` + `:core:imaging`, ktlint/detekt/Kover, Roborazzi golden of the
+  placeholder home screen, `./gradlew assembleDebug testDebugUnitTest ktlintCheck detekt lint
+  verifyRoborazziDebug` green. Compose BOM held at 2026.06.01 and Hilt at 2.58 — newer
+  releases require AGP 9 / compileSdk 37 (see CLAUDE.md).
 - **Phase 2 — Protocol library:** `:core:printer` — `GS v 0` block builder (≤ 4 rows/block),
   density/init/feed commands, status-reply parsers (`HV=…,SV=…,VOLT=…,DPI=…`, `sn:`, `id:`,
   `err:`), golden tests from `spike/fixtures` (no hardware).
