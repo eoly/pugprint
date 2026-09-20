@@ -12,7 +12,8 @@ printer (a rebranded 58 mm "cat printer"). Built with Kotlin + Jetpack Compose.
 ## Status
 Pre-alpha. Phase 0 (protocol discovery) is done: the printer protocol is **confirmed** on
 real hardware and a test image has been printed from a Python script over BLE — see
-`docs/PRINTER_PROTOCOL.md`. Next: Phase 1 (Gradle skeleton + CI).
+`docs/PRINTER_PROTOCOL.md`. Phase 1 (Gradle skeleton + CI) is done: the project builds,
+tests, lints and screenshot-verifies in CI. Next: Phase 2 (`:core:printer` protocol library).
 
 ## Quick start
 ```

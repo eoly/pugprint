@@ -8,7 +8,10 @@ Offline; no network, accounts, analytics, ads.
 ## Stack
 - Kotlin 2.2.20 (K2), AGP 8.13, Gradle 8.13, JDK 17
 - compileSdk/targetSdk 36 (Android 16), minSdk 26
-- Jetpack Compose (BOM 2026.09.00), Hilt DI, Kable for BLE, Coroutines/Flow
+- Jetpack Compose (BOM 2026.06.01), Hilt 2.58, Kable for BLE, Coroutines/Flow
+- Version ceilings while on AGP 8.13 / compileSdk 36: Compose BOM ≤ 2026.06.01 (2026.08+ needs
+  AGP 9.1 + compileSdk 37) and Hilt ≤ 2.58 (2.59+ needs AGP 9). Bump AGP/compileSdk first.
+- Pinned versions live in `gradle/libs.versions.toml`; it is the source of truth over this list.
 
 ## Commands
 - Build:        ./gradlew assembleDebug

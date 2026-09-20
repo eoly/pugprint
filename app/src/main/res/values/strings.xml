@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PugPrint</string>
+    <string name="home_title">PugPrint</string>
+    <string name="home_status_not_connected">No printer connected</string>
+    <string name="home_print">Print</string>
+</resources>

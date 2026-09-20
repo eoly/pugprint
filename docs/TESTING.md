@@ -18,6 +18,11 @@
 ./gradlew connectedDebugAndroidTest # instrumented (emulator)
 ```
 
+`:app` unit tests run on the JUnit Platform: JUnit 5 for ViewModels, and the JUnit 4
+Robolectric/Roborazzi tests via `junit-vintage-engine`. `:core:*` are JUnit 5 only; each
+exposes a `testDebugUnitTest` alias so the single command above covers every module.
+Roborazzi goldens live in `app/screenshots/` (committed).
+
 ## Golden tests (highest ROI)
 - `:core:printer`: assert exact bytes for each command (frame, CRC8, LEN) against
   checked-in fixtures — this validates the protocol WITHOUT hardware.

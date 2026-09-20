@@ -31,6 +31,11 @@ avdmanager create avd -n pug36 -k "system-images;android-36;google_apis;arm64-v8
 emulator -avd pug36                      # add -no-window for headless CI-like runs
 ```
 
+Gradle reads the SDK path from `local.properties` (gitignored, Android Studio writes it):
+```
+sdk.dir=/Users/<you>/Library/Android/sdk
+```
+
 ## 4. Physical device (required for real printing — emulator has NO Bluetooth)
 ```
 # USB: enable Developer Options + USB debugging, then:
