@@ -23,6 +23,9 @@ real hardware and a test image has been printed from a Python script over BLE �
 Real printing requires a **physical Android device** — the emulator has no Bluetooth.
 Most development runs against `FakePrinterTransport` in the emulator/JVM.
 
+## License
+MIT — see `LICENSE`.
+
 ## Docs
 `docs/PRD.md` · `docs/ARCHITECTURE.md` · `docs/PRINTER_PROTOCOL.md` · `docs/PHASE0_SPIKE.md` ·
 `docs/DEV_ENVIRONMENT.md` · `docs/TESTING.md` · `docs/SDLC.md` ·
