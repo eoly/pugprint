@@ -2,13 +2,14 @@
 
 ## 1. Brewfile — `brew bundle`
 ```
-tap "homebrew/cask"
 brew "openjdk@17"
 brew "scrcpy"              # mirror/control a physical device
 brew "python@3.12"        # for the bleak protocol spike
+brew "jadx"               # APK decompiler (Phase 0)
 cask "android-studio"     # Quail (2025.3.x) stable or newer
 cask "android-platform-tools"   # adb, fastboot
-cask "nrf-connect-for-desktop"  # BLE scanning
+cask "nrf-connect"        # nRF Connect for Desktop — BLE scanning
+cask "wireshark-app"      # HCI snoop analysis (Phase 0); its installer prompts for sudo
 ```
 
 ## 2. Environment (~/.zshrc)
@@ -16,6 +17,10 @@ cask "nrf-connect-for-desktop"  # BLE scanning
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator
 export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+```
+`java_home` only sees the Homebrew JDK after it is symlinked into the system JVM dir (one-time):
+```
+sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
 ```
 
 ## 3. SDK + emulator (arm64 on Apple Silicon)
@@ -38,6 +43,8 @@ adb exec-out screencap -p > shot.png     # capture a screenshot
 ```
 
 ## 5. Troubleshooting
+- `adb` dies instantly with exit 137 (SIGKILL) → Gatekeeper quarantine on the cask binaries:
+  `xattr -dr com.apple.quarantine /opt/homebrew/Caskroom/android-platform-tools/*/platform-tools`
 - "adb: no devices" → check USB cable/data mode; `adb kill-server && adb start-server`.
 - Emulator slow → ensure arm64 image on Apple Silicon (never x86 under emulation).
 - BLE scan finds nothing on device → grant "Nearby devices"; ensure Location Services ON for API ≤30.

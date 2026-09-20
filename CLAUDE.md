@@ -1,7 +1,9 @@
 # PugPrint
 
-Native Android app (Kotlin + Compose) that prints images to a "Hello Blink"
-cat-family thermal printer over BLE. Offline; no network, accounts, analytics, ads.
+Native Android app (Kotlin + Compose) that prints images to a "Hello Blink" 58 mm
+thermal sticker printer over BLE. It speaks ESC/POS-style `GS v 0` raster over a Microchip
+transparent-UART GATT service (NOT a cat printer — see docs/PRINTER_PROTOCOL.md).
+Offline; no network, accounts, analytics, ads.
 
 ## Stack
 - Kotlin 2.2.20 (K2), AGP 8.13, Gradle 8.13, JDK 17
@@ -30,5 +32,9 @@ cat-family thermal printer over BLE. Offline; no network, accounts, analytics, a
 ## Don't
 - Don't add analytics, ads, networking, accounts, or location code — this is a kids' app.
 - Don't put Android framework imports in `:core:*` modules.
-- Don't copy AGPL code (e.g., NaitLee/Cat-Printer) into this repo; use it only as reference.
-- Don't hardcode a printer MAC or advertised name — discover at runtime.
+- Don't copy AGPL code (e.g., NaitLee/Cat-Printer) or decompiled vendor code into this repo;
+  reference only. `spike/apk/` is gitignored and must stay that way.
+- Don't hardcode a printer MAC or advertised name — discover at runtime by service UUID
+  `49535343-fe7d-4ae5-8fa9-9fafd205e455`.
+- Don't send multi-row `GS v 0` blocks over BLE — the printer drops rows. 1 row per block,
+  one block per write, paced (see docs/PRINTER_PROTOCOL.md).

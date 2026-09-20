@@ -1,12 +1,17 @@
 # Roadmap
 
-- **Phase 0 — Protocol discovery spike (Mac):** nRF Connect scan; `bleak` Python client;
-  Android HCI snoop + Wireshark; jadx of the official APK. Output: confirmed UUIDs, command
-  bytes, energy defaults, ABIs/targetSdk → written into PRINTER_PROTOCOL.md + golden fixtures.
+- **Phase 0 — Protocol discovery spike (Mac): ✅ DONE 2026-09-20.** Outcome: Hello Blink is
+  an ESC/POS-style raster printer over a Microchip UART GATT service, not a cat printer.
+  Confirmed UUIDs, byte-exact print sequence, density values, BLE block-size limit, and a
+  successful image print from `bleak`. See `docs/PRINTER_PROTOCOL.md`, `docs/PHASE0_SPIKE.md`,
+  `docs/adr/0005-ble-uart-not-rfcomm.md`.
 - **Phase 1 — Skeleton + CI:** Gradle project, version catalog, modules, ktlint/detekt,
   GitHub Actions green.
-- **Phase 2 — Protocol library:** `:core:printer` with full golden tests (no hardware).
-- **Phase 3 — BLE transport:** Kable `BleTransport`, CDM pairing, real-device printing.
+- **Phase 2 — Protocol library:** `:core:printer` — `GS v 0` block builder (≤ 4 rows/block),
+  density/init/feed commands, status-reply parsers (`HV=…,SV=…,VOLT=…,DPI=…`, `sn:`, `id:`,
+  `err:`), golden tests from `spike/fixtures` (no hardware).
+- **Phase 3 — BLE transport:** Kable `BleTransport` on the `49535343-…` UART service, CDM
+  pairing, one raster block per write with pacing, real-device printing.
 - **Phase 4 — Image pipeline + UI:** `:core:imaging` dithering, Photo Picker, crop/rotate,
   preview, print flow.
 - **Phase 5 — Polish + kid features:** text/stamps/drawing, density slider, error UX,

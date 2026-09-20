@@ -6,6 +6,11 @@ build/
 *.jks
 .idea/
 .DS_Store
-captures/
+/captures/
 *.hprof
 .kotlin/
+
+# Phase 0 spike
+spike/.venv/
+spike/apk/
+spike/**/__pycache__/
