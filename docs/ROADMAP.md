@@ -13,6 +13,9 @@
 - **Phase 2 — Protocol library:** `:core:printer` — `GS v 0` block builder (≤ 4 rows/block),
   density/init/feed commands, status-reply parsers (`HV=…,SV=…,VOLT=…,DPI=…`, `sn:`, `id:`,
   `err:`), golden tests from `spike/fixtures` (no hardware).
+- **Phase 2.5 — Platform bump (after Phase 2):** AGP 9.x + Gradle 9.x + compileSdk 37 (+ Kotlin
+  2.4) in one PR; then lift the Dependabot ignores in `.github/dependabot.yml` and take
+  Compose 1.12+, Hilt 2.59+, lifecycle 2.10+.
 - **Phase 3 — BLE transport:** Kable `BleTransport` on the `49535343-…` UART service, CDM
   pairing, one raster block per write with pacing, real-device printing.
 - **Phase 4 — Image pipeline + UI:** `:core:imaging` dithering, Photo Picker, crop/rotate,
