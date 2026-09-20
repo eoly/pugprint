@@ -14,3 +14,5 @@ All notable changes to PugPrint are documented here. The format follows
 
 ### Changed
 - Phase 0 protocol discovery documented in `docs/PRINTER_PROTOCOL.md`.
+- JUnit 5.14 → JUnit 6.1 (platform, Jupiter, vintage moved to a single version).
+- Dependabot ignores the packages that need AGP 9 / compileSdk 37 until the platform bump.
