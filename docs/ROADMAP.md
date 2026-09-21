@@ -10,9 +10,13 @@
   placeholder home screen, `./gradlew assembleDebug testDebugUnitTest ktlintCheck detekt lint
   verifyRoborazziDebug` green. Compose BOM held at 2026.06.01 and Hilt at 2.58 — newer
   releases require AGP 9 / compileSdk 37 (see CLAUDE.md).
-- **Phase 2 — Protocol library:** `:core:printer` — `GS v 0` block builder (≤ 4 rows/block),
-  density/init/feed commands, status-reply parsers (`HV=…,SV=…,VOLT=…,DPI=…`, `sn:`, `id:`,
-  `err:`), golden tests from `spike/fixtures` (no hardware).
+- **Phase 2 — Protocol library: ✅ DONE 2026-09-20.** `:core:printer` — `PrinterCommands` /
+  `PrinterQueries`, `RasterBlock` (`GS v 0`, ≤ 4 rows/block, 1 default), `DensityProfile`,
+  `PrintJob` with the confirmed BLE pacing, `PrinterReply` / `EscPosStatus` parsers
+  (`HV=…,SV=…,VOLT=…,DPI=…`, `sn:`, `id:`, `err:`, `LABELOK`, `DLE EOT`), and
+  `CommandDecoder` + `PrinterEmulator` so Phase 3's fake transport and tests need no
+  hardware. Golden tests reproduce the Phase 0 fixtures byte-for-byte (now in
+  `core/printer/src/test/resources/print_job/`).
 - **Phase 2.5 — Platform bump (after Phase 2):** AGP 9.x + Gradle 9.x + compileSdk 37 (+ Kotlin
   2.4) in one PR; then lift the Dependabot ignores in `.github/dependabot.yml` and take
   Compose 1.12+, Hilt 2.59+, lifecycle 2.10+.
