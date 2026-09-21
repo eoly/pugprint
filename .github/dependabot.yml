@@ -4,25 +4,6 @@ updates:
     directory: "/"
     schedule: { interval: weekly }
     open-pull-requests-limit: 5
-    # Parked until the planned platform bump (AGP 9 + Gradle 9 + compileSdk 37), which is
-    # tracked in docs/ROADMAP.md. These all refuse to build on AGP 8.13 / compileSdk 36.
-    ignore:
-      - dependency-name: "gradle-wrapper"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "com.android.application"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "com.android.library"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "com.google.dagger:*"
-        versions: [">= 2.59"]
-      - dependency-name: "com.google.dagger.hilt.android"
-        versions: [">= 2.59"]
-      - dependency-name: "androidx.hilt:*"
-        versions: [">= 1.4.0"]
-      - dependency-name: "androidx.lifecycle:*"
-        versions: [">= 2.10.0"]
-      - dependency-name: "androidx.compose:compose-bom"
-        versions: [">= 2026.08.00"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule: { interval: weekly }

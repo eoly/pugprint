@@ -17,9 +17,10 @@
   `CommandDecoder` + `PrinterEmulator` so Phase 3's fake transport and tests need no
   hardware. Golden tests reproduce the Phase 0 fixtures byte-for-byte (now in
   `core/printer/src/test/resources/print_job/`).
-- **Phase 2.5 — Platform bump (after Phase 2):** AGP 9.x + Gradle 9.x + compileSdk 37 (+ Kotlin
-  2.4) in one PR; then lift the Dependabot ignores in `.github/dependabot.yml` and take
-  Compose 1.12+, Hilt 2.59+, lifecycle 2.10+.
+- **Phase 2.5 — Platform bump: ✅ DONE 2026-09-20.** AGP 9.4.1 (built-in Kotlin, new DSL),
+  Gradle 9.7.1, compileSdk/targetSdk 37, Kotlin 2.4.20, KSP 2.3.12, Compose BOM 2026.09.00,
+  Hilt 2.60.1, lifecycle 2.11.0, activity-compose 1.13.0, core-ktx 1.19.0, ktlint-gradle
+  14.2.0. Dependabot ignores lifted.
 - **Phase 3 — BLE transport:** Kable `BleTransport` on the `49535343-…` UART service, CDM
   pairing, one raster block per write with pacing, real-device printing.
 - **Phase 4 — Image pipeline + UI:** `:core:imaging` dithering, Photo Picker, crop/rotate,

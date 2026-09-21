@@ -25,7 +25,7 @@ sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/Java
 
 ## 3. SDK + emulator (arm64 on Apple Silicon)
 ```
-sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+sdkmanager "platform-tools" "platforms;android-37" "build-tools;36.0.0"   # compileSdk 37; AGP 9.4 needs build-tools 36.0.0
 sdkmanager "system-images;android-36;google_apis;arm64-v8a"   # Intel: ...;x86_64
 avdmanager create avd -n pug36 -k "system-images;android-36;google_apis;arm64-v8a" -d pixel_7
 emulator -avd pug36                      # add -no-window for headless CI-like runs
