@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from escpos import ROW_BYTES, ROW_DOTS, UART_RX, UART_TX, hexdump, pack_row  # noqa: E402
 from escpos_print import pattern_black, pattern_from_image, pattern_stripe, pattern_widths, to_pbm  # noqa: E402
 
-FIXTURES = Path(__file__).resolve().parent.parent / "fixtures" / "print_job"
+FIXTURES = Path(__file__).resolve().parents[2] / "core" / "printer" / "src" / "test" / "resources" / "print_job"
 
 
 def density(n: int) -> bytes:

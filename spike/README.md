@@ -41,11 +41,13 @@ Superseded, kept as a record of refuted hypotheses — do not extend:
   this unit's status replies.
 - `03-capture-notes.md` — HCI snoop (not needed; left as a template).
 
-## Fixtures for Phase 2 (`spike/fixtures/`)
-- `print_job/*.vendor.hex` + `.pbm` — byte-exact jobs: `black_48_rows`, `stripe_48_rows`,
-  `widths_48_rows`, `pug_arrow` (printed correctly on hardware). Format: `# label` line
-  then hex, one part per line; raster is 1 row per `GS v 0` block, density 25.
-- `refuted/` — fixtures from wrong hypotheses. Ignore.
+## Fixtures
+- Golden print jobs moved to `core/printer/src/test/resources/print_job/` in Phase 2
+  (`*.vendor.hex` + `.pbm`: `black_48_rows`, `stripe_48_rows`, `widths_48_rows`,
+  `pug_arrow`, all printed correctly on hardware). Format: `# label` line then hex, one
+  part per line; raster is 1 row per `GS v 0` block, density 25. `vendor_print.py --dump`
+  regenerates them in place.
+- `fixtures/refuted/` — fixtures from wrong hypotheses. Ignore.
 
 ## Not committed
 `apk/` (vendor XAPK + jadx output — proprietary, gitignored), `.venv/`.
