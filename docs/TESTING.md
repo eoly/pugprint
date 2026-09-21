@@ -24,8 +24,11 @@ exposes a `testDebugUnitTest` alias so the single command above covers every mod
 Roborazzi goldens live in `app/screenshots/` (committed).
 
 ## Golden tests (highest ROI)
-- `:core:printer`: assert exact bytes for each command (frame, CRC8, LEN) against
-  checked-in fixtures — this validates the protocol WITHOUT hardware.
+- `:core:printer`: `PrintJobGoldenTest` asserts `PrintJob.writes()` reproduces the vendor
+  jobs in `core/printer/src/test/resources/print_job/*.vendor.hex` byte-for-byte, and
+  `PrinterEmulatorTest` replays them back into the matching `.pbm` rows — this validates
+  the protocol WITHOUT hardware. Regenerate fixtures with
+  `python spike/bleak/vendor_print.py --dump <pattern>`.
 - `:core:imaging`: assert dithered output bitmaps against checked-in PNGs.
 
 ## Hardware checklist (run on the real printer before each release)

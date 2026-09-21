@@ -91,9 +91,10 @@ Resize to 384 wide → `GPUImageSharpenFilter(0.5)` → custom error-diffusion d
 column-major) → pack MSB-first. Plain Floyd–Steinberg (Pillow `convert("1")`) prints fine.
 
 ## Golden fixtures
-`spike/fixtures/print_job/*.vendor.hex` — byte-exact jobs (density · init · raster blocks ·
-feed) for `black`, `stripe`, `widths`, and `pug_arrow`, plus matching `.pbm` inputs. Phase 2
-moves these into `core/printer/src/test/resources`.
+`core/printer/src/test/resources/print_job/*.vendor.hex` — byte-exact jobs (density · init ·
+raster blocks · feed) for `black`, `stripe`, `widths`, and `pug_arrow`, plus matching `.pbm`
+inputs. `PrintJobGoldenTest` in `:core:printer` asserts `PrintJob.writes()` reproduces them;
+regenerate with `python spike/bleak/vendor_print.py --dump <pattern>`.
 
 ## Spike tooling
 `spike/bleak/vendor_print.py` prints any PNG via the sequence above
