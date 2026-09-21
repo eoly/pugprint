@@ -21,8 +21,16 @@
   Gradle 9.7.1, compileSdk/targetSdk 37, Kotlin 2.4.20, KSP 2.3.12, Compose BOM 2026.09.00,
   Hilt 2.60.1, lifecycle 2.11.0, activity-compose 1.13.0, core-ktx 1.19.0, ktlint-gradle
   14.2.0. Dependabot ignores lifted.
-- **Phase 3 — BLE transport:** Kable `BleTransport` on the `49535343-…` UART service, CDM
-  pairing, one raster block per write with pacing, real-device printing.
+- **Phase 3 — BLE transport: ✅ CODE COMPLETE 2026-09-21, hardware checklist pending.**
+  `PrinterTransport` / `FakePrinterTransport` / `PrinterClient` in `:core:printer` (paced
+  one-row-per-write sending, paper pre-flight, cover-open abort, progress); new
+  `:core:bluetooth` with Kable `BleTransport` (MTU 247, oversize writes refused),
+  `CompanionPairing` (CDM filtered on the UART service) and `BluetoothPermissions`
+  (`BLUETOOTH_CONNECT` only — ADR 0006); `PrinterManager` (remembered printer,
+  auto-reconnect with backoff, battery/cover state, test-page print) and the home screen
+  states behind it; `TestPattern` test page in `:core:imaging`. Emulator flow via
+  `-Ppugprint.fakePrinter=true`. **Next:** run `docs/TESTING.md` § Hardware checklist on the
+  real Hello Blink and tune `PrintTiming` if the paper shows dropped rows.
 - **Phase 4 — Image pipeline + UI:** `:core:imaging` dithering, Photo Picker, crop/rotate,
   preview, print flow.
 - **Phase 5 — Polish + kid features:** text/stamps/drawing, density slider, error UX,

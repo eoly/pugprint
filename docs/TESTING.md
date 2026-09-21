@@ -29,10 +29,31 @@ Roborazzi goldens live in `app/screenshots/` (committed).
   `PrinterEmulatorTest` replays them back into the matching `.pbm` rows — this validates
   the protocol WITHOUT hardware. Regenerate fixtures with
   `python spike/bleak/vendor_print.py --dump <pattern>`.
-- `:core:imaging`: assert dithered output bitmaps against checked-in PNGs.
+- `:core:imaging`: `TestPatternTest` asserts the built-in test page against
+  `core/imaging/src/test/resources/test_pattern.pbm`; re-record with
+  `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true`. Dithering goldens follow in Phase 4.
+
+## Transport tests (no hardware)
+- `:core:printer` `PrinterClientTest`: drives `PrinterClient` over `FakePrinterTransport` under
+  `runTest` virtual time — asserts every row reaches the emulator with no BLE-rule violation,
+  the pacing adds up (`(rows − 1) × 20 ms + 250 ms`), and link loss / paper out / `err:`
+  cover-open come back as the right `PrintResult.Failure`.
+- `:core:bluetooth` `BleTransportTest`: MockK `Peripheral` — RX write-without-response,
+  oversize payload refused, TX relayed, LOST vs requested disconnect, failed connect.
+  `CompanionPairingTest` (Robolectric): CDM result decoding. Note: kotlinx-coroutines-test's
+  `advanceUntilIdle()` ignores background-only work; use `runCurrent()` / `advanceTimeBy()`.
+- `:app` `PrinterManagerTest` / `HomeViewModelTest`: pairing → connect → identify → print →
+  reconnect, all on the fake transport.
+
+## Emulator (no Bluetooth)
+`./gradlew installDebug -Ppugprint.fakePrinter=true` wires `FakePrinterTransport` and instant
+pairing so the whole flow can be clicked through; the "printed" rows live in the emulator object.
 
 ## Hardware checklist (run on the real printer before each release)
-- [ ] Pair via CDM on a fresh install (permissions prompt appears).
+- [ ] Pair via CDM on a fresh install ("Nearby devices" prompt on Android 12+, then the system picker lists `HB-nnnn`).
+- [ ] Home screen shows "HB-nnnn is ready" with a battery percentage.
+- [ ] Print the test page: black band edge to edge, 1-dot bars resolved, no missing rows
+      (if rows drop, lower `PrintTiming.BLOCK_GAP_MILLIS` is NOT the fix — see PRINTER_PROTOCOL.md).
 - [ ] Print full-black test row (verifies energy/density).
 - [ ] Print a photo (dithered) and a line drawing (threshold).
 - [ ] Out-of-paper and cover-open surface correct errors.

@@ -24,6 +24,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true` rewrites the golden PBMs.
+    systemProperty("pugprint.recordGoldens", System.getProperty("pugprint.recordGoldens") ?: "false")
 }
 
 // Alias so the documented `./gradlew testDebugUnitTest` also covers this JVM module.

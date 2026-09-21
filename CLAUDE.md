@@ -22,11 +22,19 @@ Offline; no network, accounts, analytics, ads.
 - Install:      adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ## Architecture rules
-- `:core:printer` is PURE Kotlin/JVM — protocol encode/decode + golden tests. NO Android imports.
-- `:core:imaging` is PURE Kotlin/JVM — dithering + scale-to-384px + golden tests.
+- `:core:printer` is PURE Kotlin/JVM — protocol encode/decode, the `PrinterTransport`
+  abstraction, `FakePrinterTransport`, `PrinterClient` + golden tests. NO Android imports.
+- `:core:imaging` is PURE Kotlin/JVM — dithering + scale-to-384px + `TestPattern` + golden tests.
+- `:core:bluetooth` is the ONLY module that imports Android Bluetooth APIs (Kable
+  `BleTransport`, Companion Device Manager pairing, permission helpers). No protocol bytes.
 - All printer I/O goes through the `PrinterTransport` interface. `FakePrinterTransport`
-  renders received rows to a bitmap so dev/tests run without hardware.
+  wraps `PrinterEmulator` so dev/tests run without hardware
+  (`./gradlew installDebug -Ppugprint.fakePrinter=true` for emulators).
+- Pairing is CDM-only; permissions are `BLUETOOTH_CONNECT` (+ legacy `BLUETOOTH` ≤ 30).
+  Never add `BLUETOOTH_SCAN` or location without revising ADR 0006.
 - UI = MVVM, unidirectional data flow, `StateFlow`. Business logic never in Composables.
+- kotlinx-coroutines-test: `advanceUntilIdle()` skips background-only coroutines; use
+  `runCurrent()` / `advanceTimeBy()` when the code under test launches into `backgroundScope`.
 
 ## Do
 - Add tests with every change (golden tests for any protocol/imaging code).
