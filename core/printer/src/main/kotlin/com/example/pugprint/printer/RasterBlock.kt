@@ -18,8 +18,11 @@ public object RasterBlock {
     /** Most rows a 384-dot block can hold and still fit one 245-byte BLE write. Only 1 is proven reliable. */
     public const val MAX_ROWS_PER_BLOCK: Int = 4
 
+    /** The `m` argument: `0x30` (`'0'`) selects normal (1×) mode. */
+    internal const val MODE_NORMAL_ARG: Int = 0x30
+
     private const val GS_V: Byte = 0x76
-    private const val MODE_NORMAL: Byte = 0x30
+    private const val MODE_NORMAL: Byte = MODE_NORMAL_ARG.toByte()
     private const val MAX_DIMENSION: Int = 0xFFFF
     private const val BITS_PER_BYTE: Int = 8
 
