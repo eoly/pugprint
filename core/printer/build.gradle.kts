@@ -20,6 +20,8 @@ dependencies {
     implementation(libs.coroutines.core)
 
     testImplementation(libs.bundles.junit5)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.turbine)
     testRuntimeOnly(libs.junit5.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
 }

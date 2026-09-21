@@ -2,6 +2,30 @@
 <resources>
     <string name="app_name">PugPrint</string>
     <string name="home_title">PugPrint</string>
-    <string name="home_status_not_connected">No printer connected</string>
-    <string name="home_print">Print</string>
+
+    <string name="home_status_no_printer">No printer yet</string>
+    <string name="home_status_connecting">Looking for %1$s…</string>
+    <string name="home_status_connected">%1$s is ready</string>
+    <string name="home_status_printing">Printing…</string>
+    <string name="home_status_offline_idle">%1$s is not connected</string>
+    <string name="home_status_offline_lost">Lost %1$s — trying again</string>
+    <string name="home_status_offline_unreachable">Can\'t reach %1$s — is it on?</string>
+    <string name="home_status_offline_no_permission">Allow Bluetooth to use %1$s</string>
+    <string name="home_battery">Battery %1$d%%</string>
+    <string name="home_battery_low">Battery low — charge the printer</string>
+    <string name="home_cover_open">Close the printer lid</string>
+
+    <string name="home_connect">Connect a printer</string>
+    <string name="home_print_test">Print a test page</string>
+    <string name="home_forget">Forget printer</string>
+    <string name="home_retry">Try again</string>
+
+    <string name="message_print_done">Printed!</string>
+    <string name="message_print_no_paper">Out of paper</string>
+    <string name="message_print_cover_open">The lid is open</string>
+    <string name="message_print_disconnected">Lost the printer while printing</string>
+    <string name="message_print_failed">Printing failed</string>
+    <string name="message_pairing_cancelled">No printer chosen</string>
+    <string name="message_pairing_unavailable">Can\'t pair on this device</string>
+    <string name="message_permission_denied">Bluetooth permission is needed to talk to the printer</string>
 </resources>

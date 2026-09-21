@@ -25,3 +25,4 @@ rootProject.name = "pugprint"
 include(":app")
 include(":core:printer")
 include(":core:imaging")
+include(":core:bluetooth")

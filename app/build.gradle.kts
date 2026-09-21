@@ -13,6 +13,10 @@ plugins {
 val releaseKeystore = rootProject.file("app/upload.keystore")
 val hasReleaseSigning = releaseKeystore.exists() && System.getenv("KEYSTORE_PASSWORD") != null
 
+// `./gradlew installDebug -Ppugprint.fakePrinter=true` wires the emulator-backed fake transport
+// instead of BLE, so the print flow can be exercised on an emulator (which has no Bluetooth).
+val fakePrinter = providers.gradleProperty("pugprint.fakePrinter").map(String::toBoolean).getOrElse(false)
+
 android {
     namespace = "com.example.pugprint"
     compileSdk = 37
@@ -23,6 +27,7 @@ android {
         targetSdk = 37
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
         versionName = "0.1.0"
+        buildConfigField("boolean", "FAKE_PRINTER", fakePrinter.toString())
     }
 
     signingConfigs {
@@ -53,6 +58,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     testOptions {
@@ -80,6 +86,7 @@ roborazzi {
 dependencies {
     implementation(project(":core:printer"))
     implementation(project(":core:imaging"))
+    implementation(project(":core:bluetooth"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.activity.compose)
