@@ -1,8 +1,5 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -18,12 +15,12 @@ val hasReleaseSigning = releaseKeystore.exists() && System.getenv("KEYSTORE_PASS
 
 android {
     namespace = "com.example.pugprint"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.pugprint"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
         versionName = "0.1.0"
     }
@@ -48,6 +45,7 @@ android {
         }
     }
 
+    // Built-in Kotlin (AGP 9) derives jvmTarget from targetCompatibility.
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -67,13 +65,6 @@ android {
     lint {
         abortOnError = true
         warningsAsErrors = false
-    }
-}
-
-kotlin {
-    jvmToolchain(17)
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 

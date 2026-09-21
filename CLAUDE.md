@@ -6,12 +6,12 @@ transparent-UART GATT service (NOT a cat printer — see docs/PRINTER_PROTOCOL.m
 Offline; no network, accounts, analytics, ads.
 
 ## Stack
-- Kotlin 2.2.20 (K2), AGP 8.13, Gradle 8.13, JDK 17
-- compileSdk/targetSdk 36 (Android 16), minSdk 26
-- Jetpack Compose (BOM 2026.06.01), Hilt 2.58, Kable for BLE, Coroutines/Flow
-- Version ceilings while on AGP 8.13 / compileSdk 36: Compose BOM ≤ 2026.06.01 (2026.08+ needs
-  AGP 9.1 + compileSdk 37) and Hilt ≤ 2.58 (2.59+ needs AGP 9). Bump AGP/compileSdk first.
+- Kotlin 2.4 (K2), AGP 9.4 with built-in Kotlin (`:app` applies no `kotlin-android` plugin;
+  `:core:*` apply `kotlin-jvm`), Gradle 9.7, JDK 17, KSP 2.3 (versioned independently of Kotlin)
+- compileSdk/targetSdk 37 (Android 17), minSdk 26
+- Jetpack Compose (BOM 2026.09), Hilt 2.60, Kable for BLE, Coroutines/Flow
 - Pinned versions live in `gradle/libs.versions.toml`; it is the source of truth over this list.
+  Dependabot proposes bumps weekly; CI must stay green on them.
 
 ## Commands
 - Build:        ./gradlew assembleDebug
