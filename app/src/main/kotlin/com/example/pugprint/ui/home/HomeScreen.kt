@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -20,8 +22,10 @@ import com.example.pugprint.design.components.ButtonEmphasis
 import com.example.pugprint.design.components.HeroTitle
 import com.example.pugprint.design.components.KidScreen
 import com.example.pugprint.design.components.StatusBanner
+import com.example.pugprint.design.components.ThemePicker
 import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.design.theme.PugSpacing
+import com.example.pugprint.design.theme.ThemeCatalog
 
 @Composable
 fun HomeScreen(
@@ -72,6 +76,18 @@ fun HomeScreen(
                 )
             }
         }
+        Spacer(Modifier.height(PugSpacing.huge))
+        Text(
+            text = stringResource(R.string.home_pick_look),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(PugSpacing.small))
+        ThemePicker(
+            themes = ThemeCatalog.all,
+            selectedId = state.themeId,
+            onSelect = { actions.onThemeSelected(it.id) },
+        )
     }
 }
 

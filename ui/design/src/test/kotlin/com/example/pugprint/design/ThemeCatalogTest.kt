@@ -26,10 +26,9 @@ class ThemeCatalogTest {
     }
 
     @Test
-    fun `every theme has a name and an emoji`() {
+    fun `every theme has a name`() {
         ThemeCatalog.all.forEach { theme ->
             assertTrue(theme.displayName.isNotBlank(), "${theme.id} has no display name")
-            assertTrue(theme.emoji.isNotBlank(), "${theme.id} has no emoji")
         }
     }
 

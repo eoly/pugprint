@@ -16,7 +16,6 @@ object ThemeCatalog {
         PugTheme(
             id = "pug",
             displayName = "Pug",
-            emoji = "🐶",
             palette =
                 PugPalette(
                     background = Color(0xFFFFF8EE),
@@ -40,7 +39,6 @@ object ThemeCatalog {
         PugTheme(
             id = "bubblegum",
             displayName = "Bubblegum",
-            emoji = "🍬",
             palette =
                 PugPalette(
                     background = Color(0xFFFFF0F6),
@@ -64,7 +62,6 @@ object ThemeCatalog {
         PugTheme(
             id = "ocean",
             displayName = "Ocean",
-            emoji = "🐳",
             palette =
                 PugPalette(
                     background = Color(0xFFEAF7FA),

@@ -47,7 +47,6 @@ data class PugPalette(
  *
  * @property id stable key saved in settings; never rename an id once shipped.
  * @property displayName what the theme picker shows.
- * @property emoji a little picture for the theme picker.
  * @property roundness corner radius of buttons, tiles and banners.
  * @property fontFamily the typeface; [FontFamily.Default] unless a bundled font is added.
  */
@@ -55,7 +54,6 @@ data class PugPalette(
 data class PugTheme(
     val id: String,
     val displayName: String,
-    val emoji: String,
     val palette: PugPalette,
     val roundness: Dp = 20.dp,
     val fontFamily: FontFamily = FontFamily.Default,

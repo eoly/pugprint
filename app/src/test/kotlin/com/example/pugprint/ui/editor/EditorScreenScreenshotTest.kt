@@ -9,6 +9,7 @@ import com.example.pugprint.imaging.CropWindow
 import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.ImagePipeline
+import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.ui.Screenshots
 import com.example.pugprint.ui.home.PrinterStatus
@@ -89,6 +90,7 @@ class EditorScreenScreenshotTest {
                 window = window,
                 mode = DitherMode.DRAWING,
                 preview = ImagePipeline.render(photo, window.cropRect(), DitherMode.DRAWING),
+                density = DensityLevel.DARK,
                 printerStatus = PrinterStatus.Offline,
                 printerName = "HB-1234",
                 offlineReason = OfflineReason.LOST,

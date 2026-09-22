@@ -2,6 +2,7 @@ package com.example.pugprint.ui.editor
 
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
+import com.example.pugprint.printer.DensityLevel
 
 /** What the editor screen can ask for; wired to the ViewModel by `EditorRoute`. */
 data class EditorActions(
@@ -18,5 +19,6 @@ data class EditorActions(
     ) -> Unit = { _, _, _, _, _ -> },
     val onNext: () -> Unit = {},
     val onMode: (DitherMode) -> Unit = {},
+    val onDensity: (DensityLevel) -> Unit = {},
     val onPrint: () -> Unit = {},
 )

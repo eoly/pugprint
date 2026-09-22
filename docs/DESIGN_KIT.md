@@ -22,15 +22,16 @@ ui/design/src/main/kotlin/com/example/pugprint/design/
 
 ## Add a theme (10 minutes)
 1. Open `theme/ThemeCatalog.kt`. Copy the `Ocean` block, rename it, give it a new `id`
-   (lowercase, no spaces, never changed once shipped), a `displayName`, an `emoji`, twelve
-   colours and a `roundness`.
+   (lowercase, no spaces, never changed once shipped), a `displayName`, twelve colours and a
+   `roundness`.
 2. Add it to the `all` list. That is the only registration there is.
 3. Run `./gradlew :ui:design:testDebugUnitTest :ui:design:recordRoborazziDebug`.
    - The readability test tells you if a text colour is too faint for its background
      (it names the theme and the pair, e.g. `ocean: outline on background is 1.88:1, needs 3.0:1`).
      Darken the text or lighten the background until it passes.
    - A picture of your theme appears at `ui/design/screenshots/DesignGallery.<id>.png`.
-4. Commit the new picture with the code.
+4. Commit the new picture with the code. The theme shows up in "Pick a look" on the home
+   screen by itself: the picker reads the catalog.
 
 ### What each colour is for
 | Field | Used for |
@@ -57,12 +58,12 @@ Edit the file in `components/`; every screen picks it up. Then re-record the pic
 `app/screenshots/` before committing.
 
 ## Rules the tests enforce
-- Theme ids are unique, lowercase and not blank; every theme has a name and an emoji.
+- Theme ids are unique, lowercase and not blank; every theme has a name.
 - Every text/background pair in the palette meets WCAG AA (4.5:1; 3:1 for outlines).
 - All palette colours are opaque.
 - A gallery golden exists per theme (recorded automatically).
 
 ## Coming next (Phase 5)
-A theme picker on the home screen, stamps (`StampCatalog`: drop in a bitmap, add a line),
+Stamps (`StampCatalog`: drop in a bitmap, add a line),
 text captions with a bitmap font, and a drawing canvas — each following the same
 "one catalog file, enumerated by tests" pattern.

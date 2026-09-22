@@ -12,9 +12,12 @@ import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.PhotoLoadException
 import com.example.pugprint.imaging.PhotoSource
 import com.example.pugprint.imaging.Rotation
+import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.printer.PrinterManager
 import com.example.pugprint.printer.PrinterState
+import com.example.pugprint.settings.SettingsStore
+import com.example.pugprint.settings.setDensity
 import com.example.pugprint.ui.home.PrinterStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -47,6 +50,8 @@ data class EditorUiState(
     /** The dots that will print, once [EditorStep.Preview] has rendered them. */
     val preview: MonoBitmap? = null,
     val rendering: Boolean = false,
+    /** "How dark?" — remembered across stickers. */
+    val density: DensityLevel = DensityLevel.MEDIUM,
     val printerStatus: PrinterStatus = PrinterStatus.NoPrinter,
     val printerName: String? = null,
     val offlineReason: OfflineReason? = null,
@@ -76,6 +81,7 @@ class EditorViewModel
     constructor(
         private val photos: PhotoSource,
         private val printer: PrinterManager,
+        private val settings: SettingsStore,
         @ImagingDispatcher private val dispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         private val edit = MutableStateFlow(EditState())
@@ -87,7 +93,7 @@ class EditorViewModel
         val printRequested: StateFlow<Boolean> = mutablePrintRequested.asStateFlow()
 
         val uiState: StateFlow<EditorUiState> =
-            combine(edit, printer.state) { edit, printerState ->
+            combine(edit, printer.state, settings.settings) { edit, printerState, prefs ->
                 EditorUiState(
                     step = edit.step,
                     image = edit.image,
@@ -95,6 +101,7 @@ class EditorViewModel
                     mode = edit.mode,
                     preview = edit.preview,
                     rendering = edit.rendering,
+                    density = prefs.density,
                     printerStatus = printerState.status(),
                     printerName = printerState.deviceName(),
                     offlineReason = (printerState as? PrinterState.Offline)?.reason,
@@ -169,9 +176,12 @@ class EditorViewModel
             edit.update { it.copy(step = EditorStep.Crop, preview = null, rendering = false) }
         }
 
+        fun onDensitySelected(density: DensityLevel) = settings.setDensity(density)
+
         fun onPrintClicked() {
-            val preview = uiState.value.takeIf { it.canPrint }?.preview ?: return
-            printer.printImage(preview)
+            val state = uiState.value.takeIf { it.canPrint } ?: return
+            val preview = state.preview ?: return
+            printer.printImage(preview, state.density)
             mutablePrintRequested.value = true
         }
 

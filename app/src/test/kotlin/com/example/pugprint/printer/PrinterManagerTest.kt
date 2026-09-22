@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 class PrinterManagerTest {
     private val device = PrinterDevice("AA:BB:CC:DD:EE:FF", "HB-1234")
@@ -242,4 +244,19 @@ class PrinterManagerTest {
             (1..7).map(backoff::delayMillis),
         )
     }
+
+    @ParameterizedTest
+    @EnumSource(DensityLevel::class)
+    fun `prints at the requested density from this printer's table`(level: DensityLevel) =
+        runTest {
+            val manager = manager()
+            manager.connect(device)
+            runCurrent()
+
+            manager.printImage(TestPattern.render(), level)
+            advanceTimeBy(60_000)
+
+            assertEquals(PrintResult.Success, manager.lastPrintResult.value)
+            assertEquals(DensityProfile.PUBLIC.value(level), transport.emulator.density)
+        }
 }

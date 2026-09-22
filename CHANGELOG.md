@@ -6,6 +6,13 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 settings. `SettingsStore` / `AppSettings` (theme id and print density, in app-private
+  preferences, nothing identifying). "Pick a look" on the home screen: a `ThemePicker` kit
+  component that draws every `ThemeCatalog` theme in its own colours; the chosen theme is
+  applied app-wide and remembered. "How dark?" (Lighter / Normal / Darker) on the preview
+  step drives `PrinterManager.printImage(bitmap, density)` and the test page, mapped through
+  the printer's own `DensityProfile`. `PugTheme.emoji` removed (a colour swatch identifies a
+  theme in the picker).
 - Phase 5 design kit (ADR 0007). New `:ui:design` module: `PugTheme` / `PugPalette` tokens,
   `ThemeCatalog` (Pug, Bubblegum, Ocean — add a theme by adding one entry), `PugSpacing` /
   `PugTouch` (64 / 56 / 48 dp targets) / `PugLayout` (480 dp content cap for tablets), and the

@@ -1,6 +1,8 @@
 package com.example.pugprint.ui.home
 
 import android.content.Intent
+import com.example.pugprint.design.theme.ThemeCatalog
+import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.printer.InMemoryPairedPrinterStore
 import com.example.pugprint.printer.PairingStart
 import com.example.pugprint.printer.PrinterManager
@@ -8,6 +10,8 @@ import com.example.pugprint.printer.PrinterPairing
 import com.example.pugprint.printer.transport.FakePrinterTransport
 import com.example.pugprint.printer.transport.PrinterClient
 import com.example.pugprint.printer.transport.PrinterDevice
+import com.example.pugprint.settings.AppSettings
+import com.example.pugprint.settings.InMemorySettingsStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -30,6 +34,7 @@ class HomeViewModelTest {
     private val device = PrinterDevice("AA:BB:CC:DD:EE:FF", "HB-1234")
     private val transport = FakePrinterTransport()
     private val store = InMemoryPairedPrinterStore()
+    private val settings = InMemorySettingsStore()
 
     /** Scripted pairing: what `begin()` returns and what the picker result decodes to. */
     private class ScriptedPairing(
@@ -51,6 +56,7 @@ class HomeViewModelTest {
         HomeViewModel(
             printer = PrinterManager(PrinterClient(transport), store, { true }, backgroundScope) { 1_000L },
             pairing = pairing,
+            settings = settings,
         )
 
     @Test
@@ -152,4 +158,43 @@ class HomeViewModelTest {
         assertEquals(50, HomeViewModel.batteryPercent(7_200))
         assertEquals(100, HomeViewModel.batteryPercent(9_000))
     }
+
+    @Test
+    fun `picking a look is remembered and shown`() =
+        runTest {
+            val viewModel = viewModel(ScriptedPairing(PairingStart.Paired(device)))
+            runCurrent()
+            assertEquals(ThemeCatalog.default.id, viewModel.uiState.value.themeId)
+
+            viewModel.onThemeSelected("ocean")
+            runCurrent()
+
+            assertEquals("ocean", viewModel.uiState.value.themeId)
+            assertEquals("ocean", settings.settings.value.themeId)
+        }
+
+    @Test
+    fun `an unknown look falls back to the default`() =
+        runTest {
+            val viewModel = viewModel(ScriptedPairing(PairingStart.Paired(device)))
+            viewModel.onThemeSelected("no-such-theme")
+            runCurrent()
+
+            assertEquals(ThemeCatalog.default.id, viewModel.uiState.value.themeId)
+        }
+
+    @Test
+    fun `the test page prints at the chosen darkness`() =
+        runTest {
+            settings.update { it.copy(density = DensityLevel.DARK) }
+            val viewModel = viewModel(ScriptedPairing(PairingStart.Paired(device)))
+            viewModel.onConnectClicked()
+            runCurrent()
+
+            viewModel.onPrintTestPageClicked()
+            advanceTimeBy(60_000)
+
+            assertEquals(30, transport.emulator.density) // public-factory dark
+            assertEquals(AppSettings(density = DensityLevel.DARK), settings.settings.value)
+        }
 }

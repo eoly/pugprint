@@ -11,6 +11,9 @@ complexity:
     ignoreAnnotated: ['Composable']
   LongMethod:
     ignoreAnnotated: ['Composable']
+  # A ViewModel is one function per user action (UDF); splitting it would not reduce anything.
+  TooManyFunctions:
+    ignoreAnnotated: ['HiltViewModel']
 
 style:
   MagicNumber:

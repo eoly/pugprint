@@ -20,6 +20,7 @@ import com.example.pugprint.design.components.ChoiceRow
 import com.example.pugprint.design.components.HeroTitle
 import com.example.pugprint.design.components.KidScreen
 import com.example.pugprint.design.components.StatusBanner
+import com.example.pugprint.design.components.ThemePicker
 import com.example.pugprint.design.theme.LocalPugTheme
 import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.design.theme.PugSpacing
@@ -27,8 +28,7 @@ import com.example.pugprint.design.theme.ThemeCatalog
 
 /**
  * Every kit component on one screen, in the current theme. The per-theme goldens capture this,
- * so a new theme (or a changed component) shows up as a picture in the first PR. No emoji in
- * the title: platform emoji fonts differ and would break the goldens between macOS and CI.
+ * so a new theme (or a changed component) shows up as a picture in the first PR.
  */
 @Composable
 fun DesignGallery(modifier: Modifier = Modifier) {
@@ -57,6 +57,7 @@ fun DesignGallery(modifier: Modifier = Modifier) {
             StatusBanner(BannerKind.Working, "Printing…", progress = 0.4f)
             StatusBanner(BannerKind.Problem, "Close the lid and check the paper", hint = "Then tap Print again")
             StatusBanner(BannerKind.Success, "Printed!")
+            ThemePicker(themes = ThemeCatalog.all, selectedId = theme.id, onSelect = {})
         }
     }
 }

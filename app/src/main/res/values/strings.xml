@@ -20,6 +20,7 @@
     <string name="home_print_test">Print a test page</string>
     <string name="home_forget">Forget printer</string>
     <string name="home_retry">Try again</string>
+    <string name="home_pick_look">Pick a look</string>
 
     <string name="message_print_done">Printed!</string>
     <string name="message_print_no_paper">Out of paper</string>
@@ -47,4 +48,8 @@
     <string name="editor_style_photo">Photo</string>
     <string name="editor_style_drawing">Drawing</string>
     <string name="editor_preview_description">How your sticker will print</string>
+    <string name="editor_darkness">How dark?</string>
+    <string name="editor_density_light">Lighter</string>
+    <string name="editor_density_medium">Normal</string>
+    <string name="editor_density_dark">Darker</string>
 </resources>
