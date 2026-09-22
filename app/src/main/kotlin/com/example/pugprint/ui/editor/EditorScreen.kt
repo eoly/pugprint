@@ -26,11 +26,13 @@ import androidx.compose.ui.unit.dp
 import com.example.pugprint.R
 import com.example.pugprint.design.components.BannerKind
 import com.example.pugprint.design.components.BigButton
+import com.example.pugprint.design.components.BigTextField
 import com.example.pugprint.design.components.ButtonEmphasis
 import com.example.pugprint.design.components.ChoiceRow
 import com.example.pugprint.design.components.KidScreen
 import com.example.pugprint.design.components.StatusBanner
 import com.example.pugprint.design.theme.PugSpacing
+import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.printer.DensityLevel
@@ -52,6 +54,7 @@ fun EditorScreen(
                     EditorStep.Loading -> R.string.editor_title_loading
                     EditorStep.Failed -> R.string.editor_title_failed
                     EditorStep.Crop -> R.string.editor_title_crop
+                    EditorStep.Words -> R.string.editor_title_words
                     EditorStep.Preview -> R.string.editor_title_preview
                 },
             ),
@@ -61,6 +64,7 @@ fun EditorScreen(
             EditorStep.Loading -> Centered { CircularProgressIndicator() }
             EditorStep.Failed -> Failed(actions.onBack)
             EditorStep.Crop -> CropStep(state, actions)
+            EditorStep.Words -> WordsStep(state, actions)
             EditorStep.Preview -> PreviewStep(state, actions)
         }
     }
@@ -132,11 +136,9 @@ private fun ColumnScope.CropStep(
     BigButton(text = stringResource(R.string.editor_next), onClick = actions.onNext)
 }
 
+/** The dots that will print, or a spinner while they are being worked out. */
 @Composable
-private fun ColumnScope.PreviewStep(
-    state: EditorUiState,
-    actions: EditorActions,
-) {
+private fun ColumnScope.Dots(state: EditorUiState) {
     Spacer(Modifier.height(PugSpacing.small))
     Box(
         modifier =
@@ -164,6 +166,38 @@ private fun ColumnScope.PreviewStep(
             )
         }
     }
+}
+
+@Composable
+private fun ColumnScope.WordsStep(
+    state: EditorUiState,
+    actions: EditorActions,
+) {
+    Dots(state)
+    Spacer(Modifier.height(PugSpacing.medium))
+    BigTextField(
+        value = state.caption,
+        onValueChange = actions.onCaption,
+        placeholder = stringResource(R.string.editor_words_placeholder),
+        onDone = actions.onWordsDone,
+    )
+    Spacer(Modifier.height(PugSpacing.small))
+    ChoiceRow(
+        options = CaptionPlacement.entries,
+        selected = state.captionPlacement,
+        onSelect = actions.onCaptionPlacement,
+        label = { stringResource(placementLabel(it)) },
+    )
+    Spacer(Modifier.height(PugSpacing.medium))
+    BigButton(text = stringResource(R.string.editor_words_done), onClick = actions.onWordsDone)
+}
+
+@Composable
+private fun ColumnScope.PreviewStep(
+    state: EditorUiState,
+    actions: EditorActions,
+) {
+    Dots(state)
     Spacer(Modifier.height(PugSpacing.medium))
     ChoiceRow(
         options = DitherMode.entries,
@@ -185,6 +219,12 @@ private fun ColumnScope.PreviewStep(
         onSelect = actions.onDensity,
         label = { stringResource(densityLabel(it)) },
     )
+    Spacer(Modifier.height(PugSpacing.small))
+    BigButton(
+        text = stringResource(if (state.caption.isBlank()) R.string.editor_add_words else R.string.editor_change_words),
+        onClick = actions.onAddWords,
+        emphasis = ButtonEmphasis.Secondary,
+    )
     Spacer(Modifier.height(PugSpacing.medium))
     StatusBanner(
         kind = if (state.paperOrLidProblem) BannerKind.Problem else state.printerStatus.bannerKind(),
@@ -200,27 +240,6 @@ private fun PrinterStatus.bannerKind(): BannerKind =
         PrinterStatus.NoPrinter, PrinterStatus.Offline -> BannerKind.Problem
         PrinterStatus.Connecting, PrinterStatus.Printing -> BannerKind.Working
         PrinterStatus.Connected -> BannerKind.Success
-    }
-
-private fun shapeLabel(shape: CropShape): Int =
-    when (shape) {
-        CropShape.SQUARE -> R.string.editor_shape_square
-        CropShape.TALL -> R.string.editor_shape_tall
-        CropShape.WIDE -> R.string.editor_shape_wide
-        CropShape.WHOLE -> R.string.editor_shape_whole
-    }
-
-private fun modeLabel(mode: DitherMode): Int =
-    when (mode) {
-        DitherMode.PHOTO -> R.string.editor_style_photo
-        DitherMode.DRAWING -> R.string.editor_style_drawing
-    }
-
-private fun densityLabel(level: DensityLevel): Int =
-    when (level) {
-        DensityLevel.LIGHT -> R.string.editor_density_light
-        DensityLevel.MEDIUM -> R.string.editor_density_medium
-        DensityLevel.DARK -> R.string.editor_density_dark
     }
 
 /** The preview sits a little in from the edges so it reads as a sticker, not a full-bleed picture. */

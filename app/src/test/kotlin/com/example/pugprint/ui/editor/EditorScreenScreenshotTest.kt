@@ -4,11 +4,15 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.pugprint.design.theme.PugPrintTheme
+import com.example.pugprint.imaging.Caption
+import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.CropWindow
 import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.ImagePipeline
+import com.example.pugprint.imaging.Sticker
+import com.example.pugprint.imaging.StickerRenderer
 import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.ui.Screenshots
@@ -110,4 +114,43 @@ class EditorScreenScreenshotTest {
                 printerName = "HB-1234",
             ),
         )
+
+    @Test
+    fun editorScreen_words() {
+        val window = CropWindow(photo.width, photo.height)
+        snap(
+            EditorUiState(
+                step = EditorStep.Words,
+                image = photo,
+                window = window,
+                caption = "Best dog",
+                captionPlacement = CaptionPlacement.TOP,
+                preview =
+                    StickerRenderer.render(
+                        Sticker(photo, window.cropRect(), DitherMode.PHOTO, Caption("Best dog", CaptionPlacement.TOP)),
+                    ),
+                printerStatus = PrinterStatus.Connected,
+                printerName = "HB-1234",
+            ),
+        )
+    }
+
+    @Test
+    fun editorScreen_preview_caption() {
+        val window = CropWindow(photo.width, photo.height)
+        snap(
+            EditorUiState(
+                step = EditorStep.Preview,
+                image = photo,
+                window = window,
+                caption = "Best dog",
+                preview =
+                    StickerRenderer.render(
+                        Sticker(photo, window.cropRect(), DitherMode.PHOTO, Caption("Best dog")),
+                    ),
+                printerStatus = PrinterStatus.Connected,
+                printerName = "HB-1234",
+            ),
+        )
+    }
 }

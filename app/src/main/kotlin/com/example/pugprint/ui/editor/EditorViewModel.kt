@@ -2,16 +2,19 @@ package com.example.pugprint.ui.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pugprint.imaging.Caption
+import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.CropWindow
 import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.imaging.GrayImage
-import com.example.pugprint.imaging.ImagePipeline
 import com.example.pugprint.imaging.ImagingDispatcher
 import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.PhotoLoadException
 import com.example.pugprint.imaging.PhotoSource
 import com.example.pugprint.imaging.Rotation
+import com.example.pugprint.imaging.Sticker
+import com.example.pugprint.imaging.StickerRenderer
 import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.printer.PrinterManager
@@ -37,6 +40,9 @@ import javax.inject.Inject
 enum class EditorStep {
     Loading,
     Crop,
+
+    /** Optional detour from [Preview]: type a caption and pick where it goes, watching the dots update. */
+    Words,
     Preview,
     Failed,
 }
@@ -47,7 +53,10 @@ data class EditorUiState(
     val image: GrayImage? = null,
     val window: CropWindow? = null,
     val mode: DitherMode = DitherMode.PHOTO,
-    /** The dots that will print, once [EditorStep.Preview] has rendered them. */
+    /** Words on the sticker; blank means none. */
+    val caption: String = "",
+    val captionPlacement: CaptionPlacement = CaptionPlacement.BOTTOM,
+    /** The dots that will print, once [EditorStep.Preview] (or [EditorStep.Words]) has rendered them. */
     val preview: MonoBitmap? = null,
     val rendering: Boolean = false,
     /** "How dark?" — remembered across stickers. */
@@ -71,9 +80,13 @@ private data class EditState(
     val image: GrayImage? = null,
     val window: CropWindow? = null,
     val mode: DitherMode = DitherMode.PHOTO,
+    val caption: String = "",
+    val captionPlacement: CaptionPlacement = CaptionPlacement.BOTTOM,
     val preview: MonoBitmap? = null,
     val rendering: Boolean = false,
-)
+) {
+    val showsDots: Boolean get() = step == EditorStep.Preview || step == EditorStep.Words
+}
 
 @HiltViewModel
 class EditorViewModel
@@ -99,6 +112,8 @@ class EditorViewModel
                     image = edit.image,
                     window = edit.window,
                     mode = edit.mode,
+                    caption = edit.caption,
+                    captionPlacement = edit.captionPlacement,
                     preview = edit.preview,
                     rendering = edit.rendering,
                     density = prefs.density,
@@ -168,7 +183,31 @@ class EditorViewModel
         fun onModeSelected(mode: DitherMode) {
             if (edit.value.mode == mode) return
             edit.update { it.copy(mode = mode) }
-            if (edit.value.step == EditorStep.Preview) render()
+            if (edit.value.showsDots) render()
+        }
+
+        /** "Add words" from the preview. */
+        fun onAddWordsClicked() {
+            if (edit.value.step != EditorStep.Preview) return
+            edit.update { it.copy(step = EditorStep.Words) }
+        }
+
+        fun onCaptionChanged(text: String) {
+            if (edit.value.caption == text) return
+            edit.update { it.copy(caption = text) }
+            if (edit.value.showsDots) render()
+        }
+
+        fun onCaptionPlacementSelected(placement: CaptionPlacement) {
+            if (edit.value.captionPlacement == placement) return
+            edit.update { it.copy(captionPlacement = placement) }
+            if (edit.value.showsDots && edit.value.caption.isNotBlank()) render()
+        }
+
+        /** Done with the words: back to the preview (the dots are already up to date). */
+        fun onWordsDoneClicked() {
+            if (edit.value.step != EditorStep.Words) return
+            edit.update { it.copy(step = EditorStep.Preview) }
         }
 
         fun onBackToCropClicked() {
@@ -191,12 +230,21 @@ class EditorViewModel
 
         private fun render() {
             renderJob?.cancel()
-            val (image, window, mode) = edit.value.let { Triple(it.image, it.window, it.mode) }
-            if (image == null || window == null) return
-            edit.update { it.copy(rendering = true, preview = null) }
+            val current = edit.value
+            val image = current.image ?: return
+            val window = current.window ?: return
+            val sticker =
+                Sticker(
+                    image = image,
+                    crop = window.cropRect(),
+                    mode = current.mode,
+                    caption = Caption(current.caption, current.captionPlacement),
+                )
+            // Keep the old dots on screen while re-rendering a caption edit, so the picture doesn't blink.
+            edit.update { it.copy(rendering = true, preview = if (it.step == EditorStep.Words) it.preview else null) }
             renderJob =
                 viewModelScope.launch {
-                    val dots = withContext(dispatcher) { ImagePipeline.render(image, window.cropRect(), mode) }
+                    val dots = withContext(dispatcher) { StickerRenderer.render(sticker) }
                     edit.update { it.copy(preview = dots, rendering = false) }
                 }
         }

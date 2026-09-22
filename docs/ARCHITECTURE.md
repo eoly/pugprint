@@ -11,8 +11,8 @@
   screens: `home` and `editor/{photo}`.
 - **Domain**: `PrinterManager` — the app-wide connection state machine (pair, connect,
   identify, reconnect with backoff, `printImage`). `EditorViewModel` drives the edit:
-  `PhotoSource` → `GrayImage` → `CropWindow` (pan/zoom/shape/rotate) → `ImagePipeline` →
-  `MonoBitmap` → `PrinterManager.printImage`.
+  `PhotoSource` → `GrayImage` → `CropWindow` (pan/zoom/shape/rotate) → `Sticker` (+ caption)
+  → `StickerRenderer` → `MonoBitmap` → `PrinterManager.printImage`.
 - **Data**: `PrinterTransport` implementations, `PairedPrinterStore`, `SettingsStore`
   (`AppSettings`: theme id + print density, app-private preferences, exposed as a `StateFlow`
   that `MainActivity` maps to the theme and the ViewModels fold into their state),
@@ -26,7 +26,9 @@
   (see `docs/PRINTER_PROTOCOL.md`).
 - `:core:imaging`   — PURE JVM: `GrayImage` (rotate / crop / box-filter scale), `Dither`
   (Floyd–Steinberg, threshold), `CropWindow` (crop-frame maths), `ImagePipeline`, `MonoBitmap`
-  1bpp packing, `TestPattern`; golden PBM tests.
+  1bpp packing, `TestPattern`; the sticker document — `Sticker` (picture + crop + style +
+  `Caption`), `StickerRenderer` (pipeline → `BitCanvas` → overlays → dots), `PixelFont` /
+  `FontCatalog` / `TextRasterizer`; golden PBM tests.
 - `:core:bluetooth` — Android: Kable `BleTransport`, `CompanionPairing` (CDM), `BluetoothPermissions`.
   The only module allowed to import Android Bluetooth APIs; no protocol bytes (ADR 0006).
 - `:ui:design`     — the design kit (ADR 0007): theme tokens (`PugTheme`, `PugSpacing`,
@@ -86,6 +88,14 @@ so the frame is always full; `cropRect()` maps the frame back to image pixels. `
 crops, box-filters to 384 px, trims to at most 1152 rows, and dithers (`DitherMode.PHOTO` =
 Floyd–Steinberg, `DRAWING` = threshold at 128). Heavy steps run on the injected
 `@ImagingDispatcher` (`Dispatchers.Default`; a test dispatcher in tests).
+
+## Sticker document
+`Sticker` is the editable thing: the picture, its crop and dither style, plus layers drawn on
+top — today a `Caption` (a white band with black `PixelFont` letters at the top or bottom;
+`TextRasterizer` wraps to ≤ 3 lines and picks the largest integer scale 6→2 that fits, chopping
+a word that never fits). `StickerRenderer.render` runs `ImagePipeline`, lifts the dots into a
+`BitCanvas`, draws the layers and packs them back. Stamps and drawings become further layers
+here; `:core:printer` never changes for a new kid feature (ADR 0007).
 
 ## Threading
 BLE and encoding on `Dispatchers.Default`/Kable's own threads; the `PrinterManager` lives in

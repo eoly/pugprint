@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pugprint.design.components.BannerKind
 import com.example.pugprint.design.components.BigButton
+import com.example.pugprint.design.components.BigTextField
 import com.example.pugprint.design.components.ButtonEmphasis
 import com.example.pugprint.design.components.ChoiceRow
 import com.example.pugprint.design.components.HeroTitle
@@ -44,6 +45,7 @@ fun DesignGallery(modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             BigButton(text = "Print a photo", onClick = {})
+            BigTextField(value = "", onValueChange = {}, placeholder = "Write something…")
             BigButton(text = "Print", onClick = {}, enabled = false)
             BigButton(text = "Print a test page", onClick = {}, emphasis = ButtonEmphasis.Secondary)
             Row { BigButton(text = "Forget printer", onClick = {}, emphasis = ButtonEmphasis.Quiet) }

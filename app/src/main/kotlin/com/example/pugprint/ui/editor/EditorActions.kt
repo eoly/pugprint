@@ -1,5 +1,6 @@
 package com.example.pugprint.ui.editor
 
+import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.printer.DensityLevel
@@ -20,5 +21,9 @@ data class EditorActions(
     val onNext: () -> Unit = {},
     val onMode: (DitherMode) -> Unit = {},
     val onDensity: (DensityLevel) -> Unit = {},
+    val onAddWords: () -> Unit = {},
+    val onCaption: (String) -> Unit = {},
+    val onCaptionPlacement: (CaptionPlacement) -> Unit = {},
+    val onWordsDone: () -> Unit = {},
     val onPrint: () -> Unit = {},
 )

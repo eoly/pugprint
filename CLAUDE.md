@@ -24,7 +24,9 @@ Offline; no network, accounts, analytics, ads.
 ## Architecture rules
 - `:core:printer` is PURE Kotlin/JVM — protocol encode/decode, the `PrinterTransport`
   abstraction, `FakePrinterTransport`, `PrinterClient` + golden tests. NO Android imports.
-- `:core:imaging` is PURE Kotlin/JVM — dithering + scale-to-384px + `TestPattern` + golden tests.
+- `:core:imaging` is PURE Kotlin/JVM — dithering + scale-to-384px + `TestPattern` + the sticker
+  document (`Sticker` / `StickerRenderer` / `Caption` / `FontCatalog`) + golden tests. New kid
+  content (stamps, drawings) = new layers rendered here, never new printer code.
 - `:core:bluetooth` is the ONLY module that imports Android Bluetooth APIs (Kable
   `BleTransport`, Companion Device Manager pairing, permission helpers). No protocol bytes.
 - All printer I/O goes through the `PrinterTransport` interface. `FakePrinterTransport`

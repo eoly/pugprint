@@ -6,6 +6,13 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 words on stickers. `:core:imaging` gains the sticker document: `Sticker` (picture,
+  crop, style, `Caption`), `StickerRenderer` and `BitCanvas`, `PixelFont` with a `FontCatalog`
+  (5 × 7 "Blocky", glyphs drawn as `#`/`.` art — add a font by adding an entry) and
+  `TextRasterizer` (word wrap to three lines, integer auto-scale 6→2, giant words chopped);
+  golden PBMs per font and per caption placement. Editor: "Add words" detour from the preview
+  with the dots updating as you type, Top / Bottom placement, "Change the words" afterwards.
+  Kit: `BigTextField`.
 - Phase 5 friendly errors. Every message the home screen shows (printed, out of paper, lid
   open, printer lost, pairing cancelled, permission denied…) is now a `StatusBanner` in a
   kid's words with a second line saying what to do; it clears itself after eight seconds. The
