@@ -16,7 +16,8 @@ All notable changes to PugPrint are documented here. The format follows
   (`KidScreen.onHome`). A blank sheet can go to the editor too (words and stamps only), and a
   drawing skips "Make it fit": it opens straight on "Ready to print?" in Drawing style, without
   the Photo / Drawing row (both give the same dots on a black-and-white picture).
-- Phase 5 stamps. `StampCatalog` (heart, star, paw, smiley, sun, zap — 16 × 16 art drawn as
+- Phase 5 stamps. `StampCatalog` (heart, star, paw, smiley, sun, zap, pizza, flower, car, fish,
+  ghost, football, basketball — 16 × 16 art drawn as
   `#`/`.`, add a stamp by adding an entry), `StampPlacement` on the `Sticker` (centre as
   fractions of the sticker, Small / Medium / Big) and `StampRasterizer` (one-dot white halo so
   a stamp reads over a photo); golden PBM per stamp and for a stamped sticker. Editor: "Add
