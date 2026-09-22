@@ -38,7 +38,7 @@ fun HomeScreen(
             actions.onMessageShown()
         }
     }
-    KidScreen(modifier = modifier) {
+    KidScreen(modifier = modifier, scrollable = true) {
         Spacer(Modifier.height(PugSpacing.huge))
         HeroTitle(stringResource(R.string.home_title))
         Spacer(Modifier.height(PugSpacing.large))
@@ -110,6 +110,7 @@ private fun PrinterStatus(state: HomeUiState) {
                 kind = banner.kind,
                 text = stringResource(banner.text),
                 hint = banner.hint?.let { stringResource(it) },
+                announce = true,
             )
         }
         val statusHint = printerStatusHint(state.printerStatus, state.offlineReason, state.printProgress)

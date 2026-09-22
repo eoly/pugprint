@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -23,6 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import com.example.pugprint.design.R
 import com.example.pugprint.design.theme.PugLayout
@@ -33,7 +37,8 @@ import com.example.pugprint.design.theme.PugTouch
  * The frame every screen sits in: theme background, safe-area padding, content capped at
  * [PugLayout.maxContentWidth] and centred (so a tablet still looks hand-sized), and an optional
  * header with a big back button, a [title] and, deep in a flow, a Home button ([onHome]) so a
- * kid never has to count back-presses.
+ * kid never has to count back-presses. A [scrollable] screen scrolls when big text or a small
+ * phone makes it too tall; leave it off for screens whose picture takes the remaining height.
  */
 @Composable
 fun KidScreen(
@@ -41,6 +46,7 @@ fun KidScreen(
     title: String? = null,
     onBack: (() -> Unit)? = null,
     onHome: (() -> Unit)? = null,
+    scrollable: Boolean = false,
     snackbarHost: @Composable () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -57,6 +63,7 @@ fun KidScreen(
                     Modifier
                         .fillMaxSize()
                         .widthIn(max = PugLayout.maxContentWidth)
+                        .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)
                         .padding(horizontal = PugLayout.screenPadding, vertical = PugSpacing.small),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -85,7 +92,11 @@ private fun Header(
             Spacer(Modifier.width(PugSpacing.small))
         }
         if (title != null) {
-            Text(text = title, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.weight(1f).semantics { heading() },
+            )
         } else {
             Spacer(Modifier.weight(1f))
         }
@@ -112,6 +123,6 @@ fun HeroTitle(
         style = MaterialTheme.typography.displayMedium,
         color = MaterialTheme.colorScheme.primary,
         textAlign = TextAlign.Center,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().semantics { heading() },
     )
 }

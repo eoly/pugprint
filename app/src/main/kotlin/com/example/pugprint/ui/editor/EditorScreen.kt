@@ -168,7 +168,16 @@ private fun ColumnScope.Dots(
             val bitmap = remember(preview) { preview.toImageBitmap() }
             Image(
                 bitmap = bitmap,
-                contentDescription = stringResource(R.string.editor_preview_description),
+                contentDescription =
+                    stringResource(
+                        if (onDrag ==
+                            null
+                        ) {
+                            R.string.editor_preview_description
+                        } else {
+                            R.string.editor_stamps_canvas_description
+                        },
+                    ),
                 contentScale = ContentScale.Fit,
                 filterQuality = FilterQuality.None,
                 modifier =

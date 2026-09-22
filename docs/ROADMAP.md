@@ -73,8 +73,12 @@
      Start over; Next (also on a blank sheet, for words-and-stamps-only stickers) hands the
      384 × 384 picture to the editor through `DrawingHandoff`, which skips the crop step for it;
      words, stamps, darkness and printing all work on drawings unchanged.
-  7. **Accessibility pass** — content descriptions, TalkBack order, 1.5× font-scale goldens,
-     lint accessibility checks on.
+  7. ✅ **Accessibility pass** — every tappable thing has words for TalkBack and is ≥ 48 dp,
+     enforced by `AccessibilityAuditTest` (walks the semantics tree of nine screen states;
+     Compose has no lint for this). Banners read as one item and announce themselves
+     (`StatusBanner.announce`), titles are headings, the crop frame and stamp canvas are
+     described, stamp tiles are buttons. 1.5× font-scale goldens for home / preview / draw
+     found two bugs, fixed: home now scrolls, tile labels auto-shrink instead of truncating.
   8. **Sticker rolls** — `StickerRoll` catalog in `:core:printer` (one entry per roll; the
      standard roll measured 2026-09-22: 49.2 × 49.2 mm square labels, 12.7 mm gap with a
      serration halfway, so pitch ≈ 495 rows at 8 dots/mm), a roll setting, and per-roll

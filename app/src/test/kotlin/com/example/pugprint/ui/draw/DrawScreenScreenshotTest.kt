@@ -23,10 +23,20 @@ class DrawScreenScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private fun snap(state: DrawUiState) {
-        compose.setContent { PugPrintTheme { DrawScreen(state = state) } }
+    private fun snap(
+        state: DrawUiState,
+        bigText: Boolean = false,
+    ) {
+        compose.setContent {
+            PugPrintTheme {
+                if (bigText) Screenshots.BigText { DrawScreen(state = state) } else DrawScreen(state = state)
+            }
+        }
         compose.onRoot().captureRoboImage(roborazziOptions = Screenshots.options)
     }
+
+    @Test
+    fun drawScreen_empty_bigText() = snap(DrawUiState(), bigText = true)
 
     @Test
     fun drawScreen_empty() = snap(DrawUiState())

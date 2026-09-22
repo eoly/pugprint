@@ -43,9 +43,38 @@ class EditorScreenScreenshotTest {
             if (disc < 60) (disc * 2).toInt() else ramp
         }
 
-    private fun snap(state: EditorUiState) {
-        compose.setContent { PugPrintTheme { EditorScreen(state = state) } }
+    private fun snap(
+        state: EditorUiState,
+        bigText: Boolean = false,
+    ) {
+        compose.setContent {
+            PugPrintTheme {
+                if (bigText) Screenshots.BigText { EditorScreen(state = state) } else EditorScreen(state = state)
+            }
+        }
         compose.onRoot().captureRoboImage(roborazziOptions = Screenshots.options)
+    }
+
+    @Test
+    fun editorScreen_preview_caption_bigText() {
+        val window = CropWindow(photo.width, photo.height)
+        val stamps = listOf(StampPlacement("paw", 0.8f, 0.2f))
+        snap(
+            EditorUiState(
+                step = EditorStep.Preview,
+                image = photo,
+                window = window,
+                caption = "Best dog",
+                stamps = stamps,
+                preview =
+                    StickerRenderer.render(
+                        Sticker(photo, window.cropRect(), DitherMode.PHOTO, Caption("Best dog"), stamps),
+                    ),
+                printerStatus = PrinterStatus.Connected,
+                printerName = "HB-1234",
+            ),
+            bigText = true,
+        )
     }
 
     @Test

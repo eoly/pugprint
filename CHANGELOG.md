@@ -6,6 +6,16 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 accessibility. `AccessibilityAuditTest` walks the semantics tree of nine screen
+  states and fails if anything tappable lacks words for TalkBack or is under 48 dp. Banners
+  read as one item and message banners announce themselves (`StatusBanner.announce`); screen
+  titles are headings; the crop frame and the stamp canvas are described; stamp tiles are
+  buttons. Goldens at font scale 1.5 (`Screenshots.BigText`) for home, preview and draw.
+
+### Fixed
+- At large font sizes the home screen was cut off (it now scrolls, `KidScreen(scrollable)`) and
+  long tile labels such as "Bubblegum" were truncated (`ChoiceRow` / `ThemePicker` labels now
+  auto-shrink to one line).
 - Phase 5 drawing. `:core:imaging` gains `Drawing` / `Stroke` / `DrawPoint` / `BrushSize` and
   `StrokeRasterizer` (round-capped strokes, eraser paints white, 384 × 384 so one drawing is one
   sticker; golden `drawing_face.pbm`). App: "Draw a sticker" on the home screen opens a square

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,6 +21,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.design.theme.PugTouch
 
@@ -72,9 +74,13 @@ private fun RowScope.ChoiceTile(
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
-                maxLines = 1,
+                maxLines = 1, // one line: autoSize shrinks the label instead of breaking a word
                 overflow = TextOverflow.Ellipsis,
+                autoSize = TextAutoSize.StepBased(minFontSize = MIN_LABEL_SIZE, maxFontSize = MAX_LABEL_SIZE),
             )
         }
     }
 }
+
+private val MIN_LABEL_SIZE = 12.sp
+private val MAX_LABEL_SIZE = 16.sp
