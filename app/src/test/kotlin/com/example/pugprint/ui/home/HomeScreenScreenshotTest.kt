@@ -55,4 +55,28 @@ class HomeScreenScreenshotTest {
     @Test
     fun homeScreen_offline_lost() =
         snap(HomeUiState(PrinterStatus.Offline, printerName = "HB-1234", offlineReason = OfflineReason.LOST))
+
+    @Test
+    fun homeScreen_printed_printAgain() =
+        snap(
+            HomeUiState(
+                PrinterStatus.Connected,
+                printerName = "HB-1234",
+                batteryPercent = 64,
+                hasLastPrint = true,
+                message = HomeMessage.PrintDone,
+            ),
+        )
+
+    @Test
+    fun homeScreen_offline_unreachable_paperMessage() =
+        snap(
+            HomeUiState(
+                PrinterStatus.Offline,
+                printerName = "HB-1234",
+                offlineReason = OfflineReason.UNREACHABLE,
+                hasLastPrint = true,
+                message = HomeMessage.PrintPaperOrLid,
+            ),
+        )
 }

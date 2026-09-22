@@ -6,12 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +23,7 @@ import com.example.pugprint.design.components.ThemePicker
 import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.design.theme.ThemeCatalog
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
@@ -33,15 +31,14 @@ fun HomeScreen(
     actions: HomeActions = HomeActions(),
     modifier: Modifier = Modifier,
 ) {
-    val snackbar = remember { SnackbarHostState() }
-    val messageText = state.message?.let { stringResource(messageRes(it)) }
-    LaunchedEffect(messageText) {
-        if (messageText != null) {
-            snackbar.showSnackbar(messageText)
+    // A message banner stays long enough to read, then clears itself; any new print replaces it.
+    LaunchedEffect(state.message) {
+        if (state.message != null) {
+            delay(MESSAGE_MILLIS)
             actions.onMessageShown()
         }
     }
-    KidScreen(modifier = modifier, snackbarHost = { SnackbarHost(snackbar) }) {
+    KidScreen(modifier = modifier) {
         Spacer(Modifier.height(PugSpacing.huge))
         HeroTitle(stringResource(R.string.home_title))
         Spacer(Modifier.height(PugSpacing.large))
@@ -50,6 +47,14 @@ fun HomeScreen(
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PugSpacing.medium)) {
             if (state.hasPrinter) {
                 BigButton(text = stringResource(R.string.home_print_photo), onClick = actions.onPickPhoto)
+                if (state.hasLastPrint) {
+                    BigButton(
+                        text = stringResource(R.string.home_print_again),
+                        onClick = actions.onPrintAgain,
+                        enabled = state.canPrintAgain,
+                        emphasis = ButtonEmphasis.Secondary,
+                    )
+                }
                 BigButton(
                     text = stringResource(R.string.home_print_test),
                     onClick = actions.onPrintTestPage,
@@ -91,20 +96,29 @@ fun HomeScreen(
     }
 }
 
-/** Where the printer is at, plus anything the kid needs to fix, as banners. */
+/** What just happened, where the printer is at, and anything the kid needs to fix — as banners. */
 @Composable
 private fun PrinterStatus(state: HomeUiState) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PugSpacing.small)) {
+        state.message?.banner()?.let { banner ->
+            StatusBanner(
+                kind = banner.kind,
+                text = stringResource(banner.text),
+                hint = banner.hint?.let { stringResource(it) },
+            )
+        }
+        val statusHint = printerStatusHint(state.printerStatus, state.offlineReason, state.printProgress)
+        val battery =
+            state.batteryPercent?.takeUnless { state.batteryLow }?.let {
+                stringResource(
+                    R.string.home_battery,
+                    it,
+                )
+            }
         StatusBanner(
             kind = state.printerStatus.bannerKind(),
             text = printerStatusLabel(state.printerStatus, state.printerName, state.offlineReason),
-            hint =
-                state.batteryPercent?.takeUnless { state.batteryLow }?.let {
-                    stringResource(
-                        R.string.home_battery,
-                        it,
-                    )
-                },
+            hint = statusHint ?: battery,
             progress = state.printProgress,
         )
         if (state.batteryLow) {
@@ -124,17 +138,8 @@ private fun PrinterStatus.bannerKind(): BannerKind =
         PrinterStatus.Offline -> BannerKind.Problem
     }
 
-private fun messageRes(message: HomeMessage): Int =
-    when (message) {
-        HomeMessage.PrintDone -> R.string.message_print_done
-        HomeMessage.PrintNoPaper -> R.string.message_print_no_paper
-        HomeMessage.PrintPaperOrLid -> R.string.message_print_paper_or_lid
-        HomeMessage.PrintDisconnected -> R.string.message_print_disconnected
-        HomeMessage.PrintFailed -> R.string.message_print_failed
-        HomeMessage.PairingCancelled -> R.string.message_pairing_cancelled
-        HomeMessage.PairingUnavailable -> R.string.message_pairing_unavailable
-        HomeMessage.PermissionDenied -> R.string.message_permission_denied
-    }
+/** How long a message banner stays before clearing itself. */
+private const val MESSAGE_MILLIS = 8_000L
 
 @Preview(showBackground = true)
 @Composable

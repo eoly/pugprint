@@ -27,3 +27,27 @@ fun printerStatusLabel(
             }
     }
 }
+
+/** A second, smaller line under [printerStatusLabel] saying what to do, or `null` when nothing is needed. */
+@Composable
+fun printerStatusHint(
+    status: PrinterStatus,
+    offlineReason: OfflineReason?,
+    printProgress: Float?,
+): String? =
+    when (status) {
+        PrinterStatus.NoPrinter -> stringResource(R.string.home_status_no_printer_hint)
+        PrinterStatus.Connecting -> null
+        PrinterStatus.Connected -> null
+        PrinterStatus.Printing ->
+            printProgress?.let { stringResource(R.string.home_status_printing_hint, (it * PERCENT).toInt()) }
+        PrinterStatus.Offline ->
+            when (offlineReason) {
+                OfflineReason.LOST -> stringResource(R.string.home_status_offline_lost_hint)
+                OfflineReason.UNREACHABLE -> stringResource(R.string.home_status_offline_unreachable_hint)
+                OfflineReason.NO_PERMISSION -> stringResource(R.string.home_status_offline_no_permission_hint)
+                OfflineReason.IDLE, null -> stringResource(R.string.home_status_offline_idle_hint)
+            }
+    }
+
+private const val PERCENT = 100

@@ -259,4 +259,29 @@ class PrinterManagerTest {
             assertEquals(PrintResult.Success, manager.lastPrintResult.value)
             assertEquals(DensityProfile.PUBLIC.value(level), transport.emulator.density)
         }
+
+    @Test
+    fun `print again repeats the last sticker at the same darkness`() =
+        runTest {
+            val manager = manager()
+            manager.connect(device)
+            runCurrent()
+            assertNull(manager.lastPrint.value)
+            manager.printAgain() // nothing to repeat yet: no-op
+            runCurrent()
+            assertInstanceOf(PrinterState.Connected::class.java, manager.state.value)
+
+            val sticker = MonoBitmap.fromPixels(384, 3, BooleanArray(384 * 3) { it % 2 == 0 })
+            manager.printImage(sticker, DensityLevel.DARK)
+            advanceTimeBy(60_000)
+            assertEquals(LastPrint(sticker, DensityLevel.DARK), manager.lastPrint.value)
+            assertEquals(3, transport.emulator.rows.size)
+
+            manager.printAgain()
+            advanceTimeBy(60_000)
+
+            assertEquals(PrintResult.Success, manager.lastPrintResult.value)
+            assertEquals(6, transport.emulator.rows.size)
+            assertEquals(DensityProfile.PUBLIC.value(DensityLevel.DARK), transport.emulator.density)
+        }
 }

@@ -69,6 +69,7 @@ fun HomeRoute(
                     photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
                 onPrintTestPage = viewModel::onPrintTestPageClicked,
+                onPrintAgain = viewModel::onPrintAgainClicked,
                 onRetry = {
                     val missing = BluetoothPermissions.missing(context)
                     if (missing.isEmpty()) {

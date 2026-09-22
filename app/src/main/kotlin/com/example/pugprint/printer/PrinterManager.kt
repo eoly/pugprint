@@ -67,6 +67,12 @@ sealed interface PrinterState {
     ) : PrinterState
 }
 
+/** The sticker most recently sent to the printer, so it can be printed again from the home screen. */
+data class LastPrint(
+    val bitmap: MonoBitmap,
+    val density: DensityLevel,
+)
+
 /** Reconnect schedule: delay in ms before attempt `n` (1-based). */
 fun interface ReconnectBackoff {
     fun delayMillis(attempt: Int): Long
@@ -102,6 +108,7 @@ class PrinterManager
     ) {
         private val mutableState = MutableStateFlow<PrinterState>(PrinterState.NoPrinter)
         private val mutablePrintResult = MutableStateFlow<PrintResult?>(null)
+        private val mutableLastPrint = MutableStateFlow<LastPrint?>(null)
         private val printLock = Mutex()
         private var connection: Job? = null
 
@@ -109,6 +116,9 @@ class PrinterManager
 
         /** Outcome of the last print, until [dismissPrintResult]. */
         val lastPrintResult: StateFlow<PrintResult?> = mutablePrintResult.asStateFlow()
+
+        /** What [printImage] last sent (even if it failed), for [printAgain]; `null` until something was printed. */
+        val lastPrint: StateFlow<LastPrint?> = mutableLastPrint.asStateFlow()
 
         /** Call once at startup: reconnects to the remembered printer if allowed. */
         fun start() {
@@ -152,6 +162,7 @@ class PrinterManager
             require(bitmap.width == PrinterSpec.DOTS_PER_LINE) {
                 "Print width must be ${PrinterSpec.DOTS_PER_LINE} dots, got ${bitmap.width}"
             }
+            mutableLastPrint.value = LastPrint(bitmap, density)
             scope.launch {
                 val connected = state.value as? PrinterState.Connected ?: return@launch
                 print(printJobFor(bitmap, connected.identity.densityProfile, density))
@@ -246,3 +257,9 @@ private fun printJobFor(
 /** Prints the built-in test page; the result lands in [PrinterManager.lastPrintResult]. */
 fun PrinterManager.printTestPage(density: DensityLevel = DensityLevel.MEDIUM): Unit =
     printImage(TestPattern.render(), density)
+
+/** Prints the [PrinterManager.lastPrint] sticker once more, same darkness. No-op if nothing was printed yet. */
+fun PrinterManager.printAgain() {
+    val last = lastPrint.value ?: return
+    printImage(last.bitmap, last.density)
+}

@@ -54,9 +54,10 @@
      own colours), "How dark?" Lighter / Normal / Darker on the preview step,
      `PrinterManager.printImage(bitmap, density)`; density asserted per level against the
      emulator.
-  3. **Friendly error UX + print again** — every `PrintFailure` / offline reason mapped to a
-     kid-readable line plus a "what to do" hint in a `StatusBanner` (no more snackbars),
-     "Print again" for the last sticker, printing progress with a percentage.
+  3. ✅ **Friendly error UX + print again** — every message and offline reason is a
+     `StatusBanner` with kid-readable words plus a "what to do" hint (`MessageBanner.kt`,
+     `printerStatusHint`; the snackbar is gone), "Print it again" repeats the last sticker
+     (`PrinterManager.lastPrint` / `printAgain`), printing shows "40% done".
   4. **Sticker document + text captions** — `:core:imaging` `Sticker` / `Layer` model and a
      pure-JVM `StickerRenderer` (golden PBMs); `TextLayer` via a `PixelFont` (bitmap glyphs,
      integer-scaled) so words print crisp; "Add words" step in the editor.
