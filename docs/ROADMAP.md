@@ -67,8 +67,11 @@
      entry), `StampPlacement` on the `Sticker` (centre as fractions, Small / Medium / Big),
      `StampRasterizer` with a white halo; "Add stamps" detour: tap a stamp, it lands in the
      middle, drag it into place, Undo. Goldens per stamp and for a stamped sticker.
-  6. **Drawing canvas** — `Stroke` model + pure `StrokeRasterizer` (goldens), "Draw a sticker"
-     home entry with fat brushes, eraser and undo.
+  6. ✅ **Drawing canvas** — `Drawing` / `Stroke` / `BrushSize` and a pure `StrokeRasterizer`
+     (round-capped strokes as discs, eraser paints white; golden `drawing_face.pbm`); "Draw a
+     sticker" on the home screen → a square sheet with Thin / Medium / Fat, Pen / Eraser, Undo,
+     Start over; Next hands the 384 × 384 picture to the editor through `DrawingHandoff`, so
+     words, stamps, darkness and printing all work on drawings unchanged.
   7. **Accessibility pass** — content descriptions, TalkBack order, 1.5× font-scale goldens,
      lint accessibility checks on.
   8. **Sticker rolls** — `StickerRoll` catalog in `:core:printer` (one entry per roll; the

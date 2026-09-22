@@ -7,8 +7,10 @@
   `HomeRoute` (in `ui/home/HomeRoute.kt`) owns the platform glue a ViewModel cannot: the runtime
   permission prompt and the Companion Device Manager picker (`IntentSender`).
   `HomeRoute` also launches the system Photo Picker; `EditorRoute` owns the editor's
-  back-stack behaviour. `PugPrintNavHost` (navigation-compose, string routes) holds the two
-  screens: `home` and `editor/{photo}`.
+  back-stack behaviour. `PugPrintNavHost` (navigation-compose, string routes) holds three
+  screens: `home`, `draw` and `editor/{photo}`. `DrawRoute` / `DrawViewModel` keep a `Drawing`
+  (strokes as fractions of the sheet) and, on Next, rasterise it into `DrawingHandoff`; the
+  editor opens `DrawingHandoff.URI` like any picture via `HandoffPhotoSource`.
 - **Domain**: `PrinterManager` — the app-wide connection state machine (pair, connect,
   identify, reconnect with backoff, `printImage`). `EditorViewModel` drives the edit:
   `PhotoSource` → `GrayImage` → `CropWindow` (pan/zoom/shape/rotate) → `Sticker` (+ caption)
@@ -28,7 +30,7 @@
   (Floyd–Steinberg, threshold), `CropWindow` (crop-frame maths), `ImagePipeline`, `MonoBitmap`
   1bpp packing, `TestPattern`; the sticker document — `Sticker` (picture + crop + style +
   `Caption`), `StickerRenderer` (pipeline → `BitCanvas` → overlays → dots), `PixelFont` /
-  `FontCatalog` / `TextRasterizer`, `StampCatalog` / `StampRasterizer`; golden PBM tests.
+  `FontCatalog` / `TextRasterizer`, `StampCatalog` / `StampRasterizer`, `Drawing` / `StrokeRasterizer`; golden PBM tests.
 - `:core:bluetooth` — Android: Kable `BleTransport`, `CompanionPairing` (CDM), `BluetoothPermissions`.
   The only module allowed to import Android Bluetooth APIs; no protocol bytes (ADR 0006).
 - `:ui:design`     — the design kit (ADR 0007): theme tokens (`PugTheme`, `PugSpacing`,
@@ -96,7 +98,8 @@ sticker, at a `StampSize`; `StampRasterizer` paints a one-dot white halo first s
 over a photo) and then a `Caption` (a white band with black `PixelFont` letters at the top or bottom;
 `TextRasterizer` wraps to ≤ 3 lines and picks the largest integer scale 6→2 that fits, chopping
 a word that never fits). `StickerRenderer.render` runs `ImagePipeline`, lifts the dots into a
-`BitCanvas`, draws the layers and packs them back. Drawings become a further layer here;
+`BitCanvas`, draws the layers and packs them back. A drawing is not a layer but a picture: `StrokeRasterizer` turns `Drawing` strokes into a
+black-on-white `GrayImage` that enters the same pipeline, so captions and stamps work on it.
 `:core:printer` never changes for a new kid feature (ADR 0007).
 
 ## Threading

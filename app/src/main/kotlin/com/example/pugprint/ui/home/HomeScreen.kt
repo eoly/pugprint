@@ -47,6 +47,11 @@ fun HomeScreen(
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PugSpacing.medium)) {
             if (state.hasPrinter) {
                 BigButton(text = stringResource(R.string.home_print_photo), onClick = actions.onPickPhoto)
+                BigButton(
+                    text = stringResource(R.string.home_draw),
+                    onClick = actions.onDraw,
+                    emphasis = ButtonEmphasis.Secondary,
+                )
                 if (state.hasLastPrint) {
                     BigButton(
                         text = stringResource(R.string.home_print_again),

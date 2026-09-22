@@ -21,6 +21,7 @@ import com.example.pugprint.bluetooth.BluetoothPermissions
 @Composable
 fun HomeRoute(
     onPhotoPicked: (Uri) -> Unit,
+    onDraw: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -68,6 +69,7 @@ fun HomeRoute(
                 onPickPhoto = {
                     photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
+                onDraw = onDraw,
                 onPrintTestPage = viewModel::onPrintTestPageClicked,
                 onPrintAgain = viewModel::onPrintAgainClicked,
                 onRetry = {

@@ -6,6 +6,12 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 drawing. `:core:imaging` gains `Drawing` / `Stroke` / `DrawPoint` / `BrushSize` and
+  `StrokeRasterizer` (round-capped strokes, eraser paints white, 384 × 384 so one drawing is one
+  sticker; golden `drawing_face.pbm`). App: "Draw a sticker" on the home screen opens a square
+  sheet with Thin / Medium / Fat, Pen / Eraser, Undo and Start over; Next hands the picture to
+  the editor through `DrawingHandoff` + `HandoffPhotoSource`, so crop, words, stamps, darkness
+  and printing all apply to drawings.
 - Phase 5 stamps. `StampCatalog` (heart, star, paw, smiley, sun, zap — 16 × 16 art drawn as
   `#`/`.`, add a stamp by adding an entry), `StampPlacement` on the `Sticker` (centre as
   fractions of the sticker, Small / Medium / Big) and `StampRasterizer` (one-dot white halo so

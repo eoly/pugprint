@@ -7,20 +7,37 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.pugprint.imaging.DrawingHandoff
+import com.example.pugprint.ui.draw.DrawRoute
 import com.example.pugprint.ui.editor.EditorRoute
 import com.example.pugprint.ui.home.HomeRoute
 
 private const val HOME = "home"
+private const val DRAW = "draw"
 private const val EDITOR = "editor/{photo}"
 private const val PHOTO_ARG = "photo"
 
-/** Two screens: home (printer + pick a photo) and the editor for the picked photo. */
+/**
+ * Three screens: home (printer + pick a photo / draw), the draw sheet, and the editor for a
+ * picked photo or a finished drawing (which reaches it through [DrawingHandoff]).
+ */
 @Composable
 fun PugPrintNavHost() {
     val navController = rememberNavController()
+
+    fun openEditor(uri: String) = navController.navigate("editor/${Uri.encode(uri)}")
     NavHost(navController = navController, startDestination = HOME) {
         composable(HOME) {
-            HomeRoute(onPhotoPicked = { uri -> navController.navigate("editor/${Uri.encode(uri.toString())}") })
+            HomeRoute(
+                onPhotoPicked = { uri -> openEditor(uri.toString()) },
+                onDraw = { navController.navigate(DRAW) },
+            )
+        }
+        composable(DRAW) {
+            DrawRoute(
+                onClose = { navController.popBackStack() },
+                onDrawingReady = { openEditor(DrawingHandoff.URI) },
+            )
         }
         composable(EDITOR, arguments = listOf(navArgument(PHOTO_ARG) { type = NavType.StringType })) { entry ->
             EditorRoute(
