@@ -21,7 +21,7 @@ class StampCatalogTest {
     @Test
     fun `lookup by id, and a removed stamp is simply absent`() {
         StampCatalog.all.forEach { assertSame(it, StampCatalog.byId(it.id)) }
-        assertNull(StampCatalog.byId("unicorn"))
+        assertNull(StampCatalog.byId("dragon"))
     }
 
     @TestFactory

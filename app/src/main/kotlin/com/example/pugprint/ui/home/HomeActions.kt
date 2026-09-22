@@ -4,6 +4,7 @@ package com.example.pugprint.ui.home
 data class HomeActions(
     val onConnect: () -> Unit = {},
     val onPickPhoto: () -> Unit = {},
+    val onDraw: () -> Unit = {},
     val onPrintTestPage: () -> Unit = {},
     val onPrintAgain: () -> Unit = {},
     val onRetry: () -> Unit = {},

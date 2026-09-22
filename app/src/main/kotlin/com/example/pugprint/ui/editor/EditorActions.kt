@@ -9,6 +9,7 @@ import com.example.pugprint.printer.DensityLevel
 /** What the editor screen can ask for; wired to the ViewModel by `EditorRoute`. */
 data class EditorActions(
     val onBack: () -> Unit = {},
+    val onHome: () -> Unit = {},
     val onRotate: () -> Unit = {},
     val onShape: (CropShape) -> Unit = {},
     /** Pinch/drag step in frame widths: zoom factor, pan, and the focal point relative to the frame centre. */

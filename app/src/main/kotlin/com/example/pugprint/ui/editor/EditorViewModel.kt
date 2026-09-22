@@ -7,6 +7,7 @@ import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.CropWindow
 import com.example.pugprint.imaging.DitherMode
+import com.example.pugprint.imaging.DrawingHandoff
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.ImagingDispatcher
 import com.example.pugprint.imaging.MonoBitmap
@@ -58,6 +59,8 @@ data class EditorUiState(
     val image: GrayImage? = null,
     val window: CropWindow? = null,
     val mode: DitherMode = DitherMode.PHOTO,
+    /** A drawing is already black-and-white, so Photo / Drawing style makes no difference and is hidden. */
+    val isDrawing: Boolean = false,
     /** Words on the sticker; blank means none. */
     val caption: String = "",
     val captionPlacement: CaptionPlacement = CaptionPlacement.BOTTOM,
@@ -89,6 +92,7 @@ private data class EditState(
     val image: GrayImage? = null,
     val window: CropWindow? = null,
     val mode: DitherMode = DitherMode.PHOTO,
+    val isDrawing: Boolean = false,
     val caption: String = "",
     val captionPlacement: CaptionPlacement = CaptionPlacement.BOTTOM,
     val stamps: List<StampPlacement> = emptyList(),
@@ -126,6 +130,7 @@ class EditorViewModel
                     image = edit.image,
                     window = edit.window,
                     mode = edit.mode,
+                    isDrawing = edit.isDrawing,
                     caption = edit.caption,
                     captionPlacement = edit.captionPlacement,
                     stamps = edit.stamps,
@@ -140,22 +145,30 @@ class EditorViewModel
                 )
             }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorUiState())
 
-        /** Loads the picture at [uri]; a repeat call for the same picture is a no-op (configuration change). */
+        /**
+         * Loads the picture at [uri]; a repeat call for the same picture is a no-op (configuration
+         * change). A drawing ([DrawingHandoff.URI]) is already one sticker, so it skips "Make it fit"
+         * and opens on the preview in Drawing style.
+         */
         fun open(uri: String) {
             if (openedUri == uri) return
             openedUri = uri
             renderJob?.cancel()
             edit.value = EditState()
+            val isDrawing = uri == DrawingHandoff.URI
+            edit.update { it.copy(isDrawing = isDrawing) }
             viewModelScope.launch {
                 try {
                     val image = withContext(dispatcher) { photos.load(uri) }
                     edit.update {
                         it.copy(
-                            step = EditorStep.Crop,
+                            step = if (isDrawing) EditorStep.Preview else EditorStep.Crop,
                             image = image,
                             window = CropWindow(image.width, image.height),
+                            mode = if (isDrawing) DitherMode.DRAWING else it.mode,
                         )
                     }
+                    if (isDrawing) render()
                 } catch (_: PhotoLoadException) {
                     edit.update { it.copy(step = EditorStep.Failed) }
                 }

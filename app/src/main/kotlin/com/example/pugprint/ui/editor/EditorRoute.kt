@@ -6,12 +6,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.pugprint.imaging.DrawingHandoff
 
-/** Wires [EditorViewModel] to the screen; [onClose] pops back to the home screen. */
+/**
+ * Wires [EditorViewModel] to the screen. Back ([onClose]) returns to wherever the picture came
+ * from (home or the draw sheet); the Home button and a finished print go to home ([onHome]).
+ */
 @Composable
 fun EditorRoute(
     photoUri: String,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     viewModel: EditorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -21,10 +26,11 @@ fun EditorRoute(
     LaunchedEffect(printRequested) {
         if (printRequested) {
             viewModel.onPrintHandled()
-            onClose()
+            onHome()
         }
     }
-    val inPreview = state.step == EditorStep.Preview
+    val isDrawing = photoUri == DrawingHandoff.URI
+    val inPreview = state.step == EditorStep.Preview && !isDrawing // a drawing has no crop step to go back to
     val inWords = state.step == EditorStep.Words
     val inStamps = state.step == EditorStep.Stamps
     BackHandler(enabled = inPreview) { viewModel.onBackToCropClicked() }
@@ -43,6 +49,7 @@ fun EditorRoute(
                         else -> onClose()
                     }
                 },
+                onHome = onHome,
                 onRotate = viewModel::onRotateClicked,
                 onShape = viewModel::onShapeSelected,
                 onTransform = viewModel::onTransform,

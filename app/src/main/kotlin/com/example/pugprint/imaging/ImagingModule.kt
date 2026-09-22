@@ -19,7 +19,10 @@ annotation class ImagingDispatcher
 object ImagingModule {
     @Provides
     @Singleton
-    fun photoSource(resolver: ContentResolverPhotoSource): PhotoSource = resolver
+    fun photoSource(
+        handoff: DrawingHandoff,
+        resolver: ContentResolverPhotoSource,
+    ): PhotoSource = HandoffPhotoSource(handoff, resolver)
 
     @Provides
     @ImagingDispatcher

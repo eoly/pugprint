@@ -55,7 +55,7 @@ class StickerRendererTest {
                         listOf(
                             StampPlacement("heart", 0.25f, 0.3f, StampSize.BIG),
                             StampPlacement("star", 1f, 0f, StampSize.MEDIUM), // hangs off the top-right corner
-                            StampPlacement("unicorn"), // not in the catalog: draws nothing, does not crash
+                            StampPlacement("dragon"), // not in the catalog: draws nothing, does not crash
                         ),
                 ),
             )

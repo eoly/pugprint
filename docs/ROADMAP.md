@@ -63,12 +63,16 @@
      `FontCatalog` (5 × 7 "Blocky", glyphs drawn as `#`/`.` art, add a font = add an entry) and
      `TextRasterizer` (wrap to 3 lines, auto-scale 6→2, chop giant words); "Add words" detour
      from the preview with live dots, Top / Bottom; `BigTextField` in the kit.
-  5. ✅ **Stamps** — `StampCatalog` (six 16 × 16 stamps drawn as `#`/`.` art, add a stamp = add an
+  5. ✅ **Stamps** — `StampCatalog` (fourteen 16 × 16 stamps drawn as `#`/`.` art, add a stamp = add an
      entry), `StampPlacement` on the `Sticker` (centre as fractions, Small / Medium / Big),
      `StampRasterizer` with a white halo; "Add stamps" detour: tap a stamp, it lands in the
      middle, drag it into place, Undo. Goldens per stamp and for a stamped sticker.
-  6. **Drawing canvas** — `Stroke` model + pure `StrokeRasterizer` (goldens), "Draw a sticker"
-     home entry with fat brushes, eraser and undo.
+  6. ✅ **Drawing canvas** — `Drawing` / `Stroke` / `BrushSize` and a pure `StrokeRasterizer`
+     (round-capped strokes as discs, eraser paints white; golden `drawing_face.pbm`); "Draw a
+     sticker" on the home screen → a square sheet with Thin / Medium / Fat, Pen / Eraser, Undo,
+     Start over; Next (also on a blank sheet, for words-and-stamps-only stickers) hands the
+     384 × 384 picture to the editor through `DrawingHandoff`, which skips the crop step for it;
+     words, stamps, darkness and printing all work on drawings unchanged.
   7. **Accessibility pass** — content descriptions, TalkBack order, 1.5× font-scale goldens,
      lint accessibility checks on.
   8. **Sticker rolls** — `StickerRoll` catalog in `:core:printer` (one entry per roll; the

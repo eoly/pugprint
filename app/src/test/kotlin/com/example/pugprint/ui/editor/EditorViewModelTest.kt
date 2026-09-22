@@ -5,6 +5,7 @@ import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropRect
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
+import com.example.pugprint.imaging.DrawingHandoff
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.PhotoLoadException
@@ -321,5 +322,26 @@ class EditorViewModelTest {
 
             viewModel.onStampsDoneClicked()
             assertEquals(EditorStep.Preview, viewModel.uiState.value.step)
+        }
+
+    @Test
+    fun `a drawing skips the crop step and opens on the preview in drawing style`() =
+        runTest {
+            val sheet = GrayImage.generate(384, 384) { x, y -> if (x in 100..200 && y in 100..200) 0 else 255 }
+            photos[DrawingHandoff.URI] = sheet
+            val viewModel = viewModel()
+            viewModel.open(DrawingHandoff.URI)
+            runCurrent()
+
+            val state = viewModel.uiState.value
+            assertEquals(EditorStep.Preview, state.step)
+            assertEquals(DitherMode.DRAWING, state.mode)
+            assertTrue(state.isDrawing)
+            assertFalse(opened().uiState.value.isDrawing)
+            val preview = state.preview!!
+            assertEquals(384, preview.width)
+            assertEquals(384, preview.height)
+            assertTrue(preview.isBlack(150, 150))
+            assertFalse(preview.isBlack(10, 10))
         }
 }

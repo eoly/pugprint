@@ -23,6 +23,7 @@
 
     <string name="home_connect">Connect a printer</string>
     <string name="home_print_photo">Print a photo</string>
+    <string name="home_draw">Draw a sticker</string>
     <string name="home_print_again">Print it again</string>
     <string name="home_print_test">Print a test page</string>
     <string name="home_forget">Forget printer</string>
@@ -45,6 +46,19 @@
     <string name="message_pairing_unavailable_hint">Ask a grown-up to try another phone or tablet</string>
     <string name="message_permission_denied">Bluetooth is needed to talk to the printer</string>
     <string name="message_permission_denied_hint">Tap Connect a printer and say yes to Bluetooth</string>
+
+    <string name="draw_title">Draw a sticker</string>
+    <string name="draw_canvas_description">Your drawing</string>
+    <string name="draw_hint_empty">Draw something — or tap Next to use just words and stamps</string>
+    <string name="draw_hint">Words and stamps come next</string>
+    <string name="draw_brush_thin">Thin</string>
+    <string name="draw_brush_medium">Medium</string>
+    <string name="draw_brush_fat">Fat</string>
+    <string name="draw_tool_pen">Pen</string>
+    <string name="draw_tool_eraser">Eraser</string>
+    <string name="draw_undo">Undo</string>
+    <string name="draw_clear">Start over</string>
+    <string name="draw_next">Next</string>
 
     <string name="editor_title_loading">Opening your picture…</string>
     <string name="editor_title_failed">Oops</string>

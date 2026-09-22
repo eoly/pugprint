@@ -95,6 +95,7 @@ class EditorScreenScreenshotTest {
                 image = photo,
                 window = window,
                 mode = DitherMode.DRAWING,
+                isDrawing = true, // a drawing: no Photo / Drawing row
                 preview = ImagePipeline.render(photo, window.cropRect(), DitherMode.DRAWING),
                 density = DensityLevel.DARK,
                 printerStatus = PrinterStatus.Offline,

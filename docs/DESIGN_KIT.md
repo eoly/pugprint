@@ -84,6 +84,11 @@ Edit the file in `components/`; every screen picks it up. Then re-record the pic
 - All palette colours are opaque.
 - A gallery golden exists per theme (recorded automatically).
 
+## Brush sizes
+The pen sizes on "Draw a sticker" are `BrushSize` in
+`core/imaging/src/main/kotlin/com/example/pugprint/imaging/Drawing.kt`, in print dots
+(8 dots = 1 mm). Change a number or add a size; the screen's tiles follow the list.
+
 ## Coming next (Phase 5)
-A drawing canvas, and a hidden "Design gallery" screen so you can see every component in
-your theme without printing anything.
+A hidden "Design gallery" screen so you can see every component in your theme without
+printing anything.
