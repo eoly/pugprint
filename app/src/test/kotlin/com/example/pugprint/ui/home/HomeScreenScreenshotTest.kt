@@ -99,4 +99,10 @@ class HomeScreenScreenshotTest {
                 message = HomeMessage.PrintPaperOrLid,
             ),
         )
+
+    @Test
+    fun homeScreen_debug_designGallery() {
+        compose.setContent { PugPrintTheme { HomeScreen(state = HomeUiState(), showDesignGallery = true) } }
+        compose.onRoot().captureRoboImage(roborazziOptions = Screenshots.options)
+    }
 }

@@ -32,6 +32,8 @@ fun HomeScreen(
     state: HomeUiState,
     actions: HomeActions = HomeActions(),
     modifier: Modifier = Modifier,
+    /** Debug builds show a way into the design gallery at the bottom. */
+    showDesignGallery: Boolean = false,
 ) {
     // A message banner stays long enough to read, then clears itself; any new print replaces it.
     LaunchedEffect(state.message) {
@@ -113,6 +115,14 @@ fun HomeScreen(
             onSelect = { actions.onRollSelected(it.id) },
             label = { it.displayName },
         )
+        if (showDesignGallery) {
+            Spacer(Modifier.height(PugSpacing.large))
+            BigButton(
+                text = stringResource(R.string.home_design_gallery),
+                onClick = actions.onDesignGallery,
+                emphasis = ButtonEmphasis.Quiet,
+            )
+        }
     }
 }
 

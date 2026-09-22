@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.pugprint.BuildConfig
 import com.example.pugprint.bluetooth.BluetoothPermissions
 
 /**
@@ -22,6 +23,7 @@ import com.example.pugprint.bluetooth.BluetoothPermissions
 fun HomeRoute(
     onPhotoPicked: (Uri) -> Unit,
     onDraw: () -> Unit,
+    onDesignGallery: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -54,6 +56,7 @@ fun HomeRoute(
 
     HomeScreen(
         state = state,
+        showDesignGallery = BuildConfig.DEBUG,
         actions =
             HomeActions(
                 onConnect = {
@@ -70,6 +73,7 @@ fun HomeRoute(
                     photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
                 onDraw = onDraw,
+                onDesignGallery = onDesignGallery,
                 onPrintTestPage = viewModel::onPrintTestPageClicked,
                 onPrintAgain = viewModel::onPrintAgainClicked,
                 onRetry = {

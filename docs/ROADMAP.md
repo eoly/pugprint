@@ -42,7 +42,8 @@
   editor — "Make it fit" (pinch/drag, Square / Tall / Wide / Whole, rotate) then "Ready to
   print?" (the actual dots, Photo / Drawing style, Print) — `PrinterManager.printImage`,
   navigation-compose, ViewModel tests and Roborazzi goldens for seven editor states.
-- **Phase 5 — Polish + kid features: IN PROGRESS (started 2026-09-22).** Built so a later
+- **Phase 5 — Polish + kid features: ✅ DONE 2026-09-22 (tasks 1–9 merged as #24–#33; hardware-verified
+  on the Pixel + `HB-0342`, including the sticker placement and the pacing fix for light lines).** Built so a later
   "designer" phase can change themes, layout and add fun content without touching the printing
   core (ADR 0007). PR-sized tasks, each independently testable:
   1. ✅ **Design kit** — `:ui:design`: theme tokens, `ThemeCatalog` (Pug / Bubblegum / Ocean),
@@ -89,7 +90,9 @@
      for labels, and `place()`s the dots onto the head canvas before printing. The firmware
      feeds to the serration itself, so `:core:printer` is unchanged. Golden
      `roll_square_placement.pbm`.
-  9. **Designer handbook + gallery screen** — grow `docs/DESIGN_KIT.md` with stamps/fonts;
-     a hidden "Design gallery" screen in debug builds so the designer sees her work live.
+  9. ✅ **Designer handbook + gallery screen** — `docs/DESIGN_KIT.md` has a "Start here"
+     walkthrough and recipes for themes, fonts, stamps, rolls, brushes, words and components;
+     debug builds show a **Design gallery** button on home (`GalleryRoute`, every kit component
+     in any theme, preview only).
 - **Phase 6 — Play:** internal track to the friend group → (if going public) closed test
   (12 testers/14 days) → production.
