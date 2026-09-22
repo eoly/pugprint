@@ -63,9 +63,12 @@
      home entry with fat brushes, eraser and undo.
   7. **Accessibility pass** — content descriptions, TalkBack order, 1.5× font-scale goldens,
      lint accessibility checks on.
-  8. **Sticker sizing to the die-cut labels** — measure label height / gap / feed on the
-     hardware, then `StickerSize` → `PrintOptions.feedLines` and the row cap so one print is
-     exactly one sticker. (Needs the printer and a ruler.)
+  8. **Sticker rolls** — `StickerRoll` catalog in `:core:printer` (one entry per roll; the
+     standard roll measured 2026-09-22: 49.2 × 49.2 mm square labels, 12.7 mm gap with a
+     serration halfway, so pitch ≈ 495 rows at 8 dots/mm), a roll setting, and per-roll
+     sizing: crop shape locked to the label, rows capped to its height, feed to the
+     serration (`LABELAT1` / `LABELOK` if the firmware honours it, else a computed line feed).
+     Golden `PrintJob` per roll. Hardware check: where the print lands on the label.
   9. **Designer handbook + gallery screen** — grow `docs/DESIGN_KIT.md` with stamps/fonts;
      a hidden "Design gallery" screen in debug builds so the designer sees her work live.
 - **Phase 6 — Play:** internal track to the friend group → (if going public) closed test
