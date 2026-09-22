@@ -6,6 +6,7 @@ import com.example.pugprint.printer.transport.PrinterDevice
 import com.example.pugprint.printer.transport.PrinterTransport
 import com.example.pugprint.printer.transport.TransportException
 import com.example.pugprint.printer.transport.TransportState
+import com.juul.kable.AndroidPeripheral
 import com.juul.kable.Characteristic
 import com.juul.kable.Peripheral
 import com.juul.kable.State
@@ -73,6 +74,9 @@ public class BleTransport(
             try {
                 peripheral.connect()
                 link.maxWriteBytes = peripheral.maximumWriteValueLengthForType(WriteType.WithoutResponse)
+                // A short connection interval: rows go out on time instead of bunching up on the
+                // phone's stack, which the printer shows as light lines. The printer is used briefly.
+                (peripheral as? AndroidPeripheral)?.requestConnectionPriority(AndroidPeripheral.Priority.High)
             } catch (e: CancellationException) {
                 closeLink()
                 mutableState.value = TransportState.Disconnected(DisconnectCause.NONE)

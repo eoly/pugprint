@@ -15,6 +15,12 @@ public object PrintTiming {
     /** Gap between consecutive raster blocks. Faster is untested. */
     public const val BLOCK_GAP_MILLIS: Long = 20
 
+    /**
+     * When a write runs late, the next one may follow it this soon so the job catches up
+     * instead of drifting; never back-to-back, which the spike showed overruns the printer.
+     */
+    public const val MIN_BLOCK_GAP_MILLIS: Long = 10
+
     /** Pause between the last raster block and the feed, as the vendor app does. */
     public const val BEFORE_FEED_MILLIS: Long = 250
 }

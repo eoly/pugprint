@@ -35,6 +35,9 @@ public class FakePrinterTransport(
     /** When set, the link drops ([DisconnectCause.LOST]) as soon as this many writes have been accepted. */
     public var dropAfterWrites: Int? = null
 
+    /** Runs inside every [write] before it lands, e.g. to `delay` like a slow link or to timestamp it. */
+    public var onWrite: suspend (ByteArray) -> Unit = {}
+
     override fun notifications(): Flow<ByteArray> = replies
 
     override suspend fun connect(device: PrinterDevice) {
@@ -51,6 +54,7 @@ public class FakePrinterTransport(
         if (bytes.size > maxWriteBytes) {
             throw TransportException("write of ${bytes.size} B exceeds the $maxWriteBytes B link payload")
         }
+        onWrite(bytes)
         writeLog += bytes.copyOf()
         emulator.write(bytes).forEach { replies.emit(it) }
         if (writeLog.size == dropAfterWrites) dropConnection()

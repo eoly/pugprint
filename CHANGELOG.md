@@ -19,6 +19,10 @@ All notable changes to PugPrint are documented here. The format follows
   buttons. Goldens at font scale 1.5 (`Screenshots.BigText`) for home, preview and draw.
 
 ### Fixed
+- Light horizontal lines across printed photos: rows were paced by sleeping *after* each BLE
+  write, so write latency and jitter accumulated and the printer paused mid-picture.
+  `PrinterClient` now paces by deadline (row *n* at *n* × 20 ms, catch-up floor 10 ms) and
+  `BleTransport` requests a high-priority connection.
 - At large font sizes the home screen was cut off (it now scrolls, `KidScreen(scrollable)`) and
   long tile labels such as "Bubblegum" were truncated (`ChoiceRow` / `ThemePicker` labels now
   auto-shrink to one line).
