@@ -50,15 +50,19 @@ Roborazzi goldens live in `app/screenshots/` (committed).
 pairing so the whole flow can be clicked through; the "printed" rows live in the emulator object.
 
 ## Hardware checklist (run on the real printer before each release)
-- [ ] Pair via CDM on a fresh install ("Nearby devices" prompt on Android 12+, then the system picker lists `HB-nnnn`).
-- [ ] Home screen shows "HB-nnnn is ready" with a battery percentage.
-- [ ] Print the test page: black band edge to edge, 1-dot bars resolved, no missing rows
-      (if rows drop, lower `PrintTiming.BLOCK_GAP_MILLIS` is NOT the fix — see PRINTER_PROTOCOL.md).
-- [ ] Print full-black test row (verifies energy/density).
-- [ ] Print a photo (dithered) and a line drawing (threshold).
-- [ ] Out-of-paper and cover-open surface correct errors.
-- [ ] Low-battery warning surfaces.
-- [ ] Disconnect (walk away) then auto-reconnect.
+Last run: **2026-09-21**, Pixel 10 Pro XL (Android 17) + Hello Blink `HB-0342` — all items below passed
+unless marked.
+- [x] Pair via CDM on a fresh install ("Nearby devices" prompt on Android 12+, then the system picker lists `HB-nnnn`).
+      Picker found the printer within ~1 s of the printer advertising.
+- [x] Home screen shows "HB-nnnn is ready" with a battery percentage (67 % ≈ 7.6 V).
+- [x] Print the test page: black band edge to edge, 1-dot bars resolved, all five bands, no missing rows.
+      MTU negotiated 248 (247 requested). If rows drop, lowering `PrintTiming.BLOCK_GAP_MILLIS` is NOT the fix —
+      see PRINTER_PROTOCOL.md.
+- [ ] Print a photo (dithered) and a line drawing (threshold). *(Phase 4)*
+- [x] Out-of-paper and lid-open surface an error. **Finding:** the printer sends the same `err:` code (2) for
+      both, even with the lid closed, so the app says "Close the lid and check the paper".
+- [ ] Low-battery warning surfaces. *(Not reproducible with a charged unit; threshold 7000 mV is provisional.)*
+- [x] Disconnect (printer off / asleep) then auto-reconnect: link loss → "trying again" → reconnected ~10 s later.
 - [ ] Print immediately after device wake from sleep.
 
 ## Static analysis

@@ -49,7 +49,7 @@ public sealed interface PrinterReply {
         val kind: ErrorKind =
             when (code) {
                 ERROR_CLEARED -> ErrorKind.CLEARED
-                ERROR_COVER_OPEN -> ErrorKind.COVER_OPEN
+                ERROR_LID_OR_PAPER -> ErrorKind.LID_OR_PAPER
                 else -> ErrorKind.OTHER
             }
     }
@@ -64,11 +64,21 @@ public sealed interface PrinterReply {
         override fun toString(): String = "Unknown(${bytes.joinToString(" ") { "%02x".format(it) }})"
     }
 
-    public enum class ErrorKind { CLEARED, COVER_OPEN, OTHER }
+    public enum class ErrorKind {
+        CLEARED,
+
+        /**
+         * `err:\u0002`: the vendor app calls this "cover open", but the reference unit also sends
+         * it with the lid closed and no paper loaded (hardware check 2026-09-21). Treat as
+         * "lid open or out of paper"; the two cannot be told apart from this notification.
+         */
+        LID_OR_PAPER,
+        OTHER,
+    }
 
     public companion object {
         public const val ERROR_CLEARED: Int = 0x00
-        public const val ERROR_COVER_OPEN: Int = 0x02
+        public const val ERROR_LID_OR_PAPER: Int = 0x02
         private const val NAME_SUFFIX_LENGTH = 4
         private const val ERROR_PREFIX = "err:"
         private const val SERIAL_PREFIX = "sn:"

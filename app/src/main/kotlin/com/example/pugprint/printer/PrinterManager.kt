@@ -55,7 +55,8 @@ sealed interface PrinterState {
     data class Connected(
         val device: PrinterDevice,
         val identity: PrinterIdentity,
-        val coverOpen: Boolean = false,
+        /** `err:` code 2 is active: lid open or out of paper. */
+        val paperOrLidProblem: Boolean = false,
     ) : PrinterState
 
     data class Printing(
@@ -86,7 +87,7 @@ fun interface ReconnectBackoff {
 /**
  * Owns the connection to the paired printer for the life of the app: remembers the device,
  * connects on launch, identifies the printer (battery, density table), reconnects with
- * backoff when the link drops, tracks cover-open events, and runs print jobs.
+ * backoff when the link drops, tracks lid/paper errors, and runs print jobs.
  */
 @Singleton
 class PrinterManager
@@ -207,14 +208,14 @@ class PrinterManager
                 null
             }
 
-        /** Tracks cover-open notifications until the transport reports a disconnect. */
+        /** Tracks lid/paper error notifications until the transport reports a disconnect. */
         private suspend fun holdWhileConnected() {
             val coverWatch =
                 scope.launch {
                     client.replies.filterIsInstance<PrinterReply.Error>().collect { error ->
                         mutableState.update { current ->
                             if (current is PrinterState.Connected) {
-                                current.copy(coverOpen = error.kind == PrinterReply.ErrorKind.COVER_OPEN)
+                                current.copy(paperOrLidProblem = error.kind == PrinterReply.ErrorKind.LID_OR_PAPER)
                             } else {
                                 current
                             }

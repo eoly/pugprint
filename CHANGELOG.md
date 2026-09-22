@@ -9,20 +9,25 @@ All notable changes to PugPrint are documented here. The format follows
 - Phase 3 BLE transport. `:core:printer` gains the transport abstraction (`PrinterTransport`,
   `TransportState`, `PrinterDevice`), `FakePrinterTransport` over the emulator, and
   `PrinterClient` (identify → `PrinterIdentity` with density profile and battery; paced
-  one-row-per-write printing with progress, `GS r 1` paper pre-flight, `err:` cover-open
+  one-row-per-write printing with progress, `GS r 1` paper pre-flight, `err:` lid/paper
   abort, `PrintResult`). New Android module `:core:bluetooth`: Kable `BleTransport` on the
   Hello Blink UART service (MTU 247 requested, oversize writes refused so a block is never
   fragmented, TX observed for the whole connection), `CompanionPairing` (Companion Device
   Manager filtered on the service UUID) and `BluetoothPermissions`. `:core:imaging` gains
   `TestPattern`, a 384-dot test page with a golden PBM.
 - App: `PrinterManager` (remembers the paired printer, connects on launch, identifies,
-  reconnects with exponential backoff, tracks cover-open, prints the test page), Hilt wiring,
+  reconnects with exponential backoff, tracks lid/paper errors, prints the test page), Hilt wiring,
   home screen with connect / print-test-page / retry / forget, battery and progress display,
   snackbar feedback; Roborazzi goldens for six states. `-Ppugprint.fakePrinter=true` builds
   against the in-process emulator for Android emulators without Bluetooth.
 - Manifest: `BLUETOOTH_CONNECT` (Android 12+) and legacy `BLUETOOTH` (≤ 30); `bluetooth_le`
   required, `companion_device_setup` optional. No scan or location permission (ADR 0006).
 - `PrinterEmulator.paperPresent` to emulate an empty paper bay.
+
+### Fixed
+- Hardware run 2026-09-21: the Hello Blink sends `err:` code 2 for an empty paper bay as well as
+  an open lid, so the app now says "Close the lid and check the paper" (`ErrorKind.LID_OR_PAPER`,
+  `PrintFailure.LID_OR_PAPER`) instead of claiming the lid is open.
 - Phase 2 protocol library in `:core:printer`: `PrinterCommands` / `PrinterQueries`
   (density, speed, copies, init, feed, status/serial/product/paper queries), `RasterBlock`
   (`GS v 0`, 1–4 rows per block), `DensityProfile` (public / private-new / private-old

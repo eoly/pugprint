@@ -79,7 +79,7 @@ right default. Optional: `1d 49 f8 <n>` copies (only if n > 1).
 | `10 04 01..04` | ESC/POS DLE EOT | 1 status byte each (`1e`, `1a`, `12`, `12` when idle & paper OK) |
 | `1d 72 01` | GS r 1 paper | `00` = paper present |
 | `1d 61 ff` | GS a — ASB | `00 00 00 00` |
-| async | error | `err:\x02.` cover open · `err:\x00.` cleared · `err:\x04` / `err:\x10` other (see app strings) |
+| async | error | `err:\x02.` lid open **or paper out** (both, confirmed on hardware 2026-09-21; the app strings only say "cover open") · `err:\x00.` cleared · `err:\x04` / `err:\x10` other (see app strings) |
 | `LABELV1` / `LABELAT1` | label calibrate / next | `LABELOK` |
 Not implemented: `GS I n` (printer ID), `ESC v`, TSPL `~!T`, text printing.
 

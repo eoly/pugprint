@@ -167,7 +167,7 @@ class PrinterClientTest {
         }
 
     @Test
-    fun `an err cover-open notification mid-job aborts with COVER_OPEN`() =
+    fun `an err code 2 notification mid-job aborts with LID_OR_PAPER`() =
         runTest {
             val transport = FakePrinterTransport()
             val client = PrinterClient(transport)
@@ -181,7 +181,7 @@ class PrinterClientTest {
 
             job.join()
             assertInstanceOf(PrintResult.Failure::class.java, result)
-            assertEquals(PrintFailure.COVER_OPEN, (result as PrintResult.Failure).reason)
+            assertEquals(PrintFailure.LID_OR_PAPER, (result as PrintResult.Failure).reason)
             assertTrue(transport.emulator.rows.size < rows.size)
         }
 

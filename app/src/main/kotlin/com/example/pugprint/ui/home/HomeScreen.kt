@@ -102,10 +102,10 @@ private fun PrinterDetails(state: HomeUiState) {
             color = if (state.batteryLow) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
         )
     }
-    if (state.coverOpen) {
+    if (state.paperOrLidProblem) {
         Spacer(Modifier.height(8.dp))
         Text(
-            text = stringResource(R.string.home_cover_open),
+            text = stringResource(R.string.home_paper_or_lid),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error,
         )
@@ -156,7 +156,7 @@ private fun messageRes(message: HomeMessage): Int =
     when (message) {
         HomeMessage.PrintDone -> R.string.message_print_done
         HomeMessage.PrintNoPaper -> R.string.message_print_no_paper
-        HomeMessage.PrintCoverOpen -> R.string.message_print_cover_open
+        HomeMessage.PrintPaperOrLid -> R.string.message_print_paper_or_lid
         HomeMessage.PrintDisconnected -> R.string.message_print_disconnected
         HomeMessage.PrintFailed -> R.string.message_print_failed
         HomeMessage.PairingCancelled -> R.string.message_pairing_cancelled

@@ -170,19 +170,19 @@ class PrinterManagerTest {
         }
 
     @Test
-    fun `a cover-open notification is reflected and cleared`() =
+    fun `a lid or paper notification is reflected and cleared`() =
         runTest {
             val manager = manager()
             manager.connect(device)
             runCurrent()
 
-            transport.notify(errNotification(PrinterReply.ERROR_COVER_OPEN))
+            transport.notify(errNotification(PrinterReply.ERROR_LID_OR_PAPER))
             runCurrent()
-            assertTrue((manager.state.value as PrinterState.Connected).coverOpen)
+            assertTrue((manager.state.value as PrinterState.Connected).paperOrLidProblem)
 
             transport.notify(errNotification(PrinterReply.ERROR_CLEARED))
             runCurrent()
-            assertFalse((manager.state.value as PrinterState.Connected).coverOpen)
+            assertFalse((manager.state.value as PrinterState.Connected).paperOrLidProblem)
         }
 
     @Test
