@@ -11,7 +11,9 @@ All notable changes to PugPrint are documented here. The format follows
   sticker; golden `drawing_face.pbm`). App: "Draw a sticker" on the home screen opens a square
   sheet with Thin / Medium / Fat, Pen / Eraser, Undo and Start over; Next hands the picture to
   the editor through `DrawingHandoff` + `HandoffPhotoSource`, so crop, words, stamps, darkness
-  and printing all apply to drawings.
+  and printing all apply to drawings. Printing now always lands on the home screen (it used to
+  pop back to the draw sheet), and the draw and editor screens have a Home button in the header
+  (`KidScreen.onHome`).
 - Phase 5 stamps. `StampCatalog` (heart, star, paw, smiley, sun, zap — 16 × 16 art drawn as
   `#`/`.`, add a stamp by adding an entry), `StampPlacement` on the `Sticker` (centre as
   fractions of the sticker, Small / Medium / Big) and `StampRasterizer` (one-dot white halo so

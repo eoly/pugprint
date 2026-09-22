@@ -26,6 +26,9 @@ fun PugPrintNavHost() {
     val navController = rememberNavController()
 
     fun openEditor(uri: String) = navController.navigate("editor/${Uri.encode(uri)}")
+
+    // Home is where a kid lands after printing (progress, "Print it again") and where the Home button goes.
+    fun goHome() = navController.popBackStack(HOME, inclusive = false)
     NavHost(navController = navController, startDestination = HOME) {
         composable(HOME) {
             HomeRoute(
@@ -36,6 +39,7 @@ fun PugPrintNavHost() {
         composable(DRAW) {
             DrawRoute(
                 onClose = { navController.popBackStack() },
+                onHome = { goHome() },
                 onDrawingReady = { openEditor(DrawingHandoff.URI) },
             )
         }
@@ -43,6 +47,7 @@ fun PugPrintNavHost() {
             EditorRoute(
                 photoUri = entry.arguments?.getString(PHOTO_ARG).orEmpty(),
                 onClose = { navController.popBackStack() },
+                onHome = { goHome() },
             )
         }
     }

@@ -65,6 +65,7 @@ fun EditorScreen(
                 },
             ),
         onBack = actions.onBack,
+        onHome = actions.onHome,
     ) {
         when (state.step) {
             EditorStep.Loading -> Centered { CircularProgressIndicator() }

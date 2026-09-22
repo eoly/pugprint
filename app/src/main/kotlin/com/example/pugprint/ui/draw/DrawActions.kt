@@ -6,6 +6,7 @@ import com.example.pugprint.imaging.DrawPoint
 /** What the draw screen can ask for; wired to the ViewModel by `DrawRoute`. */
 data class DrawActions(
     val onBack: () -> Unit = {},
+    val onHome: () -> Unit = {},
     val onStrokeStart: (DrawPoint) -> Unit = {},
     val onStrokeMove: (DrawPoint) -> Unit = {},
     val onStrokeEnd: () -> Unit = {},

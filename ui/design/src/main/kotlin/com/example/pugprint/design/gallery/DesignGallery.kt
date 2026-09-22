@@ -35,7 +35,7 @@ import com.example.pugprint.design.theme.ThemeCatalog
 fun DesignGallery(modifier: Modifier = Modifier) {
     val theme = LocalPugTheme.current
     var choice by remember { mutableStateOf("Square") }
-    KidScreen(modifier = modifier, title = theme.displayName, onBack = {}) {
+    KidScreen(modifier = modifier, title = theme.displayName, onBack = {}, onHome = {}) {
         Column(verticalArrangement = Arrangement.spacedBy(PugSpacing.medium), modifier = Modifier.fillMaxWidth()) {
             HeroTitle("PugPrint")
             Text("Body text and a hint below it.", style = MaterialTheme.typography.bodyLarge)

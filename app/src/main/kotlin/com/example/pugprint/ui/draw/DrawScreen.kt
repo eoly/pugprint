@@ -47,7 +47,12 @@ fun DrawScreen(
     actions: DrawActions = DrawActions(),
     modifier: Modifier = Modifier,
 ) {
-    KidScreen(modifier = modifier, title = stringResource(R.string.draw_title), onBack = actions.onBack) {
+    KidScreen(
+        modifier = modifier,
+        title = stringResource(R.string.draw_title),
+        onBack = actions.onBack,
+        onHome = actions.onHome,
+    ) {
         DrawingCanvas(state, actions)
         Spacer(Modifier.height(PugSpacing.medium))
         ChoiceRow(

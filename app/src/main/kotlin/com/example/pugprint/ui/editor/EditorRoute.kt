@@ -7,11 +7,15 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-/** Wires [EditorViewModel] to the screen; [onClose] pops back to the home screen. */
+/**
+ * Wires [EditorViewModel] to the screen. Back ([onClose]) returns to wherever the picture came
+ * from (home or the draw sheet); the Home button and a finished print go to home ([onHome]).
+ */
 @Composable
 fun EditorRoute(
     photoUri: String,
     onClose: () -> Unit,
+    onHome: () -> Unit,
     viewModel: EditorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -21,7 +25,7 @@ fun EditorRoute(
     LaunchedEffect(printRequested) {
         if (printRequested) {
             viewModel.onPrintHandled()
-            onClose()
+            onHome()
         }
     }
     val inPreview = state.step == EditorStep.Preview
@@ -43,6 +47,7 @@ fun EditorRoute(
                         else -> onClose()
                     }
                 },
+                onHome = onHome,
                 onRotate = viewModel::onRotateClicked,
                 onShape = viewModel::onShapeSelected,
                 onTransform = viewModel::onTransform,

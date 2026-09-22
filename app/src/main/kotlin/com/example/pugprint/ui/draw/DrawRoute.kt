@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun DrawRoute(
     onClose: () -> Unit,
+    onHome: () -> Unit,
     onDrawingReady: () -> Unit,
     viewModel: DrawViewModel = hiltViewModel(),
 ) {
@@ -28,6 +29,7 @@ fun DrawRoute(
         actions =
             DrawActions(
                 onBack = onClose,
+                onHome = onHome,
                 onStrokeStart = viewModel::onStrokeStarted,
                 onStrokeMove = viewModel::onStrokeMoved,
                 onStrokeEnd = viewModel::onStrokeEnded,
