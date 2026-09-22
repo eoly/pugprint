@@ -11,6 +11,8 @@ import com.example.pugprint.imaging.CropWindow
 import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.ImagePipeline
+import com.example.pugprint.imaging.StampPlacement
+import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.imaging.Sticker
 import com.example.pugprint.imaging.StickerRenderer
 import com.example.pugprint.printer.DensityLevel
@@ -136,17 +138,36 @@ class EditorScreenScreenshotTest {
     }
 
     @Test
+    fun editorScreen_stamps() {
+        val window = CropWindow(photo.width, photo.height)
+        val stamps = listOf(StampPlacement("heart", 0.25f, 0.3f, StampSize.BIG), StampPlacement("star", 0.7f, 0.7f))
+        snap(
+            EditorUiState(
+                step = EditorStep.Stamps,
+                image = photo,
+                window = window,
+                stamps = stamps,
+                preview = StickerRenderer.render(Sticker(photo, window.cropRect(), DitherMode.PHOTO, stamps = stamps)),
+                printerStatus = PrinterStatus.Connected,
+                printerName = "HB-1234",
+            ),
+        )
+    }
+
+    @Test
     fun editorScreen_preview_caption() {
         val window = CropWindow(photo.width, photo.height)
+        val stamps = listOf(StampPlacement("paw", 0.8f, 0.2f))
         snap(
             EditorUiState(
                 step = EditorStep.Preview,
                 image = photo,
                 window = window,
                 caption = "Best dog",
+                stamps = stamps,
                 preview =
                     StickerRenderer.render(
-                        Sticker(photo, window.cropRect(), DitherMode.PHOTO, Caption("Best dog")),
+                        Sticker(photo, window.cropRect(), DitherMode.PHOTO, Caption("Best dog"), stamps),
                     ),
                 printerStatus = PrinterStatus.Connected,
                 printerName = "HB-1234",

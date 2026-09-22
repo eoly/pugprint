@@ -4,6 +4,7 @@ import com.example.pugprint.R
 import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
+import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.printer.DensityLevel
 
 // The words on the editor's choice tiles.
@@ -33,4 +34,11 @@ internal fun densityLabel(level: DensityLevel): Int =
         DensityLevel.LIGHT -> R.string.editor_density_light
         DensityLevel.MEDIUM -> R.string.editor_density_medium
         DensityLevel.DARK -> R.string.editor_density_dark
+    }
+
+internal fun stampSizeLabel(size: StampSize): Int =
+    when (size) {
+        StampSize.SMALL -> R.string.editor_stamp_small
+        StampSize.MEDIUM -> R.string.editor_stamp_medium
+        StampSize.BIG -> R.string.editor_stamp_big
     }

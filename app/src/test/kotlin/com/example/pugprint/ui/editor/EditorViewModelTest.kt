@@ -9,6 +9,8 @@ import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.PhotoLoadException
 import com.example.pugprint.imaging.PhotoSource
+import com.example.pugprint.imaging.StampPlacement
+import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.imaging.Sticker
 import com.example.pugprint.imaging.StickerRenderer
 import com.example.pugprint.printer.DensityLevel
@@ -277,4 +279,47 @@ class EditorViewModelTest {
         x: Int,
         y: Int,
     ) = preview!!.isBlack(x, y)
+
+    @Test
+    fun `stamps land in the middle, the newest one drags, resizes and undoes`() =
+        runTest {
+            val viewModel = opened()
+            viewModel.onNextClicked()
+            runCurrent()
+            viewModel.onAddStampsClicked()
+            assertEquals(EditorStep.Stamps, viewModel.uiState.value.step)
+            viewModel.onStampDragged(0.1f, 0.1f) // nothing to drag yet
+            assertTrue(
+                viewModel.uiState.value.stamps
+                    .isEmpty(),
+            )
+
+            viewModel.onStampPicked("heart")
+            viewModel.onStampPicked("star")
+            runCurrent()
+            assertEquals(
+                listOf(StampPlacement("heart"), StampPlacement("star")),
+                viewModel.uiState.value.stamps,
+            )
+
+            viewModel.onStampDragged(0.25f, -0.9f) // clamps at the top edge
+            viewModel.onStampSizeSelected(StampSize.BIG)
+            runCurrent()
+            val state = viewModel.uiState.value
+            assertEquals(StampPlacement("heart"), state.stamps[0])
+            assertEquals(StampPlacement("star", 0.75f, 0f, StampSize.BIG), state.stamps[1])
+            assertEquals(StampSize.BIG, state.stampSize)
+            val expected =
+                StickerRenderer.render(
+                    Sticker(landscape, state.window!!.cropRect(), stamps = state.stamps, caption = Caption("")),
+                )
+            assertArrayEquals(expected.packed, state.preview!!.packed)
+
+            viewModel.onUndoStampClicked()
+            runCurrent()
+            assertEquals(listOf(StampPlacement("heart")), viewModel.uiState.value.stamps)
+
+            viewModel.onStampsDoneClicked()
+            assertEquals(EditorStep.Preview, viewModel.uiState.value.step)
+        }
 }

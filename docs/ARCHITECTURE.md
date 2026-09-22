@@ -28,7 +28,7 @@
   (Floyd–Steinberg, threshold), `CropWindow` (crop-frame maths), `ImagePipeline`, `MonoBitmap`
   1bpp packing, `TestPattern`; the sticker document — `Sticker` (picture + crop + style +
   `Caption`), `StickerRenderer` (pipeline → `BitCanvas` → overlays → dots), `PixelFont` /
-  `FontCatalog` / `TextRasterizer`; golden PBM tests.
+  `FontCatalog` / `TextRasterizer`, `StampCatalog` / `StampRasterizer`; golden PBM tests.
 - `:core:bluetooth` — Android: Kable `BleTransport`, `CompanionPairing` (CDM), `BluetoothPermissions`.
   The only module allowed to import Android Bluetooth APIs; no protocol bytes (ADR 0006).
 - `:ui:design`     — the design kit (ADR 0007): theme tokens (`PugTheme`, `PugSpacing`,
@@ -91,11 +91,13 @@ Floyd–Steinberg, `DRAWING` = threshold at 128). Heavy steps run on the injecte
 
 ## Sticker document
 `Sticker` is the editable thing: the picture, its crop and dither style, plus layers drawn on
-top — today a `Caption` (a white band with black `PixelFont` letters at the top or bottom;
+top, bottom to top: `StampPlacement`s (a `StampCatalog` stamp centred at fractions of the
+sticker, at a `StampSize`; `StampRasterizer` paints a one-dot white halo first so it reads
+over a photo) and then a `Caption` (a white band with black `PixelFont` letters at the top or bottom;
 `TextRasterizer` wraps to ≤ 3 lines and picks the largest integer scale 6→2 that fits, chopping
 a word that never fits). `StickerRenderer.render` runs `ImagePipeline`, lifts the dots into a
-`BitCanvas`, draws the layers and packs them back. Stamps and drawings become further layers
-here; `:core:printer` never changes for a new kid feature (ADR 0007).
+`BitCanvas`, draws the layers and packs them back. Drawings become a further layer here;
+`:core:printer` never changes for a new kid feature (ADR 0007).
 
 ## Threading
 BLE and encoding on `Dispatchers.Default`/Kable's own threads; the `PrinterManager` lives in

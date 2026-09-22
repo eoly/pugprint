@@ -26,8 +26,10 @@ fun EditorRoute(
     }
     val inPreview = state.step == EditorStep.Preview
     val inWords = state.step == EditorStep.Words
+    val inStamps = state.step == EditorStep.Stamps
     BackHandler(enabled = inPreview) { viewModel.onBackToCropClicked() }
     BackHandler(enabled = inWords) { viewModel.onWordsDoneClicked() }
+    BackHandler(enabled = inStamps) { viewModel.onStampsDoneClicked() }
 
     EditorScreen(
         state = state,
@@ -36,6 +38,7 @@ fun EditorRoute(
                 onBack = {
                     when {
                         inWords -> viewModel.onWordsDoneClicked()
+                        inStamps -> viewModel.onStampsDoneClicked()
                         inPreview -> viewModel.onBackToCropClicked()
                         else -> onClose()
                     }
@@ -50,6 +53,12 @@ fun EditorRoute(
                 onCaption = viewModel::onCaptionChanged,
                 onCaptionPlacement = viewModel::onCaptionPlacementSelected,
                 onWordsDone = viewModel::onWordsDoneClicked,
+                onAddStamps = viewModel::onAddStampsClicked,
+                onStampPicked = viewModel::onStampPicked,
+                onStampDragged = viewModel::onStampDragged,
+                onStampSize = viewModel::onStampSizeSelected,
+                onUndoStamp = viewModel::onUndoStampClicked,
+                onStampsDone = viewModel::onStampsDoneClicked,
                 onPrint = viewModel::onPrintClicked,
             ),
     )

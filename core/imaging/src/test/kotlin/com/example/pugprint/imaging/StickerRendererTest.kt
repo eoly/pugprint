@@ -1,6 +1,7 @@
 package com.example.pugprint.imaging
 
 import org.junit.jupiter.api.Assertions.assertArrayEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -41,5 +42,41 @@ class StickerRendererTest {
         assertFalse(sticker.isBlack(0, 0))
         assertFalse(sticker.isBlack(sticker.width - 1, 0))
         Pbm.assertMatchesGolden("sticker_caption_top", sticker)
+    }
+
+    @Test
+    fun `stamps are drawn with a white halo, under the caption, and clipped at the edge`() {
+        val sticker =
+            StickerRenderer.render(
+                Sticker(
+                    photo,
+                    caption = Caption("Woof"),
+                    stamps =
+                        listOf(
+                            StampPlacement("heart", 0.25f, 0.3f, StampSize.BIG),
+                            StampPlacement("star", 1f, 0f, StampSize.MEDIUM), // hangs off the top-right corner
+                            StampPlacement("unicorn"), // not in the catalog: draws nothing, does not crash
+                        ),
+                ),
+            )
+        // The heart's halo: the art row above the first dot row is white across the heart's width.
+        val heartLeft = (0.25f * sticker.width).toInt() - 16 * 8 / 2
+        val heartTop = (0.3f * sticker.height).toInt() - 16 * 8 / 2
+        for (x in heartLeft + 2 * 8 until heartLeft + 6 * 8) {
+            assertFalse(
+                sticker.isBlack(x, heartTop + 0 * 8 + 4),
+                "halo at $x",
+            )
+        }
+        // A dot inside the heart is black.
+        assertTrue(sticker.isBlack(heartLeft + 8 * 8, heartTop + 5 * 8))
+        Pbm.assertMatchesGolden("sticker_stamps", sticker)
+    }
+
+    @Test
+    fun `a placement nudge stays on the sticker`() {
+        val moved = StampPlacement("heart", 0.9f, 0.1f).movedBy(0.5f, -0.5f)
+        assertEquals(1f, moved.centerX)
+        assertEquals(0f, moved.centerY)
     }
 }

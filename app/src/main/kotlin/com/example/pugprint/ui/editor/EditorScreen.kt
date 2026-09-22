@@ -3,8 +3,11 @@ package com.example.pugprint.ui.editor
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +39,7 @@ import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
+import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.ui.home.PrinterStatus
 import com.example.pugprint.ui.home.printerStatusLabel
@@ -55,6 +60,7 @@ fun EditorScreen(
                     EditorStep.Failed -> R.string.editor_title_failed
                     EditorStep.Crop -> R.string.editor_title_crop
                     EditorStep.Words -> R.string.editor_title_words
+                    EditorStep.Stamps -> R.string.editor_title_stamps
                     EditorStep.Preview -> R.string.editor_title_preview
                 },
             ),
@@ -65,6 +71,7 @@ fun EditorScreen(
             EditorStep.Failed -> Failed(actions.onBack)
             EditorStep.Crop -> CropStep(state, actions)
             EditorStep.Words -> WordsStep(state, actions)
+            EditorStep.Stamps -> StampsStep(state, actions)
             EditorStep.Preview -> PreviewStep(state, actions)
         }
     }
@@ -136,9 +143,15 @@ private fun ColumnScope.CropStep(
     BigButton(text = stringResource(R.string.editor_next), onClick = actions.onNext)
 }
 
-/** The dots that will print, or a spinner while they are being worked out. */
+/**
+ * The dots that will print, or a spinner while they are being worked out. With [onDrag], a finger
+ * on the picture reports its movement in fractions of the picture's size.
+ */
 @Composable
-private fun ColumnScope.Dots(state: EditorUiState) {
+private fun ColumnScope.Dots(
+    state: EditorUiState,
+    onDrag: ((dx: Float, dy: Float) -> Unit)? = null,
+) {
     Spacer(Modifier.height(PugSpacing.small))
     Box(
         modifier =
@@ -162,9 +175,59 @@ private fun ColumnScope.Dots(state: EditorUiState) {
                         .padding(horizontal = PREVIEW_INSET)
                         .aspectRatio(preview.width.toFloat() / preview.height)
                         .background(Color.White)
-                        .border(1.dp, MaterialTheme.colorScheme.outline),
+                        .border(1.dp, MaterialTheme.colorScheme.outline)
+                        .then(
+                            if (onDrag == null) {
+                                Modifier
+                            } else {
+                                Modifier.pointerInput(Unit) {
+                                    detectDragGestures { change, drag ->
+                                        change.consume()
+                                        onDrag(drag.x / size.width, drag.y / size.height)
+                                    }
+                                }
+                            },
+                        ),
             )
         }
+    }
+}
+
+@Composable
+private fun ColumnScope.StampsStep(
+    state: EditorUiState,
+    actions: EditorActions,
+) {
+    Dots(state, onDrag = actions.onStampDragged)
+    Spacer(Modifier.height(PugSpacing.small))
+    Text(
+        text = stringResource(R.string.editor_stamps_hint),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Spacer(Modifier.height(PugSpacing.small))
+    StampGrid(onPick = actions.onStampPicked)
+    Spacer(Modifier.height(PugSpacing.small))
+    ChoiceRow(
+        options = StampSize.entries,
+        selected = state.stampSize,
+        onSelect = actions.onStampSize,
+        label = { stringResource(stampSizeLabel(it)) },
+    )
+    Spacer(Modifier.height(PugSpacing.medium))
+    Row(horizontalArrangement = Arrangement.spacedBy(PugSpacing.small)) {
+        BigButton(
+            text = stringResource(R.string.editor_stamps_undo),
+            onClick = actions.onUndoStamp,
+            enabled = state.stamps.isNotEmpty(),
+            emphasis = ButtonEmphasis.Secondary,
+            modifier = Modifier.weight(1f),
+        )
+        BigButton(
+            text = stringResource(R.string.editor_words_done),
+            onClick = actions.onStampsDone,
+            modifier = Modifier.weight(1f),
+        )
     }
 }
 
@@ -220,11 +283,26 @@ private fun ColumnScope.PreviewStep(
         label = { stringResource(densityLabel(it)) },
     )
     Spacer(Modifier.height(PugSpacing.small))
-    BigButton(
-        text = stringResource(if (state.caption.isBlank()) R.string.editor_add_words else R.string.editor_change_words),
-        onClick = actions.onAddWords,
-        emphasis = ButtonEmphasis.Secondary,
-    )
+    Row(horizontalArrangement = Arrangement.spacedBy(PugSpacing.small)) {
+        BigButton(
+            text =
+                stringResource(
+                    if (state.caption.isBlank()) R.string.editor_add_words else R.string.editor_change_words,
+                ),
+            onClick = actions.onAddWords,
+            emphasis = ButtonEmphasis.Secondary,
+            modifier = Modifier.weight(1f),
+        )
+        BigButton(
+            text =
+                stringResource(
+                    if (state.stamps.isEmpty()) R.string.editor_add_stamps else R.string.editor_change_stamps,
+                ),
+            onClick = actions.onAddStamps,
+            emphasis = ButtonEmphasis.Secondary,
+            modifier = Modifier.weight(1f),
+        )
+    }
     Spacer(Modifier.height(PugSpacing.medium))
     StatusBanner(
         kind = if (state.paperOrLidProblem) BannerKind.Problem else state.printerStatus.bannerKind(),
