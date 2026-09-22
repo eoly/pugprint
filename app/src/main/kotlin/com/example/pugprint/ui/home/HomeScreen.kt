@@ -16,6 +16,7 @@ import com.example.pugprint.R
 import com.example.pugprint.design.components.BannerKind
 import com.example.pugprint.design.components.BigButton
 import com.example.pugprint.design.components.ButtonEmphasis
+import com.example.pugprint.design.components.ChoiceRow
 import com.example.pugprint.design.components.HeroTitle
 import com.example.pugprint.design.components.KidScreen
 import com.example.pugprint.design.components.StatusBanner
@@ -23,6 +24,7 @@ import com.example.pugprint.design.components.ThemePicker
 import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.design.theme.ThemeCatalog
+import com.example.pugprint.imaging.StickerRollCatalog
 import kotlinx.coroutines.delay
 
 @Composable
@@ -97,6 +99,19 @@ fun HomeScreen(
             themes = ThemeCatalog.all,
             selectedId = state.themeId,
             onSelect = { actions.onThemeSelected(it.id) },
+        )
+        Spacer(Modifier.height(PugSpacing.large))
+        Text(
+            text = stringResource(R.string.home_pick_paper),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(PugSpacing.small))
+        ChoiceRow(
+            options = StickerRollCatalog.all,
+            selected = StickerRollCatalog.byId(state.rollId),
+            onSelect = { actions.onRollSelected(it.id) },
+            label = { it.displayName },
         )
     }
 }

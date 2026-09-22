@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.example.pugprint.design.theme.ThemeCatalog
+import com.example.pugprint.imaging.StickerRollCatalog
 import com.example.pugprint.printer.DensityLevel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,8 @@ data class AppSettings(
     val themeId: String = ThemeCatalog.default.id,
     /** How hard the printer burns: the "How dark?" choice on the preview step. */
     val density: DensityLevel = DensityLevel.MEDIUM,
+    /** A [StickerRollCatalog] id: the paper in the printer; unknown ids fall back to the default roll. */
+    val rollId: String = StickerRollCatalog.default.id,
 )
 
 /** Where [AppSettings] live; observed by the theme, the home screen and the editor. */
@@ -32,6 +35,8 @@ interface SettingsStore {
 fun SettingsStore.setTheme(themeId: String) = update { it.copy(themeId = themeId) }
 
 fun SettingsStore.setDensity(density: DensityLevel) = update { it.copy(density = density) }
+
+fun SettingsStore.setRoll(rollId: String) = update { it.copy(rollId = rollId) }
 
 /** App-private preferences; nothing here identifies the user or leaves the device. */
 @Singleton
@@ -50,6 +55,7 @@ class PreferencesSettingsStore
             prefs.edit {
                 putString(KEY_THEME, next.themeId)
                 putString(KEY_DENSITY, next.density.name)
+                putString(KEY_ROLL, next.rollId)
             }
         }
 
@@ -61,6 +67,7 @@ class PreferencesSettingsStore
                     prefs.getString(KEY_DENSITY, null)?.let { name ->
                         DensityLevel.entries.firstOrNull { it.name == name }
                     } ?: defaults.density,
+                rollId = StickerRollCatalog.byId(prefs.getString(KEY_ROLL, null)).id,
             )
         }
 
@@ -68,6 +75,7 @@ class PreferencesSettingsStore
             const val FILE = "settings"
             const val KEY_THEME = "theme"
             const val KEY_DENSITY = "density"
+            const val KEY_ROLL = "roll"
         }
     }
 

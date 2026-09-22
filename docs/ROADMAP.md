@@ -79,14 +79,16 @@
      (`StatusBanner.announce`), titles are headings, the crop frame and stamp canvas are
      described, stamp tiles are buttons. 1.5× font-scale goldens for home / preview / draw
      found two bugs, fixed: home now scrolls, tile labels auto-shrink instead of truncating.
-  8. **Sticker rolls** — `StickerRoll` catalog in `:core:printer` (one entry per roll; the
-     standard roll measured 2026-09-22: 49.2 × 49.2 mm square labels, 12.7 mm gap with a
-     serration halfway, so pitch ≈ 495 rows at 8 dots/mm), a roll setting, and per-roll
-     sizing: crop shape locked to the label, rows capped to its height, and a per-roll
-     placement calibration (the firmware already feeds to the serration on its own; a Square
-     print measured 2026-09-22 lands 3.2 mm from the left edge, 0.8 mm from the right, flush
-     with the top and 3.2 mm short of the bottom, so centring means ~12 white rows on top and
-     a ~19-dot white inset on the right). Golden `PrintJob` per roll.
+  8. ✅ **Sticker rolls** — `StickerRoll` / `StickerRollCatalog` in `:core:imaging` (one entry
+     per roll: label size, gap, `PrintPlacement`). "Square stickers" is the standard roll
+     measured 2026-09-22 (49.2 mm square, 12.7 mm gap; a full print landed 3.2 mm from the
+     left, 0.8 mm from the right, flush top, 3.2 mm short at the bottom), so its picture is
+     365 dots square placed with 19 white rows on top and 19 dots on the right; "Plain roll"
+     is untouched 58 mm paper. The roll is a setting ("Which stickers are in the printer?"
+     on home); the editor renders at the roll's width and row cap, locks the shape to Square
+     for labels, and `place()`s the dots onto the head canvas before printing. The firmware
+     feeds to the serration itself, so `:core:printer` is unchanged. Golden
+     `roll_square_placement.pbm`.
   9. **Designer handbook + gallery screen** — grow `docs/DESIGN_KIT.md` with stamps/fonts;
      a hidden "Design gallery" screen in debug builds so the designer sees her work live.
 - **Phase 6 — Play:** internal track to the friend group → (if going public) closed test

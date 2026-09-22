@@ -128,13 +128,15 @@ private fun ColumnScope.CropStep(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
     Spacer(Modifier.height(PugSpacing.medium))
-    ChoiceRow(
-        options = CropShape.entries,
-        selected = window.shape,
-        onSelect = actions.onShape,
-        label = { stringResource(shapeLabel(it)) },
-    )
-    Spacer(Modifier.height(PugSpacing.small))
+    if (!state.shapeLocked) {
+        ChoiceRow(
+            options = CropShape.entries,
+            selected = window.shape,
+            onSelect = actions.onShape,
+            label = { stringResource(shapeLabel(it)) },
+        )
+        Spacer(Modifier.height(PugSpacing.small))
+    }
     BigButton(
         text = stringResource(R.string.editor_rotate),
         onClick = actions.onRotate,

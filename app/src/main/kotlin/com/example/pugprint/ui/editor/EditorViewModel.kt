@@ -18,6 +18,8 @@ import com.example.pugprint.imaging.StampPlacement
 import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.imaging.Sticker
 import com.example.pugprint.imaging.StickerRenderer
+import com.example.pugprint.imaging.StickerRoll
+import com.example.pugprint.imaging.StickerRollCatalog
 import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.printer.PrinterManager
@@ -73,6 +75,8 @@ data class EditorUiState(
     val rendering: Boolean = false,
     /** "How dark?" — remembered across stickers. */
     val density: DensityLevel = DensityLevel.MEDIUM,
+    /** A die-cut label is one shape, so the Square / Tall / Wide / Whole row is hidden. */
+    val shapeLocked: Boolean = false,
     val printerStatus: PrinterStatus = PrinterStatus.NoPrinter,
     val printerName: String? = null,
     val offlineReason: OfflineReason? = null,
@@ -138,6 +142,7 @@ class EditorViewModel
                     preview = edit.preview,
                     rendering = edit.rendering,
                     density = prefs.density,
+                    shapeLocked = StickerRollCatalog.byId(prefs.rollId).isLabel,
                     printerStatus = printerState.status(),
                     printerName = printerState.deviceName(),
                     offlineReason = (printerState as? PrinterState.Offline)?.reason,
@@ -191,7 +196,11 @@ class EditorViewModel
             }
         }
 
-        fun onShapeSelected(shape: CropShape) = edit.update { it.copy(window = it.window?.withShape(shape)) }
+        /** Ignored on a label roll: the label decides the shape. */
+        fun onShapeSelected(shape: CropShape) {
+            if (roll().isLabel) return
+            edit.update { it.copy(window = it.window?.withShape(shape)) }
+        }
 
         /** A pinch/drag step from the crop frame, in frame widths (see [CropWindow.transformed]). */
         fun onTransform(
@@ -295,7 +304,7 @@ class EditorViewModel
         fun onPrintClicked() {
             val state = uiState.value.takeIf { it.canPrint } ?: return
             val preview = state.preview ?: return
-            printer.printImage(preview, state.density)
+            printer.printImage(roll().place(preview), state.density)
             mutablePrintRequested.value = true
         }
 
@@ -316,13 +325,20 @@ class EditorViewModel
                     caption = Caption(current.caption, current.captionPlacement),
                     stamps = current.stamps,
                 )
+            val roll = roll()
             edit.update { it.copy(rendering = true, preview = if (it.isDetour) it.preview else null) }
             renderJob =
                 viewModelScope.launch {
-                    val dots = withContext(dispatcher) { StickerRenderer.render(sticker) }
+                    val dots =
+                        withContext(dispatcher) {
+                            StickerRenderer.render(sticker, width = roll.contentWidth, maxRows = roll.contentHeight)
+                        }
                     edit.update { it.copy(preview = dots, rendering = false) }
                 }
         }
+
+        /** The paper in the printer, as chosen on the home screen. */
+        private fun roll(): StickerRoll = StickerRollCatalog.byId(settings.settings.value.rollId)
     }
 
 private fun PrinterState.status(): PrinterStatus =

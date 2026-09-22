@@ -20,6 +20,7 @@ import com.example.pugprint.printer.PrinterManager
 import com.example.pugprint.printer.transport.FakePrinterTransport
 import com.example.pugprint.printer.transport.PrinterClient
 import com.example.pugprint.printer.transport.PrinterDevice
+import com.example.pugprint.settings.AppSettings
 import com.example.pugprint.settings.InMemorySettingsStore
 import com.example.pugprint.ui.home.PrinterStatus
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +45,9 @@ import org.junit.jupiter.api.Test
 class EditorViewModelTest {
     private val device = PrinterDevice("AA:BB:CC:DD:EE:FF", "HB-1234")
     private val transport = FakePrinterTransport()
-    private val settings = InMemorySettingsStore()
+
+    /** Most tests assume a head-wide picture and free shapes, i.e. the plain roll; label tests opt in. */
+    private val settings = InMemorySettingsStore(AppSettings(rollId = "continuous"))
 
     /** 200×100, dark on the left half, light on the right. */
     private val landscape = GrayImage.generate(200, 100) { x, _ -> if (x < 100) 20 else 235 }
@@ -343,5 +346,59 @@ class EditorViewModelTest {
             assertEquals(384, preview.height)
             assertTrue(preview.isBlack(150, 150))
             assertFalse(preview.isBlack(10, 10))
+        }
+
+    @Test
+    fun `on the square roll the shape is locked, the picture is 365 dots and the print is one padded label`() =
+        runTest {
+            settings.update { it.copy(rollId = "square-49") }
+            val printer = printer()
+            printer.connect(device)
+            val viewModel = viewModel(printer)
+            viewModel.open("content://photo/1")
+            runCurrent()
+            assertTrue(viewModel.uiState.value.shapeLocked)
+            viewModel.onShapeSelected(CropShape.TALL) // ignored on a label roll
+            assertEquals(
+                CropShape.SQUARE,
+                viewModel.uiState.value.window!!
+                    .shape,
+            )
+
+            viewModel.onNextClicked()
+            runCurrent()
+            val preview = viewModel.uiState.value.preview!!
+            assertEquals(365, preview.width)
+            assertEquals(365, preview.height)
+
+            viewModel.onPrintClicked()
+            advanceTimeBy(60_000)
+            assertEquals(384, transport.emulator.rows.size)
+            assertTrue(
+                transport.emulator.rows
+                    .first()
+                    .all { it == 0.toByte() },
+                "top margin row should be white",
+            )
+        }
+
+    @Test
+    fun `on the plain roll shapes are free and the picture is head-wide`() =
+        runTest {
+            val viewModel = opened()
+            assertFalse(viewModel.uiState.value.shapeLocked)
+            viewModel.onShapeSelected(CropShape.TALL)
+            assertEquals(
+                CropShape.TALL,
+                viewModel.uiState.value.window!!
+                    .shape,
+            )
+            viewModel.onNextClicked()
+            runCurrent()
+            assertEquals(
+                384,
+                viewModel.uiState.value.preview!!
+                    .width,
+            )
         }
 }
