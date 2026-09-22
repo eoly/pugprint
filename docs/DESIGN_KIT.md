@@ -57,6 +57,15 @@ Fonts live in the picture code, not the kit: `core/imaging/src/main/kotlin/com/e
    A sample sentence appears at `core/imaging/src/test/resources/font_<id>.pbm` (any image
    viewer opens it). Commit it with the font.
 
+## Add a stamp (10 minutes)
+Stamps live next to the fonts: `core/imaging/src/main/kotlin/com/example/pugprint/imaging/StampCatalog.kt`.
+1. Copy the `Heart` block, rename it, give it a new `id` and `displayName`.
+2. Draw it as 16 rows of 16 `#`/`.` characters (up to 32 × 32 works). Solid shapes print best;
+   the app draws a white outline around every stamp so it shows up on a photo.
+3. Add it to `all`, then run `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true`.
+   Your stamp appears at `core/imaging/src/test/resources/stamp_<id>.pbm` and in the
+   "Add stamps" picker. Commit the picture with the stamp.
+
 ## Change how big or round things are
 - Corners: `roundness` on each theme (buttons, tiles and banners all follow it).
 - Spacing: `PugSpacing` in `Tokens.kt`.
@@ -76,6 +85,5 @@ Edit the file in `components/`; every screen picks it up. Then re-record the pic
 - A gallery golden exists per theme (recorded automatically).
 
 ## Coming next (Phase 5)
-Stamps (`StampCatalog`: drop in a bitmap, add a line),
-text captions with a bitmap font, and a drawing canvas — each following the same
-"one catalog file, enumerated by tests" pattern.
+A drawing canvas, and a hidden "Design gallery" screen so you can see every component in
+your theme without printing anything.

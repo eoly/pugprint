@@ -37,7 +37,8 @@ nearest-neighbour image sampling, so `Screenshots.options` allows 0.05 % changed
   `core/imaging/src/test/resources/test_pattern.pbm`; `DitherTest` asserts Floyd–Steinberg and
   threshold output for `SyntheticPhoto` against `dither_photo.pbm` / `dither_drawing.pbm`.
   `TextRasterizerTest` records `font_<id>.pbm` (a pangram per `FontCatalog` font) and
-  `StickerRendererTest` records `sticker_caption_bottom.pbm` / `sticker_caption_top.pbm`.
+  `StickerRendererTest` records `sticker_caption_bottom.pbm` / `sticker_caption_top.pbm` /
+  `sticker_stamps.pbm`; `StampCatalogTest` records `stamp_<id>.pbm` per stamp.
   Re-record with `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true` and eyeball the
   PBMs (any image viewer opens P1 PBM). `GrayImageTest`, `CropWindowTest` and
   `ImagePipelineTest` pin the rotate/crop/scale maths and the crop-frame geometry.

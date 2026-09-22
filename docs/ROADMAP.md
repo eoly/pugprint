@@ -63,7 +63,10 @@
      `FontCatalog` (5 × 7 "Blocky", glyphs drawn as `#`/`.` art, add a font = add an entry) and
      `TextRasterizer` (wrap to 3 lines, auto-scale 6→2, chop giant words); "Add words" detour
      from the preview with live dots, Top / Bottom; `BigTextField` in the kit.
-  5. **Stamps** — `StampCatalog` (PBM assets + one line each), stamp layer, big stamp picker.
+  5. ✅ **Stamps** — `StampCatalog` (six 16 × 16 stamps drawn as `#`/`.` art, add a stamp = add an
+     entry), `StampPlacement` on the `Sticker` (centre as fractions, Small / Medium / Big),
+     `StampRasterizer` with a white halo; "Add stamps" detour: tap a stamp, it lands in the
+     middle, drag it into place, Undo. Goldens per stamp and for a stamped sticker.
   6. **Drawing canvas** — `Stroke` model + pure `StrokeRasterizer` (goldens), "Draw a sticker"
      home entry with fat brushes, eraser and undo.
   7. **Accessibility pass** — content descriptions, TalkBack order, 1.5× font-scale goldens,

@@ -17,15 +17,39 @@ public data class Caption(
 }
 
 /**
+ * One stamp on the sticker. [centerX] / [centerY] are fractions of the sticker's width and
+ * height (0.0 = left/top edge, 1.0 = right/bottom), so a placement survives any crop or scale.
+ *
+ * @property stampId a [StampCatalog] id; a placement whose stamp was removed draws nothing.
+ */
+public data class StampPlacement(
+    val stampId: String,
+    val centerX: Float = CENTRE,
+    val centerY: Float = CENTRE,
+    val size: StampSize = StampSize.MEDIUM,
+) {
+    /** The same stamp nudged by ([dx], [dy]) fractions, kept on the sticker. */
+    public fun movedBy(
+        dx: Float,
+        dy: Float,
+    ): StampPlacement = copy(centerX = (centerX + dx).coerceIn(0f, 1f), centerY = (centerY + dy).coerceIn(0f, 1f))
+
+    public companion object {
+        public const val CENTRE: Float = 0.5f
+    }
+}
+
+/**
  * Everything that makes one sticker: the picture (cropped and dithered by [ImagePipeline])
- * plus the layers drawn on top. New kid features (stamps, drawings) are new layers here;
- * nothing below [StickerRenderer] changes.
+ * plus the layers drawn on top, bottom to top: [stamps] then the [caption] band. New kid
+ * features are new layers here; nothing below [StickerRenderer] changes.
  */
 public data class Sticker(
     val image: GrayImage,
     val crop: CropRect? = null,
     val mode: DitherMode = DitherMode.PHOTO,
     val caption: Caption? = null,
+    val stamps: List<StampPlacement> = emptyList(),
 )
 
 /** Turns a [Sticker] into the dots that print. Deterministic; covered by golden PBMs. */
@@ -35,9 +59,20 @@ public object StickerRenderer {
 
     public fun render(sticker: Sticker): MonoBitmap {
         val picture = ImagePipeline.render(sticker.image, sticker.crop, sticker.mode)
-        val caption = sticker.caption?.takeUnless { it.isBlank } ?: return picture
+        val caption = sticker.caption?.takeUnless { it.isBlank }
+        if (caption == null && sticker.stamps.isEmpty()) return picture
         val canvas = BitCanvas.from(picture)
-        drawCaption(canvas, caption)
+        sticker.stamps.forEach { placement ->
+            val stamp = StampCatalog.byId(placement.stampId) ?: return@forEach
+            StampRasterizer.draw(
+                canvas,
+                stamp,
+                placement.size,
+                centerX = (placement.centerX * canvas.width).toInt(),
+                centerY = (placement.centerY * canvas.height).toInt(),
+            )
+        }
+        if (caption != null) drawCaption(canvas, caption)
         return canvas.toMonoBitmap()
     }
 

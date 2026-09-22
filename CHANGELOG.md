@@ -6,6 +6,12 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 stamps. `StampCatalog` (heart, star, paw, smiley, sun, zap — 16 × 16 art drawn as
+  `#`/`.`, add a stamp by adding an entry), `StampPlacement` on the `Sticker` (centre as
+  fractions of the sticker, Small / Medium / Big) and `StampRasterizer` (one-dot white halo so
+  a stamp reads over a photo); golden PBM per stamp and for a stamped sticker. Editor: "Add
+  stamps" detour — tap a stamp and it lands in the middle, drag it into place, pick a size,
+  Undo. Preview shows "Edit words" / "Edit stamps" side by side.
 - Phase 5 words on stickers. `:core:imaging` gains the sticker document: `Sticker` (picture,
   crop, style, `Caption`), `StickerRenderer` and `BitCanvas`, `PixelFont` with a `FontCatalog`
   (5 × 7 "Blocky", glyphs drawn as `#`/`.` art — add a font by adding an entry) and

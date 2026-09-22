@@ -13,6 +13,8 @@ import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.PhotoLoadException
 import com.example.pugprint.imaging.PhotoSource
 import com.example.pugprint.imaging.Rotation
+import com.example.pugprint.imaging.StampPlacement
+import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.imaging.Sticker
 import com.example.pugprint.imaging.StickerRenderer
 import com.example.pugprint.printer.DensityLevel
@@ -43,6 +45,9 @@ enum class EditorStep {
 
     /** Optional detour from [Preview]: type a caption and pick where it goes, watching the dots update. */
     Words,
+
+    /** Optional detour from [Preview]: tap stamps onto the sticker and drag the newest one around. */
+    Stamps,
     Preview,
     Failed,
 }
@@ -56,7 +61,11 @@ data class EditorUiState(
     /** Words on the sticker; blank means none. */
     val caption: String = "",
     val captionPlacement: CaptionPlacement = CaptionPlacement.BOTTOM,
-    /** The dots that will print, once [EditorStep.Preview] (or [EditorStep.Words]) has rendered them. */
+    /** Stamps on the sticker, oldest first; the last one is the one a drag moves. */
+    val stamps: List<StampPlacement> = emptyList(),
+    /** Size for the next stamp (and the newest one). */
+    val stampSize: StampSize = StampSize.MEDIUM,
+    /** The dots that will print, once a dots-showing step has rendered them. */
     val preview: MonoBitmap? = null,
     val rendering: Boolean = false,
     /** "How dark?" — remembered across stickers. */
@@ -82,10 +91,15 @@ private data class EditState(
     val mode: DitherMode = DitherMode.PHOTO,
     val caption: String = "",
     val captionPlacement: CaptionPlacement = CaptionPlacement.BOTTOM,
+    val stamps: List<StampPlacement> = emptyList(),
+    val stampSize: StampSize = StampSize.MEDIUM,
     val preview: MonoBitmap? = null,
     val rendering: Boolean = false,
 ) {
-    val showsDots: Boolean get() = step == EditorStep.Preview || step == EditorStep.Words
+    val showsDots: Boolean get() = step == EditorStep.Preview || step == EditorStep.Words || step == EditorStep.Stamps
+
+    /** Detours keep the old dots on screen while re-rendering so the picture doesn't blink. */
+    val isDetour: Boolean get() = step == EditorStep.Words || step == EditorStep.Stamps
 }
 
 @HiltViewModel
@@ -114,6 +128,8 @@ class EditorViewModel
                     mode = edit.mode,
                     caption = edit.caption,
                     captionPlacement = edit.captionPlacement,
+                    stamps = edit.stamps,
+                    stampSize = edit.stampSize,
                     preview = edit.preview,
                     rendering = edit.rendering,
                     density = prefs.density,
@@ -210,6 +226,52 @@ class EditorViewModel
             edit.update { it.copy(step = EditorStep.Preview) }
         }
 
+        /** "Add stamps" from the preview. */
+        fun onAddStampsClicked() {
+            if (edit.value.step != EditorStep.Preview) return
+            edit.update { it.copy(step = EditorStep.Stamps) }
+        }
+
+        /** A stamp from the picker lands in the middle at the current size; drag it from there. */
+        fun onStampPicked(stampId: String) {
+            edit.update { it.copy(stamps = it.stamps + StampPlacement(stampId, size = it.stampSize)) }
+            render()
+        }
+
+        /** Drag on the dots, in fractions of the sticker's width and height; moves the newest stamp. */
+        fun onStampDragged(
+            dx: Float,
+            dy: Float,
+        ) {
+            val stamps = edit.value.stamps
+            if (stamps.isEmpty()) return
+            edit.update { it.copy(stamps = stamps.dropLast(1) + stamps.last().movedBy(dx, dy)) }
+            render()
+        }
+
+        /** Sets the size for the next stamp and resizes the newest one. */
+        fun onStampSizeSelected(size: StampSize) {
+            if (edit.value.stampSize == size) return
+            edit.update { current ->
+                val stamps = current.stamps
+                val resized = if (stamps.isEmpty()) stamps else stamps.dropLast(1) + stamps.last().copy(size = size)
+                current.copy(stampSize = size, stamps = resized)
+            }
+            if (edit.value.stamps.isNotEmpty()) render()
+        }
+
+        /** Takes the newest stamp off again. */
+        fun onUndoStampClicked() {
+            if (edit.value.stamps.isEmpty()) return
+            edit.update { it.copy(stamps = it.stamps.dropLast(1)) }
+            render()
+        }
+
+        fun onStampsDoneClicked() {
+            if (edit.value.step != EditorStep.Stamps) return
+            edit.update { it.copy(step = EditorStep.Preview) }
+        }
+
         fun onBackToCropClicked() {
             renderJob?.cancel()
             edit.update { it.copy(step = EditorStep.Crop, preview = null, rendering = false) }
@@ -239,9 +301,9 @@ class EditorViewModel
                     crop = window.cropRect(),
                     mode = current.mode,
                     caption = Caption(current.caption, current.captionPlacement),
+                    stamps = current.stamps,
                 )
-            // Keep the old dots on screen while re-rendering a caption edit, so the picture doesn't blink.
-            edit.update { it.copy(rendering = true, preview = if (it.step == EditorStep.Words) it.preview else null) }
+            edit.update { it.copy(rendering = true, preview = if (it.isDetour) it.preview else null) }
             renderJob =
                 viewModelScope.launch {
                     val dots = withContext(dispatcher) { StickerRenderer.render(sticker) }
