@@ -5,6 +5,8 @@ data class HomeActions(
     val onConnect: () -> Unit = {},
     val onPickPhoto: () -> Unit = {},
     val onDraw: () -> Unit = {},
+    /** Debug builds: open the design gallery. */
+    val onDesignGallery: () -> Unit = {},
     val onPrintTestPage: () -> Unit = {},
     val onPrintAgain: () -> Unit = {},
     val onRetry: () -> Unit = {},

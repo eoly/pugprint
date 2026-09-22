@@ -104,6 +104,9 @@ class AccessibilityAuditTest {
         }
 
     @Test
+    fun home_debug_withGallery() = audit("home debug") { HomeScreen(HomeUiState(), showDesignGallery = true) }
+
+    @Test
     fun home_offline() =
         audit("home") { HomeScreen(HomeUiState(PrinterStatus.Offline, printerName = "HB-1234", hasLastPrint = true)) }
 

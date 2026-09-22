@@ -25,17 +25,24 @@ import com.example.pugprint.design.components.ThemePicker
 import com.example.pugprint.design.theme.LocalPugTheme
 import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.design.theme.PugSpacing
+import com.example.pugprint.design.theme.PugTheme
 import com.example.pugprint.design.theme.ThemeCatalog
 
 /**
  * Every kit component on one screen, in the current theme. The per-theme goldens capture this,
- * so a new theme (or a changed component) shows up as a picture in the first PR.
+ * so a new theme (or a changed component) shows up as a picture in the first PR; debug builds
+ * also show it live from the home screen, with [onThemeSelected] switching the look in place.
  */
 @Composable
-fun DesignGallery(modifier: Modifier = Modifier) {
+fun DesignGallery(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit = {},
+    onHome: () -> Unit = {},
+    onThemeSelected: (PugTheme) -> Unit = {},
+) {
     val theme = LocalPugTheme.current
     var choice by remember { mutableStateOf("Square") }
-    KidScreen(modifier = modifier, title = theme.displayName, onBack = {}, onHome = {}) {
+    KidScreen(modifier = modifier, title = theme.displayName, onBack = onBack, onHome = onHome) {
         Column(verticalArrangement = Arrangement.spacedBy(PugSpacing.medium), modifier = Modifier.fillMaxWidth()) {
             HeroTitle("PugPrint")
             Text("Body text and a hint below it.", style = MaterialTheme.typography.bodyLarge)
@@ -59,7 +66,7 @@ fun DesignGallery(modifier: Modifier = Modifier) {
             StatusBanner(BannerKind.Working, "Printing…", progress = 0.4f)
             StatusBanner(BannerKind.Problem, "Close the lid and check the paper", hint = "Then tap Print again")
             StatusBanner(BannerKind.Success, "Printed!")
-            ThemePicker(themes = ThemeCatalog.all, selectedId = theme.id, onSelect = {})
+            ThemePicker(themes = ThemeCatalog.all, selectedId = theme.id, onSelect = onThemeSelected)
         }
     }
 }

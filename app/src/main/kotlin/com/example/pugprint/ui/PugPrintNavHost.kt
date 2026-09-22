@@ -10,10 +10,12 @@ import androidx.navigation.navArgument
 import com.example.pugprint.imaging.DrawingHandoff
 import com.example.pugprint.ui.draw.DrawRoute
 import com.example.pugprint.ui.editor.EditorRoute
+import com.example.pugprint.ui.gallery.GalleryRoute
 import com.example.pugprint.ui.home.HomeRoute
 
 private const val HOME = "home"
 private const val DRAW = "draw"
+private const val GALLERY = "gallery"
 private const val EDITOR = "editor/{photo}"
 private const val PHOTO_ARG = "photo"
 
@@ -34,7 +36,11 @@ fun PugPrintNavHost() {
             HomeRoute(
                 onPhotoPicked = { uri -> openEditor(uri.toString()) },
                 onDraw = { navController.navigate(DRAW) },
+                onDesignGallery = { navController.navigate(GALLERY) },
             )
+        }
+        composable(GALLERY) {
+            GalleryRoute(onClose = { navController.popBackStack() })
         }
         composable(DRAW) {
             DrawRoute(

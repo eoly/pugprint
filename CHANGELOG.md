@@ -6,6 +6,10 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 designer tools. Debug builds show a "Design gallery" button on the home screen:
+  every kit component in any theme, switchable in place without touching the saved look
+  (`GalleryRoute` / `GalleryViewModel`; `DesignGallery` gained callbacks). `docs/DESIGN_KIT.md`
+  now opens with a "Start here" walkthrough and covers changing the app's words.
 - Phase 5 sticker rolls. `StickerRoll` / `StickerRollCatalog` in `:core:imaging`: "Square
   stickers" (the measured 49.2 mm die-cut roll: picture 365 dots square, placed with 19 white
   rows on top and 19 dots on the right so it lands centred) and "Plain roll" (58 mm paper,

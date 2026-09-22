@@ -1,5 +1,13 @@
 # The design kit — a handbook for PugPrint's designer
 
+## Start here
+1. Install the debug app on the phone (`./gradlew installDebug`) and tap **Design gallery** at
+   the bottom of the home screen. Every button, tile and banner is there in one place, and the
+   "Pick a look" row at the bottom switches the theme without changing anything for real.
+2. Pick the thing you want to change from the list below. Each one is a single file, and each
+   has a test that tells you if something is wrong and a picture that shows you the result.
+3. Run the command in the section, look at the picture, and commit it together with the change.
+
 Everything about how PugPrint *looks* lives in one place: the `ui/design` folder (the "design
 kit"). Printing, Bluetooth and picture code never change when the look changes, and the look
 never has to know about them. See ADR 0007 for why.
@@ -105,6 +113,13 @@ The pen sizes on "Draw a sticker" are `BrushSize` in
 `core/imaging/src/main/kotlin/com/example/pugprint/imaging/Drawing.kt`, in print dots
 (8 dots = 1 mm). Change a number or add a size; the screen's tiles follow the list.
 
-## Coming next (Phase 5)
-A hidden "Design gallery" screen so you can see every component in your theme without
-printing anything.
+## Change the words the app says
+Every label and message is in `app/src/main/res/values/strings.xml`, one line each, in plain
+English ("Print a photo", "Peel it off — or tap Print it again for another"). Change the words
+between the tags; leave the `name="…"` part alone. Keep them short: labels shrink to fit but
+a long one gets small. `./gradlew recordRoborazziDebug` shows the new words on every screen.
+
+## See it live
+Debug builds have a **Design gallery** button at the bottom of the home screen. It shows every
+kit component in the theme you choose there (a preview: the kid's saved look is untouched).
+Release builds never show it.
