@@ -10,10 +10,10 @@ printer (a rebranded 58 mm "cat printer"). Built with Kotlin + Jetpack Compose.
 > 58 mm Bluetooth mini printers.
 
 ## Status
-Pre-alpha. Phase 0 (protocol discovery) is done: the printer protocol is **confirmed** on
-real hardware and a test image has been printed from a Python script over BLE — see
-`docs/PRINTER_PROTOCOL.md`. Phase 1 (Gradle skeleton + CI) is done: the project builds,
-tests, lints and screenshot-verifies in CI. Next: Phase 2 (`:core:printer` protocol library).
+Pre-alpha. Phases 0–4 are done (see `docs/ROADMAP.md`): the protocol is confirmed on real
+hardware, the app pairs over Companion Device Manager, prints a test page over BLE, and now
+prints photos — pick one, fit it into a sticker shape, see the dots, print. Next: Phase 5
+(polish and kid features).
 
 ## Quick start
 ```

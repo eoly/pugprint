@@ -1,5 +1,6 @@
 package com.example.pugprint.printer
 
+import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.TestPattern
 import com.example.pugprint.printer.transport.PrintProgress
 import com.example.pugprint.printer.transport.PrintResult
@@ -140,20 +141,17 @@ class PrinterManager
             scope.launch { client.disconnect() }
         }
 
-        /** Prints the built-in test page at medium density; result lands in [lastPrintResult]. */
-        fun printTestPage() {
+        /**
+         * Prints [bitmap] (one row per raster block, medium density for this printer's firmware);
+         * the result lands in [lastPrintResult]. Ignored unless the printer is connected and idle.
+         */
+        fun printImage(bitmap: MonoBitmap) {
+            require(bitmap.width == PrinterSpec.DOTS_PER_LINE) {
+                "Print width must be ${PrinterSpec.DOTS_PER_LINE} dots, got ${bitmap.width}"
+            }
             scope.launch {
                 val connected = state.value as? PrinterState.Connected ?: return@launch
-                val page = TestPattern.render()
-                val rows = List(page.height, page::row)
-                val profile = connected.identity.densityProfile
-                val job =
-                    PrintJob(
-                        rows = rows,
-                        density = profile.value(DensityLevel.MEDIUM),
-                        options = PrintOptions(speed = profile.legacySpeed),
-                    )
-                print(job)
+                print(printJobFor(bitmap, connected.identity.densityProfile))
             }
         }
 
@@ -229,3 +227,17 @@ class PrinterManager
             }
         }
     }
+
+/** One row per raster block at medium density, plus the speed command old private-factory firmware needs. */
+private fun printJobFor(
+    bitmap: MonoBitmap,
+    profile: DensityProfile,
+): PrintJob =
+    PrintJob(
+        rows = List(bitmap.height, bitmap::row),
+        density = profile.value(DensityLevel.MEDIUM),
+        options = PrintOptions(speed = profile.legacySpeed),
+    )
+
+/** Prints the built-in test page; the result lands in [PrinterManager.lastPrintResult]. */
+fun PrinterManager.printTestPage(): Unit = printImage(TestPattern.render())

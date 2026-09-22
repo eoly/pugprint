@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pugprint.R
-import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.ui.theme.PugPrintTheme
 
 @Composable
@@ -58,7 +57,7 @@ fun HomeScreen(
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                text = statusLabel(state),
+                text = printerStatusLabel(state.printerStatus, state.printerName, state.offlineReason),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
@@ -66,10 +65,14 @@ fun HomeScreen(
             Spacer(Modifier.height(32.dp))
             if (state.hasPrinter) {
                 BigButton(
-                    text = stringResource(R.string.home_print_test),
-                    enabled = state.canPrint,
-                    onClick = actions.onPrintTestPage,
+                    text = stringResource(R.string.home_print_photo),
+                    enabled = true,
+                    onClick = actions.onPickPhoto,
                 )
+                Spacer(Modifier.height(12.dp))
+                TextButton(onClick = actions.onPrintTestPage, enabled = state.canPrint) {
+                    Text(stringResource(R.string.home_print_test))
+                }
                 if (state.printerStatus == PrinterStatus.Offline) {
                     Spacer(Modifier.height(12.dp))
                     TextButton(onClick = actions.onRetry) { Text(stringResource(R.string.home_retry)) }
@@ -131,24 +134,6 @@ private fun BigButton(
                 .height(64.dp),
     ) {
         Text(text = text, style = MaterialTheme.typography.titleLarge)
-    }
-}
-
-@Composable
-private fun statusLabel(state: HomeUiState): String {
-    val name = state.printerName.orEmpty()
-    return when (state.printerStatus) {
-        PrinterStatus.NoPrinter -> stringResource(R.string.home_status_no_printer)
-        PrinterStatus.Connecting -> stringResource(R.string.home_status_connecting, name)
-        PrinterStatus.Connected -> stringResource(R.string.home_status_connected, name)
-        PrinterStatus.Printing -> stringResource(R.string.home_status_printing)
-        PrinterStatus.Offline ->
-            when (state.offlineReason) {
-                OfflineReason.LOST -> stringResource(R.string.home_status_offline_lost, name)
-                OfflineReason.UNREACHABLE -> stringResource(R.string.home_status_offline_unreachable, name)
-                OfflineReason.NO_PERMISSION -> stringResource(R.string.home_status_offline_no_permission, name)
-                OfflineReason.IDLE, null -> stringResource(R.string.home_status_offline_idle, name)
-            }
     }
 }
 

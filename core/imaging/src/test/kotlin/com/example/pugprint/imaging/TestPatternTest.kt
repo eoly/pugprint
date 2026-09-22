@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.io.File
 
 /**
  * Golden test against `src/test/resources/test_pattern.pbm`. Re-record after an intentional
@@ -44,23 +43,5 @@ class TestPatternTest {
     }
 
     @Test
-    fun `matches the golden PBM`() {
-        val golden = File("src/test/resources/test_pattern.pbm")
-        val rendered = toPbm(page)
-        if (System.getProperty("pugprint.recordGoldens") == "true") {
-            golden.parentFile.mkdirs()
-            golden.writeText(rendered)
-        }
-        assertTrue(golden.exists(), "missing golden ${golden.path}; record with -Dpugprint.recordGoldens=true")
-        assertEquals(golden.readText(), rendered)
-    }
-
-    private fun toPbm(bitmap: MonoBitmap): String =
-        buildString {
-            append("P1\n${bitmap.width} ${bitmap.height}\n")
-            for (y in 0 until bitmap.height) {
-                for (x in 0 until bitmap.width) append(if (bitmap.isBlack(x, y)) '1' else '0')
-                append('\n')
-            }
-        }
+    fun `matches the golden PBM`() = Pbm.assertMatchesGolden("test_pattern", page)
 }

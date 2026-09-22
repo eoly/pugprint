@@ -16,6 +16,7 @@
     <string name="home_paper_or_lid">Close the lid and check the paper</string>
 
     <string name="home_connect">Connect a printer</string>
+    <string name="home_print_photo">Print a photo</string>
     <string name="home_print_test">Print a test page</string>
     <string name="home_forget">Forget printer</string>
     <string name="home_retry">Try again</string>
@@ -28,4 +29,22 @@
     <string name="message_pairing_cancelled">No printer chosen</string>
     <string name="message_pairing_unavailable">Can\'t pair on this device</string>
     <string name="message_permission_denied">Bluetooth permission is needed to talk to the printer</string>
+
+    <string name="editor_title_loading">Opening your picture…</string>
+    <string name="editor_title_failed">Oops</string>
+    <string name="editor_title_crop">Make it fit</string>
+    <string name="editor_title_preview">Ready to print?</string>
+    <string name="editor_failed_body">Couldn\'t open that picture. Try another one.</string>
+    <string name="editor_back">Back</string>
+    <string name="editor_rotate">Rotate ↻</string>
+    <string name="editor_next">Next</string>
+    <string name="editor_print">Print</string>
+    <string name="editor_crop_hint">Pinch to zoom, drag to move</string>
+    <string name="editor_shape_square">Square</string>
+    <string name="editor_shape_tall">Tall</string>
+    <string name="editor_shape_wide">Wide</string>
+    <string name="editor_shape_whole">Whole</string>
+    <string name="editor_style_photo">Photo</string>
+    <string name="editor_style_drawing">Drawing</string>
+    <string name="editor_preview_description">How your sticker will print</string>
 </resources>

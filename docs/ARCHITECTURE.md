@@ -2,11 +2,17 @@
 
 ## Layers
 - **UI**: Jetpack Compose screens + ViewModels exposing immutable UI state via StateFlow (UDF).
-  `HomeRoute` (in `MainActivity.kt`) owns the platform glue a ViewModel cannot: the runtime
+  `HomeRoute` (in `ui/home/HomeRoute.kt`) owns the platform glue a ViewModel cannot: the runtime
   permission prompt and the Companion Device Manager picker (`IntentSender`).
+  `HomeRoute` also launches the system Photo Picker; `EditorRoute` owns the editor's
+  back-stack behaviour. `PugPrintNavHost` (navigation-compose, string routes) holds the two
+  screens: `home` and `editor/{photo}`.
 - **Domain**: `PrinterManager` — the app-wide connection state machine (pair, connect,
-  identify, reconnect with backoff, print). Later: `PrintImageUseCase`.
-- **Data**: `PrinterTransport` implementations, `PairedPrinterStore`, imaging pipeline.
+  identify, reconnect with backoff, `printImage`). `EditorViewModel` drives the edit:
+  `PhotoSource` → `GrayImage` → `CropWindow` (pan/zoom/shape/rotate) → `ImagePipeline` →
+  `MonoBitmap` → `PrinterManager.printImage`.
+- **Data**: `PrinterTransport` implementations, `PairedPrinterStore`,
+  `ContentResolverPhotoSource` (decodes a picked picture to ≤ 1600 px luma, EXIF-corrected).
 
 ## Modules
 - `:app`            — Compose UI, ViewModels, `PrinterManager`, Hilt wiring, manifest/permissions.
@@ -14,10 +20,14 @@
   sequencing/pacing, reply parsers, `CommandDecoder` + `PrinterEmulator`, and the transport
   abstraction (`PrinterTransport`, `FakePrinterTransport`, `PrinterClient`). Golden tests
   (see `docs/PRINTER_PROTOCOL.md`).
-- `:core:imaging`   — PURE JVM: dithering, scaling to 384 px, 1bpp packing, `TestPattern`, golden tests.
+- `:core:imaging`   — PURE JVM: `GrayImage` (rotate / crop / box-filter scale), `Dither`
+  (Floyd–Steinberg, threshold), `CropWindow` (crop-frame maths), `ImagePipeline`, `MonoBitmap`
+  1bpp packing, `TestPattern`; golden PBM tests.
 - `:core:bluetooth` — Android: Kable `BleTransport`, `CompanionPairing` (CDM), `BluetoothPermissions`.
   The only module allowed to import Android Bluetooth APIs; no protocol bytes (ADR 0006).
-- `:feature:editor` — (Phase 4) crop/rotate/preview/stamps UI.
+- Editor UI lives in `:app` under `ui/editor` (`EditorScreen`, `CropFrame`, `EditorViewModel`);
+  a `:feature:editor` module (ADR 0004) is deferred until the stamps/drawing work in Phase 5
+  makes it worth the split.
 
 ## Printer transport abstraction
 ```kotlin
@@ -55,6 +65,18 @@ whole connection and relays into a hot `SharedFlow`, so a query's reply cannot b
 Companion Device Manager association filtered on the UART service UUID → the picked device's
 address is stored → Kable connects by address. Permissions: `BLUETOOTH_CONNECT` (Android 12+)
 and legacy `BLUETOOTH` (≤ 30). No scan or location permission.
+
+## Image pipeline
+`ContentResolverPhotoSource` decodes on `Dispatchers.IO` with `ImageDecoder` (API 28+, applies
+EXIF itself) or `BitmapFactory` + `ExifInterface` (API 26–27), sized to fit 1600 px, and reads
+the pixels row by row into a `GrayImage` (`(38R + 75G + 15B) >> 7`, the vendor's weighting).
+`CropWindow` models the crop frame in *frame widths* so the ViewModel never sees screen
+pixels: the picture covers a frame of the chosen `CropShape`, zoom ∈ [1, 4], pans clamped
+so the frame is always full; `cropRect()` maps the frame back to image pixels. `CropFrame`
+(Compose) only converts gesture pixels to frame widths and draws. `ImagePipeline.render`
+crops, box-filters to 384 px, trims to at most 1152 rows, and dithers (`DitherMode.PHOTO` =
+Floyd–Steinberg, `DRAWING` = threshold at 128). Heavy steps run on the injected
+`@ImagingDispatcher` (`Dispatchers.Default`; a test dispatcher in tests).
 
 ## Threading
 BLE and encoding on `Dispatchers.Default`/Kable's own threads; the `PrinterManager` lives in
