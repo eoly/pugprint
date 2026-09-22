@@ -6,6 +6,16 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 4 image pipeline and editor. `:core:imaging` gains `GrayImage` (8-bit luminance with
+  quarter-turn rotation, crop and box-filter scaling), `Dither` (Floyd–Steinberg `PHOTO`,
+  threshold `DRAWING`) with golden PBMs, `CropWindow` (pan/zoom/shape crop maths in frame
+  widths) and `ImagePipeline` (crop → 384 px → ≤ 1152 rows → dither). App: "Print a photo"
+  opens the system Photo Picker (no storage permission), `ContentResolverPhotoSource` decodes
+  the picture to at most 1600 px with EXIF orientation, and a two-step editor lets a kid fit
+  the picture into a Square / Tall / Wide / Whole sticker by pinching and dragging, rotate it,
+  see the exact dots that will print, switch Photo / Drawing style and print.
+  `PrinterManager.printImage(MonoBitmap)`; navigation-compose for home ↔ editor; ViewModel
+  tests and seven Roborazzi goldens for the editor.
 - Phase 3 BLE transport. `:core:printer` gains the transport abstraction (`PrinterTransport`,
   `TransportState`, `PrinterDevice`), `FakePrinterTransport` over the emulator, and
   `PrinterClient` (identify → `PrinterIdentity` with density profile and battery; paced

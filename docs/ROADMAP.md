@@ -33,8 +33,15 @@
   negotiated, test page prints all five bands with no dropped rows at 20 ms pacing,
   auto-reconnect works. Finding: `err:` code 2 means lid open *or* paper out
   (see `docs/TESTING.md` § Hardware checklist).
-- **Phase 4 — Image pipeline + UI:** `:core:imaging` dithering, Photo Picker, crop/rotate,
-  preview, print flow.
+- **Phase 4 — Image pipeline + UI: ✅ DONE 2026-09-21 (hardware photo print still to tick off in
+  `docs/TESTING.md`).** `:core:imaging` gains `GrayImage` (8-bit luma, rotate / crop / box-filter
+  scale), `Dither` (Floyd–Steinberg for photos, threshold for drawings, golden PBMs),
+  `CropWindow` (the pure pan/zoom/shape maths behind the crop frame) and `ImagePipeline`
+  (crop → 384 px → dither, capped at 1152 rows). App: system Photo Picker (no storage
+  permission), `ContentResolverPhotoSource` (downsized decode, EXIF orientation), a two-step
+  editor — "Make it fit" (pinch/drag, Square / Tall / Wide / Whole, rotate) then "Ready to
+  print?" (the actual dots, Photo / Drawing style, Print) — `PrinterManager.printImage`,
+  navigation-compose, ViewModel tests and Roborazzi goldens for seven editor states.
 - **Phase 5 — Polish + kid features:** text/stamps/drawing, density slider, error UX,
   accessibility, large touch targets.
 - **Phase 6 — Play:** internal track to the friend group → (if going public) closed test

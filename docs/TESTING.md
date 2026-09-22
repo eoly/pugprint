@@ -21,7 +21,10 @@
 `:app` unit tests run on the JUnit Platform: JUnit 5 for ViewModels, and the JUnit 4
 Robolectric/Roborazzi tests via `junit-vintage-engine`. `:core:*` are JUnit 5 only; each
 exposes a `testDebugUnitTest` alias so the single command above covers every module.
-Roborazzi goldens live in `app/screenshots/` (committed).
+Roborazzi goldens live in `app/screenshots/` (committed). They are recorded on macOS and
+verified on Linux CI; the two Skia builds differ by a few dozen pixels in anti-aliased text and
+nearest-neighbour image sampling, so `Screenshots.options` allows 0.05 % changed pixels
+(≈ 1 600 px) — enough to absorb that, far below any real UI change.
 
 ## Golden tests (highest ROI)
 - `:core:printer`: `PrintJobGoldenTest` asserts `PrintJob.writes()` reproduces the vendor
@@ -30,8 +33,11 @@ Roborazzi goldens live in `app/screenshots/` (committed).
   the protocol WITHOUT hardware. Regenerate fixtures with
   `python spike/bleak/vendor_print.py --dump <pattern>`.
 - `:core:imaging`: `TestPatternTest` asserts the built-in test page against
-  `core/imaging/src/test/resources/test_pattern.pbm`; re-record with
-  `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true`. Dithering goldens follow in Phase 4.
+  `core/imaging/src/test/resources/test_pattern.pbm`; `DitherTest` asserts Floyd–Steinberg and
+  threshold output for `SyntheticPhoto` against `dither_photo.pbm` / `dither_drawing.pbm`.
+  Re-record with `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true` and eyeball the
+  PBMs (any image viewer opens P1 PBM). `GrayImageTest`, `CropWindowTest` and
+  `ImagePipelineTest` pin the rotate/crop/scale maths and the crop-frame geometry.
 
 ## Transport tests (no hardware)
 - `:core:printer` `PrinterClientTest`: drives `PrinterClient` over `FakePrinterTransport` under
@@ -43,7 +49,9 @@ Roborazzi goldens live in `app/screenshots/` (committed).
   `CompanionPairingTest` (Robolectric): CDM result decoding. Note: kotlinx-coroutines-test's
   `advanceUntilIdle()` ignores background-only work; use `runCurrent()` / `advanceTimeBy()`.
 - `:app` `PrinterManagerTest` / `HomeViewModelTest`: pairing → connect → identify → print →
-  reconnect, all on the fake transport.
+  reconnect, all on the fake transport. `EditorViewModelTest`: open → crop/rotate/shape →
+  preview render → print, with a map-backed `PhotoSource` and a test dispatcher; the printed
+  rows land in the emulator.
 
 ## Emulator (no Bluetooth)
 `./gradlew installDebug -Ppugprint.fakePrinter=true` wires `FakePrinterTransport` and instant
@@ -58,7 +66,8 @@ unless marked.
 - [x] Print the test page: black band edge to edge, 1-dot bars resolved, all five bands, no missing rows.
       MTU negotiated 248 (247 requested). If rows drop, lowering `PrintTiming.BLOCK_GAP_MILLIS` is NOT the fix —
       see PRINTER_PROTOCOL.md.
-- [ ] Print a photo (dithered) and a line drawing (threshold). *(Phase 4)*
+- [ ] Print a photo (Photo style) and a line drawing (Drawing style) from the Photo Picker; check
+      the crop frame matches what printed and the rotate button turns the sticker. *(Phase 4 — not yet run on hardware.)*
 - [x] Out-of-paper and lid-open surface an error. **Finding:** the printer sends the same `err:` code (2) for
       both, even with the lid closed, so the app says "Close the lid and check the paper".
 - [ ] Low-battery warning surfaces. *(Not reproducible with a charged unit; threshold 7000 mV is provisional.)*

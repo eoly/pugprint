@@ -1,5 +1,6 @@
 package com.example.pugprint.printer
 
+import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.TestPattern
 import com.example.pugprint.printer.transport.FakePrinterTransport
 import com.example.pugprint.printer.transport.PrintFailure
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -150,6 +152,36 @@ class PrinterManagerTest {
 
             manager.dismissPrintResult()
             assertNull(manager.lastPrintResult.value)
+        }
+
+    @Test
+    fun `printing an image sends exactly its rows`() =
+        runTest {
+            val manager = manager()
+            manager.connect(device)
+            runCurrent()
+            val image = MonoBitmap.fromPixels(384, 3, BooleanArray(384 * 3) { it % 384 < 8 })
+
+            manager.printImage(image)
+            advanceTimeBy(5_000)
+
+            assertEquals(PrintResult.Success, manager.lastPrintResult.value)
+            assertEquals(3, transport.emulator.rows.size)
+            assertEquals(
+                0xFF.toByte(),
+                transport.emulator.rows
+                    .first()
+                    .first(),
+            )
+            assertEquals(emptyList<String>(), transport.emulator.violations)
+        }
+
+    @Test
+    fun `an image that is not head-width is refused up front`() =
+        runTest {
+            val manager = manager()
+            val narrow = MonoBitmap.fromPixels(8, 1, BooleanArray(8))
+            assertThrows(IllegalArgumentException::class.java) { manager.printImage(narrow) }
         }
 
     @Test

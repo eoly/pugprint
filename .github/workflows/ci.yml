@@ -17,6 +17,7 @@ jobs:
           name: reports
           path: |
             **/build/reports/**
+            **/build/outputs/roborazzi/**
             **/build/outputs/apk/debug/*.apk
 
   instrumented:

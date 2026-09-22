@@ -4,6 +4,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.pugprint.printer.OfflineReason
+import com.example.pugprint.ui.Screenshots
 import com.example.pugprint.ui.theme.PugPrintTheme
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -22,7 +23,7 @@ class HomeScreenScreenshotTest {
 
     private fun snap(state: HomeUiState) {
         compose.setContent { PugPrintTheme { HomeScreen(state = state) } }
-        compose.onRoot().captureRoboImage()
+        compose.onRoot().captureRoboImage(roborazziOptions = Screenshots.options)
     }
 
     @Test

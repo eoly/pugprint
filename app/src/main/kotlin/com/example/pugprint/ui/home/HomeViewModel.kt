@@ -9,6 +9,7 @@ import com.example.pugprint.printer.PairingStart
 import com.example.pugprint.printer.PrinterManager
 import com.example.pugprint.printer.PrinterPairing
 import com.example.pugprint.printer.PrinterState
+import com.example.pugprint.printer.printTestPage
 import com.example.pugprint.printer.transport.PrintFailure
 import com.example.pugprint.printer.transport.PrintResult
 import dagger.hilt.android.lifecycle.HiltViewModel
