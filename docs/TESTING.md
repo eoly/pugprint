@@ -83,8 +83,11 @@ unless marked.
       default (medium) density.
 - [x] Out-of-paper and lid-open surface an error. **Finding:** the printer sends the same `err:` code (2) for
       both, even with the lid closed, so the app says "Close the lid and check the paper".
-- [ ] A full photo prints with no light horizontal lines (pacing by deadline + high-priority
-      connection, 2026-09-22; lines mid-print mean rows arrived late).
+- [x] A full photo prints with no light horizontal lines. Run 2026-09-22 on the Pixel: with
+      pacing by deadline + a high-priority connection the lines that every earlier photo showed
+      are gone (lines mid-print mean rows arrived late).
+- [x] On the square sticker roll the picture lands centred on the label (run 2026-09-22 after
+      the 365-dot placement; "works well").
 - [ ] Low-battery warning surfaces. *(Not reproducible with a charged unit; threshold 7000 mV is provisional.)*
 - [x] Disconnect (printer off / asleep) then auto-reconnect: link loss → "trying again" → reconnected ~10 s later.
 - [ ] Print immediately after device wake from sleep.
