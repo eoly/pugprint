@@ -336,6 +336,8 @@ class EditorViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(EditorStep.Preview, state.step)
             assertEquals(DitherMode.DRAWING, state.mode)
+            assertTrue(state.isDrawing)
+            assertFalse(opened().uiState.value.isDrawing)
             val preview = state.preview!!
             assertEquals(384, preview.width)
             assertEquals(384, preview.height)

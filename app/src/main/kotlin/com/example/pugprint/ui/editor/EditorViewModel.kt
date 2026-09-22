@@ -59,6 +59,8 @@ data class EditorUiState(
     val image: GrayImage? = null,
     val window: CropWindow? = null,
     val mode: DitherMode = DitherMode.PHOTO,
+    /** A drawing is already black-and-white, so Photo / Drawing style makes no difference and is hidden. */
+    val isDrawing: Boolean = false,
     /** Words on the sticker; blank means none. */
     val caption: String = "",
     val captionPlacement: CaptionPlacement = CaptionPlacement.BOTTOM,
@@ -90,6 +92,7 @@ private data class EditState(
     val image: GrayImage? = null,
     val window: CropWindow? = null,
     val mode: DitherMode = DitherMode.PHOTO,
+    val isDrawing: Boolean = false,
     val caption: String = "",
     val captionPlacement: CaptionPlacement = CaptionPlacement.BOTTOM,
     val stamps: List<StampPlacement> = emptyList(),
@@ -127,6 +130,7 @@ class EditorViewModel
                     image = edit.image,
                     window = edit.window,
                     mode = edit.mode,
+                    isDrawing = edit.isDrawing,
                     caption = edit.caption,
                     captionPlacement = edit.captionPlacement,
                     stamps = edit.stamps,
@@ -152,6 +156,7 @@ class EditorViewModel
             renderJob?.cancel()
             edit.value = EditState()
             val isDrawing = uri == DrawingHandoff.URI
+            edit.update { it.copy(isDrawing = isDrawing) }
             viewModelScope.launch {
                 try {
                     val image = withContext(dispatcher) { photos.load(uri) }

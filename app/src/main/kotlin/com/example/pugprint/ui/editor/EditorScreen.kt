@@ -263,13 +263,15 @@ private fun ColumnScope.PreviewStep(
 ) {
     Dots(state)
     Spacer(Modifier.height(PugSpacing.medium))
-    ChoiceRow(
-        options = DitherMode.entries,
-        selected = state.mode,
-        onSelect = actions.onMode,
-        label = { stringResource(modeLabel(it)) },
-    )
-    Spacer(Modifier.height(PugSpacing.small))
+    if (!state.isDrawing) {
+        ChoiceRow(
+            options = DitherMode.entries,
+            selected = state.mode,
+            onSelect = actions.onMode,
+            label = { stringResource(modeLabel(it)) },
+        )
+        Spacer(Modifier.height(PugSpacing.small))
+    }
     Text(
         text = stringResource(R.string.editor_darkness),
         style = MaterialTheme.typography.titleSmall,

@@ -14,7 +14,8 @@ All notable changes to PugPrint are documented here. The format follows
   and printing all apply to drawings. Printing now always lands on the home screen (it used to
   pop back to the draw sheet), and the draw and editor screens have a Home button in the header
   (`KidScreen.onHome`). A blank sheet can go to the editor too (words and stamps only), and a
-  drawing skips "Make it fit": it opens straight on "Ready to print?" in Drawing style.
+  drawing skips "Make it fit": it opens straight on "Ready to print?" in Drawing style, without
+  the Photo / Drawing row (both give the same dots on a black-and-white picture).
 - Phase 5 stamps. `StampCatalog` (heart, star, paw, smiley, sun, zap — 16 × 16 art drawn as
   `#`/`.`, add a stamp by adding an entry), `StampPlacement` on the `Sticker` (centre as
   fractions of the sticker, Small / Medium / Big) and `StampRasterizer` (one-dot white halo so
