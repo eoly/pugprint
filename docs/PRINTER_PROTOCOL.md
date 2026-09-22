@@ -47,6 +47,12 @@ Negotiated MTU on macOS: 248 → 245-byte writes. No flow control on BLE.
   ~5 rows over BLE, then the rest is discarded.
 - Pace ~20 ms between blocks; 50 ms between writes was used throughout the spike without
   corruption. Faster is untested.
+- **Pace by deadline, not by sleeping after each write.** The printer steps the paper as rows
+  arrive, so any late row prints as a light horizontal line (seen on the Pixel across several
+  photos, 2026-09-22). `PrinterClient` schedules row *n* at `n × 20 ms` from the start of the
+  job; a write that runs late is followed by a catch-up no sooner than 10 ms
+  (`PrintTiming.MIN_BLOCK_GAP_MILLIS`). `BleTransport` also asks for a high-priority
+  connection (short connection interval) so writes leave the phone promptly.
 - `LABELOK` arrives on TX at unpredictable times (label-sensor event). **Not an ack**; ignore.
 
 ## Print sequence (byte-exact, from `TaskPosPrint.run` in the official app)

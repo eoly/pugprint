@@ -10,6 +10,7 @@ import com.example.pugprint.printer.PrinterCommand
 import com.example.pugprint.printer.PrinterEmulator
 import com.example.pugprint.printer.PrinterReply
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -31,7 +32,7 @@ class PrinterClientTest {
     fun `identify reads status, serial and product from the printer`() =
         runTest {
             val transport = FakePrinterTransport()
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             client.connect(device)
 
             val identity = client.identify()
@@ -88,7 +89,7 @@ class PrinterClientTest {
     fun `print sends the whole job, paced, and the emulator prints every row`() =
         runTest {
             val transport = FakePrinterTransport()
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             client.connect(device)
             val progress = ArrayList<PrintProgress>()
             val start = testScheduler.currentTime
@@ -111,7 +112,7 @@ class PrinterClientTest {
     fun `every write is one command group and no raster block exceeds a BLE payload`() =
         runTest {
             val transport = FakePrinterTransport()
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             client.connect(device)
 
             client.print(PrintJob(rows, density = 25))
@@ -138,7 +139,7 @@ class PrinterClientTest {
     fun `print aborts before the raster when the paper bay is empty`() =
         runTest {
             val transport = FakePrinterTransport().apply { emulator.paperPresent = false }
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             client.connect(device)
 
             val result = client.print(PrintJob(rows, density = 25))
@@ -154,7 +155,7 @@ class PrinterClientTest {
         runTest {
             // Accept the paper query, density, init and 10 raster blocks, then lose the link.
             val transport = FakePrinterTransport().apply { dropAfterWrites = 1 + 2 + 10 }
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             client.connect(device)
 
             val result = client.print(PrintJob(rows, density = 25))
@@ -170,7 +171,7 @@ class PrinterClientTest {
     fun `an err code 2 notification mid-job aborts with LID_OR_PAPER`() =
         runTest {
             val transport = FakePrinterTransport()
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             client.connect(device)
             var result: PrintResult? = null
             val job = launch { result = client.print(PrintJob(rows, density = 25)) }
@@ -189,7 +190,7 @@ class PrinterClientTest {
     fun `err cleared does not abort but another code does`() =
         runTest {
             val transport = FakePrinterTransport()
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             client.connect(device)
             var result: PrintResult? = null
             val job = launch { result = client.print(PrintJob(rows, density = 25)) }
@@ -208,7 +209,7 @@ class PrinterClientTest {
     fun `operations are serialised so a second print waits for the first`() =
         runTest {
             val transport = FakePrinterTransport()
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             client.connect(device)
             val first = launch { client.print(PrintJob(rows.take(4), density = 25)) }
             val second = launch { client.print(PrintJob(rows.take(4), density = 25)) }
@@ -227,7 +228,7 @@ class PrinterClientTest {
     fun `replies flow decodes unsolicited notifications`() =
         runTest {
             val transport = FakePrinterTransport()
-            val client = PrinterClient(transport)
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
             val seen = ArrayList<PrinterReply>()
             val collector = launch { client.replies.collect(seen::add) }
             advanceUntilIdle()
@@ -258,4 +259,51 @@ class PrinterClientTest {
         val thrown = runCatching(block).exceptionOrNull()
         assertInstanceOf(TransportException::class.java, thrown)
     }
+
+    @Test
+    fun `pacing is by deadline, so a slow link does not stretch the job`() =
+        runTest {
+            val transport = FakePrinterTransport()
+            transport.onWrite = { delay(12) } // every write takes 12 ms on the link
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
+            client.connect(device)
+            val start = testScheduler.currentTime
+
+            val result = client.print(PrintJob(rows, density = 25)) {}
+
+            assertEquals(PrintResult.Success, result)
+            assertEquals(rows.map(::hex), transport.emulator.rows.map(::hex))
+            // Rows still go out every BLOCK_GAP; only the writes' own time is added at the ends.
+            val writes = 3 + rows.size
+            val ideal = (rows.size - 1) * PrintTiming.BLOCK_GAP_MILLIS + PrintTiming.BEFORE_FEED_MILLIS
+            val elapsed = testScheduler.currentTime - start
+            assertTrue(elapsed < ideal + writes * 12, "elapsed $elapsed should not include every write's latency")
+            assertTrue(elapsed >= ideal, "elapsed $elapsed can't beat the cadence")
+        }
+
+    @Test
+    fun `a stalled write shifts the schedule, and the next row waits at least the floor`() =
+        runTest {
+            val transport = FakePrinterTransport()
+            val sentAt = ArrayList<Long>()
+            var stall = true
+            transport.onWrite = {
+                sentAt += testScheduler.currentTime
+                if (stall && sentAt.size == 4) delay(70) // one row's write hangs for 70 ms
+            }
+            val client = PrinterClient(transport, clock = { testScheduler.currentTime })
+            client.connect(device)
+
+            client.print(PrintJob(rows, density = 25)) {}
+            stall = false
+
+            // Gaps between row sends (the first three writes are the query, density and init, unpaced).
+            val rowGaps = sentAt.zipWithNext { a, b -> b - a }.drop(3)
+            assertTrue(rowGaps.all { it >= PrintTiming.MIN_BLOCK_GAP_MILLIS }, "gaps $rowGaps")
+            // The stalled row finished 70 ms late; the next waits only the floor, then the steady cadence resumes.
+            assertEquals(70 + PrintTiming.MIN_BLOCK_GAP_MILLIS, rowGaps[0])
+            assertEquals(PrintTiming.BLOCK_GAP_MILLIS, rowGaps[1])
+            // (the final gap is the 250 ms pause before the feed)
+            assertTrue(rowGaps.drop(1).dropLast(1).all { it == PrintTiming.BLOCK_GAP_MILLIS }, "steady: $rowGaps")
+        }
 }

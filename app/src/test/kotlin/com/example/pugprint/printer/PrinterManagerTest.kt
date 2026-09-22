@@ -31,7 +31,7 @@ class PrinterManagerTest {
 
     private fun TestScope.manager() =
         PrinterManager(
-            client = PrinterClient(transport),
+            client = PrinterClient(transport, clock = { testScheduler.currentTime }),
             store = store,
             permission = { permissionGranted },
             scope = backgroundScope,

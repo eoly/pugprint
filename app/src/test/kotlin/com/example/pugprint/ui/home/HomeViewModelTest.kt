@@ -54,7 +54,15 @@ class HomeViewModelTest {
 
     private fun TestScope.viewModel(pairing: PrinterPairing) =
         HomeViewModel(
-            printer = PrinterManager(PrinterClient(transport), store, { true }, backgroundScope) { 1_000L },
+            printer =
+                PrinterManager(
+                    PrinterClient(transport, clock = {
+                        testScheduler.currentTime
+                    }),
+                    store,
+                    { true },
+                    backgroundScope,
+                ) { 1_000L },
             pairing = pairing,
             settings = settings,
         )

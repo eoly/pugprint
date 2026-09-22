@@ -62,7 +62,14 @@ class EditorViewModelTest {
     fun tearDown() = Dispatchers.resetMain()
 
     private fun TestScope.printer() =
-        PrinterManager(PrinterClient(transport), InMemoryPairedPrinterStore(), { true }, backgroundScope) { 1_000L }
+        PrinterManager(
+            PrinterClient(transport, clock = {
+                testScheduler.currentTime
+            }),
+            InMemoryPairedPrinterStore(),
+            { true },
+            backgroundScope,
+        ) { 1_000L }
 
     private fun TestScope.viewModel(printer: PrinterManager = printer()) =
         EditorViewModel(source, printer, settings, UnconfinedTestDispatcher(testScheduler))

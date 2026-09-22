@@ -4,6 +4,7 @@ import com.example.pugprint.printer.DensityProfile
 import com.example.pugprint.printer.EscPosStatus
 import com.example.pugprint.printer.FactoryType
 import com.example.pugprint.printer.PrintJob
+import com.example.pugprint.printer.PrintTiming
 import com.example.pugprint.printer.PrinterQueries
 import com.example.pugprint.printer.PrinterReply
 import kotlinx.coroutines.CoroutineStart
@@ -99,6 +100,8 @@ public sealed interface PrintResult {
 public class PrinterClient(
     private val transport: PrinterTransport,
     private val replyTimeoutMillis: Long = DEFAULT_REPLY_TIMEOUT_MILLIS,
+    /** Milliseconds on a monotonic clock, for pacing; tests pass the virtual clock. */
+    private val clock: () -> Long = { System.nanoTime() / NANOS_PER_MILLI },
 ) {
     private val operations = Mutex()
 
@@ -156,7 +159,14 @@ public class PrinterClient(
                                 .first { it.kind != PrinterReply.ErrorKind.CLEARED }
                     }
                 try {
+                    // Pacing by deadline: row n is due BLOCK_GAP after row n-1 was due, not after it
+                    // finished sending, so BLE latency and jitter don't stretch the cadence — the
+                    // printer steps the paper as rows arrive, and a late row shows as a light line.
+                    val started = clock()
+                    var due = 0L
                     for (write in writes) {
+                        val wait = due - (clock() - started)
+                        if (wait > 0) delay(wait)
                         fault?.let { return@coroutineScope failure(it, progress) }
                         if (transport.state.value !is TransportState.Connected) {
                             return@coroutineScope PrintResult.Failure(PrintFailure.DISCONNECTED, progress)
@@ -174,7 +184,12 @@ public class PrinterClient(
                         }
                         progress = progress.copy(completedWrites = progress.completedWrites + 1)
                         onProgress(progress)
-                        if (write.pauseAfterMillis > 0) delay(write.pauseAfterMillis)
+                        val finished = clock() - started
+                        due =
+                            maxOf(
+                                due + write.pauseAfterMillis,
+                                finished + PrintTiming.MIN_BLOCK_GAP_MILLIS.coerceAtMost(write.pauseAfterMillis),
+                            )
                     }
                     PrintResult.Success
                 } finally {
@@ -228,5 +243,6 @@ public class PrinterClient(
 
     public companion object {
         public const val DEFAULT_REPLY_TIMEOUT_MILLIS: Long = 2_000
+        private const val NANOS_PER_MILLI: Long = 1_000_000
     }
 }
