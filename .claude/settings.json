@@ -8,11 +8,17 @@
       "Bash(adb install:*)",
       "Bash(adb shell pidof:*)",
       "Bash(adb exec-out screencap:*)",
-      "Bash(git status)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git add:*)"
+      "Bash(git status)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git add:*)",
+      "Bash(git push -u origin feat/:*)",
+      "Bash(git push -u origin fix/:*)",
+      "Bash(git push origin feat/:*)",
+      "Bash(git push origin fix/:*)"
     ],
     "deny": [
       "Bash(adb uninstall:*)",
-      "Bash(git push:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push --force-with-lease:*)",
       "Bash(rm -rf:*)"
     ]
   },
