@@ -88,6 +88,17 @@ class EditorScreenScreenshotTest {
         snap(EditorUiState(step = EditorStep.Crop, image = photo, window = CropWindow(photo.width, photo.height)))
 
     @Test
+    fun editorScreen_crop_square_labelRoll() =
+        snap(
+            EditorUiState(
+                step = EditorStep.Crop,
+                image = photo,
+                window = CropWindow(photo.width, photo.height),
+                shapeLocked = true,
+            ),
+        )
+
+    @Test
     fun editorScreen_crop_tall_zoomed() =
         snap(
             EditorUiState(

@@ -92,6 +92,14 @@ Edit the file in `components/`; every screen picks it up. Then re-record the pic
 - All palette colours are opaque.
 - A gallery golden exists per theme (recorded automatically).
 
+## Add a sticker roll (needs a ruler and the printer)
+Rolls live at `core/imaging/src/main/kotlin/com/example/pugprint/imaging/StickerRoll.kt`
+(`StickerRollCatalog`). Copy the `SquareStandard` block, give it an `id`, a `displayName` and
+the label's width and height in mm. Print one sticker, measure the white gaps on each side,
+and set `PrintPlacement`: white rows to add on top and dots to leave free on the right (the
+head cannot print further left or higher than it does). Add it to `all`; it appears under
+"Which stickers are in the printer?" by itself.
+
 ## Brush sizes
 The pen sizes on "Draw a sticker" are `BrushSize` in
 `core/imaging/src/main/kotlin/com/example/pugprint/imaging/Drawing.kt`, in print dots

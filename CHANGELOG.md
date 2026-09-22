@@ -6,6 +6,12 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 sticker rolls. `StickerRoll` / `StickerRollCatalog` in `:core:imaging`: "Square
+  stickers" (the measured 49.2 mm die-cut roll: picture 365 dots square, placed with 19 white
+  rows on top and 19 dots on the right so it lands centred) and "Plain roll" (58 mm paper,
+  any height). A "Which stickers are in the printer?" setting on the home screen; the editor
+  renders at the roll's size, hides the shape row for labels (a label is always square), and
+  pads the dots onto the head canvas before printing. Golden `roll_square_placement.pbm`.
 - Phase 5 accessibility. `AccessibilityAuditTest` walks the semantics tree of nine screen
   states and fails if anything tappable lacks words for TalkBack or is under 48 dp. Banners
   read as one item and message banners announce themselves (`StatusBanner.announce`); screen

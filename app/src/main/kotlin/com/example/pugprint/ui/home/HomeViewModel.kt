@@ -5,6 +5,7 @@ import android.content.IntentSender
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pugprint.design.theme.ThemeCatalog
+import com.example.pugprint.imaging.StickerRollCatalog
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.printer.PairingStart
 import com.example.pugprint.printer.PrinterManager
@@ -15,6 +16,7 @@ import com.example.pugprint.printer.printTestPage
 import com.example.pugprint.printer.transport.PrintFailure
 import com.example.pugprint.printer.transport.PrintResult
 import com.example.pugprint.settings.SettingsStore
+import com.example.pugprint.settings.setRoll
 import com.example.pugprint.settings.setTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,6 +66,8 @@ data class HomeUiState(
     val message: HomeMessage? = null,
     /** The chosen look, a [ThemeCatalog] id. */
     val themeId: String = ThemeCatalog.default.id,
+    /** The paper in the printer, a [StickerRollCatalog] id. */
+    val rollId: String = StickerRollCatalog.default.id,
 ) {
     val canPrint: Boolean get() = printerStatus == PrinterStatus.Connected && !paperOrLidProblem
     val canPrintAgain: Boolean get() = hasLastPrint && canPrint
@@ -102,6 +106,7 @@ class HomeViewModel
                     pairingInProgress = pairingNow,
                     message = msg ?: print?.toMessage(),
                     themeId = prefs.themeId,
+                    rollId = prefs.rollId,
                     hasLastPrint = last != null,
                 )
             }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState())
@@ -153,6 +158,8 @@ class HomeViewModel
         fun onPrintAgainClicked() = printer.printAgain()
 
         fun onThemeSelected(themeId: String) = settings.setTheme(ThemeCatalog.byId(themeId).id)
+
+        fun onRollSelected(rollId: String) = settings.setRoll(StickerRollCatalog.byId(rollId).id)
 
         fun onForgetClicked() = printer.forget()
 

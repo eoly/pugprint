@@ -57,8 +57,13 @@ public object StickerRenderer {
     /** White space around the letters inside the caption band. */
     public const val CAPTION_PADDING: Int = 12
 
-    public fun render(sticker: Sticker): MonoBitmap {
-        val picture = ImagePipeline.render(sticker.image, sticker.crop, sticker.mode)
+    /** @param width dots across the sticker; @param maxRows tallest it may be (see [ImagePipeline.render]). */
+    public fun render(
+        sticker: Sticker,
+        width: Int = ImagePipeline.PRINT_WIDTH,
+        maxRows: Int = ImagePipeline.MAX_ROWS,
+    ): MonoBitmap {
+        val picture = ImagePipeline.render(sticker.image, sticker.crop, sticker.mode, width, maxRows)
         val caption = sticker.caption?.takeUnless { it.isBlank }
         if (caption == null && sticker.stamps.isEmpty()) return picture
         val canvas = BitCanvas.from(picture)

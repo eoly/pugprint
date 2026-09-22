@@ -11,4 +11,5 @@ data class HomeActions(
     val onForget: () -> Unit = {},
     val onMessageShown: () -> Unit = {},
     val onThemeSelected: (themeId: String) -> Unit = {},
+    val onRollSelected: (rollId: String) -> Unit = {},
 )

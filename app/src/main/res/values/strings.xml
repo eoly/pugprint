@@ -29,6 +29,7 @@
     <string name="home_forget">Forget printer</string>
     <string name="home_retry">Try again</string>
     <string name="home_pick_look">Pick a look</string>
+    <string name="home_pick_paper">Which stickers are in the printer?</string>
 
     <string name="message_print_done">Printed!</string>
     <string name="message_print_done_hint">Peel it off — or tap Print it again for another</string>

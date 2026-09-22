@@ -85,6 +85,7 @@ fun HomeRoute(
                 onForget = viewModel::onForgetClicked,
                 onMessageShown = viewModel::onMessageShown,
                 onThemeSelected = viewModel::onThemeSelected,
+                onRollSelected = viewModel::onRollSelected,
             ),
     )
 }

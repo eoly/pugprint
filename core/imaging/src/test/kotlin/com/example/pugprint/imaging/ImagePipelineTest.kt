@@ -41,4 +41,12 @@ class ImagePipelineTest {
         assertFalse(drawing.anyBlack())
         assertTrue(photo.anyBlack())
     }
+
+    @Test
+    fun `a narrower width scales to it and the row cap still applies`() {
+        val tall = GrayImage.generate(100, 400) { _, y -> if (y % 2 == 0) 0 else 255 }
+        val dots = ImagePipeline.render(tall, width = 365, maxRows = 365)
+        assertEquals(365, dots.width)
+        assertEquals(365, dots.height)
+    }
 }

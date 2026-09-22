@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.pugprint.design.theme.ThemeCatalog
+import com.example.pugprint.imaging.StickerRollCatalog
 import com.example.pugprint.printer.DensityLevel
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -26,10 +27,11 @@ class PreferencesSettingsStoreTest {
         PreferencesSettingsStore(context).apply {
             setTheme("bubblegum")
             setDensity(DensityLevel.LIGHT)
+            setRoll("continuous")
         }
 
         assertEquals(
-            AppSettings(themeId = "bubblegum", density = DensityLevel.LIGHT),
+            AppSettings(themeId = "bubblegum", density = DensityLevel.LIGHT, rollId = "continuous"),
             PreferencesSettingsStore(context).settings.value,
         )
     }
@@ -41,10 +43,12 @@ class PreferencesSettingsStoreTest {
             .edit()
             .putString("theme", "retired-theme")
             .putString("density", "EXTRA_CRISPY")
+            .putString("roll", "papyrus")
             .commit()
 
         val loaded = PreferencesSettingsStore(context).settings.value
         assertEquals(ThemeCatalog.default.id, loaded.themeId)
         assertEquals(DensityLevel.MEDIUM, loaded.density)
+        assertEquals(StickerRollCatalog.default.id, loaded.rollId)
     }
 }
