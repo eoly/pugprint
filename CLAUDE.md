@@ -33,6 +33,11 @@ Offline; no network, accounts, analytics, ads.
 - Pairing is CDM-only; permissions are `BLUETOOTH_CONNECT` (+ legacy `BLUETOOTH` ≤ 30).
   Never add `BLUETOOTH_SCAN` or location without revising ADR 0006.
 - UI = MVVM, unidirectional data flow, `StateFlow`. Business logic never in Composables.
+- `:ui:design` is the design kit (ADR 0007): theme tokens, `ThemeCatalog`, and the kid-sized
+  components (`KidScreen`, `BigButton`, `ChoiceRow`, `StatusBanner`). It depends on NO other
+  module. Screens in `:app` use kit components and `PugSpacing`/`PugTouch` tokens, never raw
+  Material widgets, `dp` literals or `MaterialTheme.colorScheme.*` picks. Content that a
+  designer adds (themes, later stamps/fonts) lives in one catalog file each, enumerated by tests.
 - kotlinx-coroutines-test: `advanceUntilIdle()` skips background-only coroutines; use
   `runCurrent()` / `advanceTimeBy()` when the code under test launches into `backgroundScope`.
 

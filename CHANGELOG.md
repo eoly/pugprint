@@ -6,6 +6,16 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 design kit (ADR 0007). New `:ui:design` module: `PugTheme` / `PugPalette` tokens,
+  `ThemeCatalog` (Pug, Bubblegum, Ocean — add a theme by adding one entry), `PugSpacing` /
+  `PugTouch` (64 / 56 / 48 dp targets) / `PugLayout` (480 dp content cap for tablets), and the
+  components every screen is built from: `KidScreen`, `HeroTitle`, `BigButton` (Primary /
+  Secondary / Quiet), `ChoiceRow` (big radio tiles replacing chips) and `StatusBanner`
+  (Info / Working / Problem / Success with optional hint and progress). `ThemeCatalogTest`
+  checks WCAG AA contrast for every text/background pair of every theme; a Roborazzi gallery
+  golden is recorded per theme. Home and editor screens rebuilt on the kit: printer status,
+  battery and lid/paper problems are banners, shape and style pickers are big tiles, every
+  action is at least 48 dp tall. `docs/DESIGN_KIT.md` is the designer's handbook.
 - Phase 4 image pipeline and editor. `:core:imaging` gains `GrayImage` (8-bit luminance with
   quarter-turn rotation, crop and box-filter scaling), `Dither` (Floyd–Steinberg `PHOTO`,
   threshold `DRAWING`) with golden PBMs, `CropWindow` (pan/zoom/shape crop maths in frame

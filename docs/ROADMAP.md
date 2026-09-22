@@ -42,7 +42,36 @@
   editor — "Make it fit" (pinch/drag, Square / Tall / Wide / Whole, rotate) then "Ready to
   print?" (the actual dots, Photo / Drawing style, Print) — `PrinterManager.printImage`,
   navigation-compose, ViewModel tests and Roborazzi goldens for seven editor states.
-- **Phase 5 — Polish + kid features:** text/stamps/drawing, density slider, error UX,
-  accessibility, large touch targets.
+- **Phase 5 — Polish + kid features: IN PROGRESS (started 2026-09-22).** Built so a later
+  "designer" phase can change themes, layout and add fun content without touching the printing
+  core (ADR 0007). PR-sized tasks, each independently testable:
+  1. ✅ **Design kit** — `:ui:design`: theme tokens, `ThemeCatalog` (Pug / Bubblegum / Ocean),
+     `KidScreen` / `BigButton` / `ChoiceRow` / `StatusBanner`, WCAG contrast tests over the
+     catalog, one gallery golden per theme; home + editor rebuilt on the kit;
+     `docs/DESIGN_KIT.md`.
+  2. **Settings + theme picker + darkness** — `SettingsStore` (theme id, `DensityLevel`), "Pick
+     a look" on the home screen, Light / Medium / Dark choice on the preview step,
+     `PrinterManager.printImage(bitmap, density)`; `PrintJob` golden per level.
+  3. **Friendly error UX + print again** — every `PrintFailure` / offline reason mapped to a
+     kid-readable line plus a "what to do" hint in a `StatusBanner` (no more snackbars),
+     "Print again" for the last sticker, printing progress with a percentage.
+  4. **Sticker document + text captions** — `:core:imaging` `Sticker` / `Layer` model and a
+     pure-JVM `StickerRenderer` (golden PBMs); `TextLayer` via a `PixelFont` (bitmap glyphs,
+     integer-scaled) so words print crisp; "Add words" step in the editor.
+  5. **Stamps** — `StampCatalog` (PBM assets + one line each), stamp layer, big stamp picker.
+  6. **Drawing canvas** — `Stroke` model + pure `StrokeRasterizer` (goldens), "Draw a sticker"
+     home entry with fat brushes, eraser and undo.
+  7. **Accessibility pass** — content descriptions, TalkBack order, 1.5× font-scale goldens,
+     lint accessibility checks on.
+  8. **Sticker rolls** — `StickerRoll` catalog in `:core:printer` (one entry per roll; the
+     standard roll measured 2026-09-22: 49.2 × 49.2 mm square labels, 12.7 mm gap with a
+     serration halfway, so pitch ≈ 495 rows at 8 dots/mm), a roll setting, and per-roll
+     sizing: crop shape locked to the label, rows capped to its height, and a per-roll
+     placement calibration (the firmware already feeds to the serration on its own; a Square
+     print measured 2026-09-22 lands 3.2 mm from the left edge, 0.8 mm from the right, flush
+     with the top and 3.2 mm short of the bottom, so centring means ~12 white rows on top and
+     a ~19-dot white inset on the right). Golden `PrintJob` per roll.
+  9. **Designer handbook + gallery screen** — grow `docs/DESIGN_KIT.md` with stamps/fonts;
+     a hidden "Design gallery" screen in debug builds so the designer sees her work live.
 - **Phase 6 — Play:** internal track to the friend group → (if going public) closed test
   (12 testers/14 days) → production.

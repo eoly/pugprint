@@ -2,6 +2,8 @@
 
 ## Layers
 - **UI**: Jetpack Compose screens + ViewModels exposing immutable UI state via StateFlow (UDF).
+  Screens are built only from `:ui:design` components and tokens — never raw Material widgets
+  or `dp` literals — so the look and layout change in the kit, not per screen.
   `HomeRoute` (in `ui/home/HomeRoute.kt`) owns the platform glue a ViewModel cannot: the runtime
   permission prompt and the Companion Device Manager picker (`IntentSender`).
   `HomeRoute` also launches the system Photo Picker; `EditorRoute` owns the editor's
@@ -25,6 +27,11 @@
   1bpp packing, `TestPattern`; golden PBM tests.
 - `:core:bluetooth` — Android: Kable `BleTransport`, `CompanionPairing` (CDM), `BluetoothPermissions`.
   The only module allowed to import Android Bluetooth APIs; no protocol bytes (ADR 0006).
+- `:ui:design`     — the design kit (ADR 0007): theme tokens (`PugTheme`, `PugSpacing`,
+  `PugTouch`, `PugLayout`), the `ThemeCatalog`, `PugPrintTheme`, and the kid-sized components
+  every screen is built from (`KidScreen`, `HeroTitle`, `BigButton`, `ChoiceRow`,
+  `StatusBanner`). Compose only; depends on no other module. Contrast tests and one gallery
+  golden per theme (`ui/design/screenshots/`). Designer handbook: `docs/DESIGN_KIT.md`.
 - Editor UI lives in `:app` under `ui/editor` (`EditorScreen`, `CropFrame`, `EditorViewModel`);
   a `:feature:editor` module (ADR 0004) is deferred until the stamps/drawing work in Phase 5
   makes it worth the split.

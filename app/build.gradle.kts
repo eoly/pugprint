@@ -87,6 +87,7 @@ dependencies {
     implementation(project(":core:printer"))
     implementation(project(":core:imaging"))
     implementation(project(":core:bluetooth"))
+    implementation(project(":ui:design"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.activity.compose)
