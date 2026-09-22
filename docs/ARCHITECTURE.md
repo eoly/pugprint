@@ -62,6 +62,6 @@ an application-scoped `CoroutineScope`. `PrinterClient` is a single-consumer ope
 (`Mutex`) that serialises and paces GATT writes — write-without-response has no ACK.
 
 ## Error handling
-`PrintResult.Failure(reason)` with `DISCONNECTED`, `NO_PAPER`, `COVER_OPEN`, `PRINTER_ERROR`,
-`WRITE_FAILED`. `PrinterIdentity.batteryLow` from `VOLT=`. Cover-open tracked live from
+`PrintResult.Failure(reason)` with `DISCONNECTED`, `NO_PAPER`, `LID_OR_PAPER`, `PRINTER_ERROR`,
+`WRITE_FAILED`. `PrinterIdentity.batteryLow` from `VOLT=`. Lid-open / paper-out (one `err:` code on this firmware) tracked live from
 `err:` notifications. `PrinterManager` reconnects with exponential backoff (1 s → 30 s cap).

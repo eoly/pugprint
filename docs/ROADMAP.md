@@ -21,7 +21,7 @@
   Gradle 9.7.1, compileSdk/targetSdk 37, Kotlin 2.4.20, KSP 2.3.12, Compose BOM 2026.09.00,
   Hilt 2.60.1, lifecycle 2.11.0, activity-compose 1.13.0, core-ktx 1.19.0, ktlint-gradle
   14.2.0. Dependabot ignores lifted.
-- **Phase 3 — BLE transport: ✅ CODE COMPLETE 2026-09-21, hardware checklist pending.**
+- **Phase 3 — BLE transport: ✅ DONE 2026-09-21 (hardware-verified on a Pixel 10 Pro XL + `HB-0342`).**
   `PrinterTransport` / `FakePrinterTransport` / `PrinterClient` in `:core:printer` (paced
   one-row-per-write sending, paper pre-flight, cover-open abort, progress); new
   `:core:bluetooth` with Kable `BleTransport` (MTU 247, oversize writes refused),
@@ -29,8 +29,10 @@
   (`BLUETOOTH_CONNECT` only — ADR 0006); `PrinterManager` (remembered printer,
   auto-reconnect with backoff, battery/cover state, test-page print) and the home screen
   states behind it; `TestPattern` test page in `:core:imaging`. Emulator flow via
-  `-Ppugprint.fakePrinter=true`. **Next:** run `docs/TESTING.md` § Hardware checklist on the
-  real Hello Blink and tune `PrintTiming` if the paper shows dropped rows.
+  `-Ppugprint.fakePrinter=true`. Hardware run: CDM picker finds the printer, MTU 248
+  negotiated, test page prints all five bands with no dropped rows at 20 ms pacing,
+  auto-reconnect works. Finding: `err:` code 2 means lid open *or* paper out
+  (see `docs/TESTING.md` § Hardware checklist).
 - **Phase 4 — Image pipeline + UI:** `:core:imaging` dithering, Photo Picker, crop/rotate,
   preview, print flow.
 - **Phase 5 — Polish + kid features:** text/stamps/drawing, density slider, error UX,

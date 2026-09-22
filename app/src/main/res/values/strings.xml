@@ -13,7 +13,7 @@
     <string name="home_status_offline_no_permission">Allow Bluetooth to use %1$s</string>
     <string name="home_battery">Battery %1$d%%</string>
     <string name="home_battery_low">Battery low — charge the printer</string>
-    <string name="home_cover_open">Close the printer lid</string>
+    <string name="home_paper_or_lid">Close the lid and check the paper</string>
 
     <string name="home_connect">Connect a printer</string>
     <string name="home_print_test">Print a test page</string>
@@ -22,7 +22,7 @@
 
     <string name="message_print_done">Printed!</string>
     <string name="message_print_no_paper">Out of paper</string>
-    <string name="message_print_cover_open">The lid is open</string>
+    <string name="message_print_paper_or_lid">Lid open or out of paper</string>
     <string name="message_print_disconnected">Lost the printer while printing</string>
     <string name="message_print_failed">Printing failed</string>
     <string name="message_pairing_cancelled">No printer chosen</string>

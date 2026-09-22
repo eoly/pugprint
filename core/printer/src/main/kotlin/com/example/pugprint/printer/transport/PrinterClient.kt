@@ -69,8 +69,8 @@ public enum class PrintFailure {
     /** `GS r 1` reported paper end before the first raster row was sent. */
     NO_PAPER,
 
-    /** The printer sent `err:` cover-open while the job was in flight. */
-    COVER_OPEN,
+    /** The printer sent `err:` code 2 (lid open or out of paper) while the job was in flight. */
+    LID_OR_PAPER,
 
     /** The printer sent some other `err:` code while the job was in flight. */
     PRINTER_ERROR,
@@ -189,9 +189,9 @@ public class PrinterClient(
     ): PrintResult.Failure =
         PrintResult.Failure(
             if (error.kind ==
-                PrinterReply.ErrorKind.COVER_OPEN
+                PrinterReply.ErrorKind.LID_OR_PAPER
             ) {
-                PrintFailure.COVER_OPEN
+                PrintFailure.LID_OR_PAPER
             } else {
                 PrintFailure.PRINTER_ERROR
             },

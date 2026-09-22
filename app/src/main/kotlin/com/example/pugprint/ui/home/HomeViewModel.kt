@@ -34,7 +34,7 @@ enum class PrinterStatus {
 enum class HomeMessage {
     PrintDone,
     PrintNoPaper,
-    PrintCoverOpen,
+    PrintPaperOrLid,
     PrintDisconnected,
     PrintFailed,
     PairingCancelled,
@@ -49,13 +49,14 @@ data class HomeUiState(
     /** 0–100, or `null` when unknown. */
     val batteryPercent: Int? = null,
     val batteryLow: Boolean = false,
-    val coverOpen: Boolean = false,
+    /** Lid open or out of paper (the printer reports both the same way). */
+    val paperOrLidProblem: Boolean = false,
     /** 0.0–1.0 while [PrinterStatus.Printing]. */
     val printProgress: Float? = null,
     val pairingInProgress: Boolean = false,
     val message: HomeMessage? = null,
 ) {
-    val canPrint: Boolean get() = printerStatus == PrinterStatus.Connected && !coverOpen
+    val canPrint: Boolean get() = printerStatus == PrinterStatus.Connected && !paperOrLidProblem
     val hasPrinter: Boolean get() = printerStatus != PrinterStatus.NoPrinter
 }
 
@@ -149,7 +150,7 @@ class HomeViewModel
                         printerName = device.displayName,
                         batteryPercent = identity.batteryMillivolts?.let(::batteryPercent),
                         batteryLow = identity.batteryLow,
-                        coverOpen = coverOpen,
+                        paperOrLidProblem = paperOrLidProblem,
                     )
                 is PrinterState.Printing ->
                     HomeUiState(
@@ -167,7 +168,7 @@ class HomeViewModel
                 is PrintResult.Failure ->
                     when (reason) {
                         PrintFailure.NO_PAPER -> HomeMessage.PrintNoPaper
-                        PrintFailure.COVER_OPEN -> HomeMessage.PrintCoverOpen
+                        PrintFailure.LID_OR_PAPER -> HomeMessage.PrintPaperOrLid
                         PrintFailure.DISCONNECTED -> HomeMessage.PrintDisconnected
                         PrintFailure.PRINTER_ERROR, PrintFailure.WRITE_FAILED -> HomeMessage.PrintFailed
                     }
