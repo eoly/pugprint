@@ -4,32 +4,47 @@
     <string name="home_title">PugPrint</string>
 
     <string name="home_status_no_printer">No printer yet</string>
+    <string name="home_status_no_printer_hint">Turn the printer on, then tap Connect a printer</string>
     <string name="home_status_connecting">Looking for %1$s…</string>
     <string name="home_status_connected">%1$s is ready</string>
     <string name="home_status_printing">Printing…</string>
+    <string name="home_status_printing_hint">%1$d%% done — don\'t pull the paper yet</string>
     <string name="home_status_offline_idle">%1$s is not connected</string>
     <string name="home_status_offline_lost">Lost %1$s — trying again</string>
     <string name="home_status_offline_unreachable">Can\'t reach %1$s — is it on?</string>
     <string name="home_status_offline_no_permission">Allow Bluetooth to use %1$s</string>
+    <string name="home_status_offline_idle_hint">Tap Try again</string>
+    <string name="home_status_offline_lost_hint">Hang on, it will come back by itself</string>
+    <string name="home_status_offline_unreachable_hint">Turn it on and bring it closer, then tap Try again</string>
+    <string name="home_status_offline_no_permission_hint">Tap Try again and say yes to Bluetooth</string>
     <string name="home_battery">Battery %1$d%%</string>
     <string name="home_battery_low">Battery low — charge the printer</string>
     <string name="home_paper_or_lid">Close the lid and check the paper</string>
 
     <string name="home_connect">Connect a printer</string>
     <string name="home_print_photo">Print a photo</string>
+    <string name="home_print_again">Print it again</string>
     <string name="home_print_test">Print a test page</string>
     <string name="home_forget">Forget printer</string>
     <string name="home_retry">Try again</string>
     <string name="home_pick_look">Pick a look</string>
 
     <string name="message_print_done">Printed!</string>
+    <string name="message_print_done_hint">Peel it off — or tap Print it again for another</string>
     <string name="message_print_no_paper">Out of paper</string>
-    <string name="message_print_paper_or_lid">Lid open or out of paper</string>
+    <string name="message_print_no_paper_hint">Put in a new roll, then try again</string>
+    <string name="message_print_paper_or_lid">The lid is open or the paper is out</string>
+    <string name="message_print_paper_or_lid_hint">Close the lid, check the paper, then try again</string>
     <string name="message_print_disconnected">Lost the printer while printing</string>
-    <string name="message_print_failed">Printing failed</string>
+    <string name="message_print_disconnected_hint">Keep it close and turned on — it will reconnect by itself</string>
+    <string name="message_print_failed">The printer got confused</string>
+    <string name="message_print_failed_hint">Turn it off and on again, then try again</string>
     <string name="message_pairing_cancelled">No printer chosen</string>
-    <string name="message_pairing_unavailable">Can\'t pair on this device</string>
-    <string name="message_permission_denied">Bluetooth permission is needed to talk to the printer</string>
+    <string name="message_pairing_cancelled_hint">Tap Connect a printer to try again</string>
+    <string name="message_pairing_unavailable">This device can\'t pair with the printer</string>
+    <string name="message_pairing_unavailable_hint">Ask a grown-up to try another phone or tablet</string>
+    <string name="message_permission_denied">Bluetooth is needed to talk to the printer</string>
+    <string name="message_permission_denied_hint">Tap Connect a printer and say yes to Bluetooth</string>
 
     <string name="editor_title_loading">Opening your picture…</string>
     <string name="editor_title_failed">Oops</string>

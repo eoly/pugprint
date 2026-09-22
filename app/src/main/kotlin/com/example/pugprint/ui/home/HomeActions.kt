@@ -5,6 +5,7 @@ data class HomeActions(
     val onConnect: () -> Unit = {},
     val onPickPhoto: () -> Unit = {},
     val onPrintTestPage: () -> Unit = {},
+    val onPrintAgain: () -> Unit = {},
     val onRetry: () -> Unit = {},
     val onForget: () -> Unit = {},
     val onMessageShown: () -> Unit = {},

@@ -95,4 +95,6 @@ an application-scoped `CoroutineScope`. `PrinterClient` is a single-consumer ope
 ## Error handling
 `PrintResult.Failure(reason)` with `DISCONNECTED`, `NO_PAPER`, `LID_OR_PAPER`, `PRINTER_ERROR`,
 `WRITE_FAILED`. `PrinterIdentity.batteryLow` from `VOLT=`. Lid-open / paper-out (one `err:` code on this firmware) tracked live from
-`err:` notifications. `PrinterManager` reconnects with exponential backoff (1 s → 30 s cap).
+`err:` notifications. `PrinterManager` reconnects with exponential backoff (1 s → 30 s cap). The home screen turns
+every outcome into a `StatusBanner` with a hint (`HomeMessage.banner()` in `ui/home/MessageBanner.kt`,
+`printerStatusHint`); `PrinterManager.lastPrint` remembers the last sticker for "Print it again".

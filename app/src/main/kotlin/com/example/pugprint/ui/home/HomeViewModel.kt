@@ -10,6 +10,7 @@ import com.example.pugprint.printer.PairingStart
 import com.example.pugprint.printer.PrinterManager
 import com.example.pugprint.printer.PrinterPairing
 import com.example.pugprint.printer.PrinterState
+import com.example.pugprint.printer.printAgain
 import com.example.pugprint.printer.printTestPage
 import com.example.pugprint.printer.transport.PrintFailure
 import com.example.pugprint.printer.transport.PrintResult
@@ -57,12 +58,15 @@ data class HomeUiState(
     val paperOrLidProblem: Boolean = false,
     /** 0.0–1.0 while [PrinterStatus.Printing]. */
     val printProgress: Float? = null,
+    /** A sticker was sent before, so "Print again" makes sense. */
+    val hasLastPrint: Boolean = false,
     val pairingInProgress: Boolean = false,
     val message: HomeMessage? = null,
     /** The chosen look, a [ThemeCatalog] id. */
     val themeId: String = ThemeCatalog.default.id,
 ) {
     val canPrint: Boolean get() = printerStatus == PrinterStatus.Connected && !paperOrLidProblem
+    val canPrintAgain: Boolean get() = hasLastPrint && canPrint
     val hasPrinter: Boolean get() = printerStatus != PrinterStatus.NoPrinter
 }
 
@@ -81,18 +85,24 @@ class HomeViewModel
         /** A system pairing picker the UI must launch; call [onPairingLaunched] once done. */
         val pairingLaunch: StateFlow<IntentSender?> = mutablePairingLaunch.asStateFlow()
 
+        /** The printer's three flows folded together, so the main combine stays within five inputs. */
+        private val printerView =
+            combine(printer.state, printer.lastPrintResult, printer.lastPrint) { state, result, last ->
+                Triple(state, result, last)
+            }
+
         val uiState: StateFlow<HomeUiState> =
             combine(
-                printer.state,
-                printer.lastPrintResult,
+                printerView,
                 message,
                 pairingInProgress,
                 settings.settings,
-            ) { state, print, msg, pairingNow, prefs ->
+            ) { (state, print, last), msg, pairingNow, prefs ->
                 state.toUiState().copy(
                     pairingInProgress = pairingNow,
                     message = msg ?: print?.toMessage(),
                     themeId = prefs.themeId,
+                    hasLastPrint = last != null,
                 )
             }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState())
 
@@ -139,6 +149,8 @@ class HomeViewModel
         fun onRetryClicked() = printer.retry()
 
         fun onPrintTestPageClicked() = printer.printTestPage(settings.settings.value.density)
+
+        fun onPrintAgainClicked() = printer.printAgain()
 
         fun onThemeSelected(themeId: String) = settings.setTheme(ThemeCatalog.byId(themeId).id)
 

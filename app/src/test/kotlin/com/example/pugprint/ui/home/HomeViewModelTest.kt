@@ -197,4 +197,28 @@ class HomeViewModelTest {
             assertEquals(30, transport.emulator.density) // public-factory dark
             assertEquals(AppSettings(density = DensityLevel.DARK), settings.settings.value)
         }
+
+    @Test
+    fun `print again appears after the first print and repeats it`() =
+        runTest {
+            val viewModel = viewModel(ScriptedPairing(PairingStart.Paired(device)))
+            viewModel.onConnectClicked()
+            runCurrent()
+            assertFalse(viewModel.uiState.value.hasLastPrint)
+            assertFalse(viewModel.uiState.value.canPrintAgain)
+
+            viewModel.onPrintTestPageClicked()
+            advanceTimeBy(60_000)
+            assertTrue(viewModel.uiState.value.hasLastPrint)
+            assertTrue(viewModel.uiState.value.canPrintAgain)
+            val rowsAfterFirst = transport.emulator.rows.size
+
+            viewModel.onPrintAgainClicked()
+            runCurrent()
+            assertEquals(PrinterStatus.Printing, viewModel.uiState.value.printerStatus)
+            advanceTimeBy(60_000)
+
+            assertEquals(rowsAfterFirst * 2, transport.emulator.rows.size)
+            assertEquals(HomeMessage.PrintDone, viewModel.uiState.value.message)
+        }
 }

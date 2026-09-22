@@ -6,6 +6,12 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Phase 5 friendly errors. Every message the home screen shows (printed, out of paper, lid
+  open, printer lost, pairing cancelled, permission denied…) is now a `StatusBanner` in a
+  kid's words with a second line saying what to do; it clears itself after eight seconds. The
+  printer status banner gains the same hints for offline reasons and shows "40% done" while
+  printing. "Print it again" repeats the last sticker at the same darkness
+  (`PrinterManager.lastPrint` / `printAgain`). The snackbar is gone.
 - Phase 5 settings. `SettingsStore` / `AppSettings` (theme id and print density, in app-private
   preferences, nothing identifying). "Pick a look" on the home screen: a `ThemePicker` kit
   component that draws every `ThemeCatalog` theme in its own colours; the chosen theme is
