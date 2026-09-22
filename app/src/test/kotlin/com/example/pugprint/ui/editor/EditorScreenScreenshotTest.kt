@@ -9,6 +9,7 @@ import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.ImagePipeline
 import com.example.pugprint.printer.OfflineReason
+import com.example.pugprint.ui.Screenshots
 import com.example.pugprint.ui.home.PrinterStatus
 import com.example.pugprint.ui.theme.PugPrintTheme
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -37,7 +38,7 @@ class EditorScreenScreenshotTest {
 
     private fun snap(state: EditorUiState) {
         compose.setContent { PugPrintTheme { EditorScreen(state = state) } }
-        compose.onRoot().captureRoboImage()
+        compose.onRoot().captureRoboImage(roborazziOptions = Screenshots.options)
     }
 
     @Test

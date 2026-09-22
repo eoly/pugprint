@@ -21,7 +21,10 @@
 `:app` unit tests run on the JUnit Platform: JUnit 5 for ViewModels, and the JUnit 4
 Robolectric/Roborazzi tests via `junit-vintage-engine`. `:core:*` are JUnit 5 only; each
 exposes a `testDebugUnitTest` alias so the single command above covers every module.
-Roborazzi goldens live in `app/screenshots/` (committed).
+Roborazzi goldens live in `app/screenshots/` (committed). They are recorded on macOS and
+verified on Linux CI; the two Skia builds differ by a few dozen pixels in anti-aliased text and
+nearest-neighbour image sampling, so `Screenshots.options` allows 0.05 % changed pixels
+(≈ 1 600 px) — enough to absorb that, far below any real UI change.
 
 ## Golden tests (highest ROI)
 - `:core:printer`: `PrintJobGoldenTest` asserts `PrintJob.writes()` reproduces the vendor
