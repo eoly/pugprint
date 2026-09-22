@@ -3,6 +3,7 @@ package com.example.pugprint.ui.editor
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.CropWindow
 import com.example.pugprint.imaging.DitherMode
@@ -11,7 +12,6 @@ import com.example.pugprint.imaging.ImagePipeline
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.ui.Screenshots
 import com.example.pugprint.ui.home.PrinterStatus
-import com.example.pugprint.ui.theme.PugPrintTheme
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test

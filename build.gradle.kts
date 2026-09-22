@@ -18,4 +18,5 @@ dependencies {
     kover(project(":core:printer"))
     kover(project(":core:imaging"))
     kover(project(":core:bluetooth"))
+    kover(project(":ui:design"))
 }

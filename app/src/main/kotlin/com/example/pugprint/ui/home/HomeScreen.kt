@@ -3,29 +3,25 @@ package com.example.pugprint.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.pugprint.R
-import com.example.pugprint.ui.theme.PugPrintTheme
+import com.example.pugprint.design.components.BannerKind
+import com.example.pugprint.design.components.BigButton
+import com.example.pugprint.design.components.ButtonEmphasis
+import com.example.pugprint.design.components.HeroTitle
+import com.example.pugprint.design.components.KidScreen
+import com.example.pugprint.design.components.StatusBanner
+import com.example.pugprint.design.theme.PugPrintTheme
+import com.example.pugprint.design.theme.PugSpacing
 
 @Composable
 fun HomeScreen(
@@ -41,101 +37,76 @@ fun HomeScreen(
             actions.onMessageShown()
         }
     }
-    Scaffold(modifier = modifier.fillMaxSize(), snackbarHost = { SnackbarHost(snackbar) }) { innerPadding ->
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = stringResource(R.string.home_title),
-                style = MaterialTheme.typography.displayMedium,
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = printerStatusLabel(state.printerStatus, state.printerName, state.offlineReason),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-            )
-            PrinterDetails(state)
-            Spacer(Modifier.height(32.dp))
+    KidScreen(modifier = modifier, snackbarHost = { SnackbarHost(snackbar) }) {
+        Spacer(Modifier.height(PugSpacing.huge))
+        HeroTitle(stringResource(R.string.home_title))
+        Spacer(Modifier.height(PugSpacing.large))
+        PrinterStatus(state)
+        Spacer(Modifier.height(PugSpacing.huge))
+        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PugSpacing.medium)) {
             if (state.hasPrinter) {
+                BigButton(text = stringResource(R.string.home_print_photo), onClick = actions.onPickPhoto)
                 BigButton(
-                    text = stringResource(R.string.home_print_photo),
-                    enabled = true,
-                    onClick = actions.onPickPhoto,
+                    text = stringResource(R.string.home_print_test),
+                    onClick = actions.onPrintTestPage,
+                    enabled = state.canPrint,
+                    emphasis = ButtonEmphasis.Secondary,
                 )
-                Spacer(Modifier.height(12.dp))
-                TextButton(onClick = actions.onPrintTestPage, enabled = state.canPrint) {
-                    Text(stringResource(R.string.home_print_test))
-                }
                 if (state.printerStatus == PrinterStatus.Offline) {
-                    Spacer(Modifier.height(12.dp))
-                    TextButton(onClick = actions.onRetry) { Text(stringResource(R.string.home_retry)) }
+                    BigButton(
+                        text = stringResource(R.string.home_retry),
+                        onClick = actions.onRetry,
+                        emphasis = ButtonEmphasis.Secondary,
+                    )
                 }
-                Spacer(Modifier.height(12.dp))
-                TextButton(onClick = actions.onForget) { Text(stringResource(R.string.home_forget)) }
+                BigButton(
+                    text = stringResource(R.string.home_forget),
+                    onClick = actions.onForget,
+                    emphasis = ButtonEmphasis.Quiet,
+                )
             } else {
                 BigButton(
                     text = stringResource(R.string.home_connect),
-                    enabled = !state.pairingInProgress,
                     onClick = actions.onConnect,
+                    enabled = !state.pairingInProgress,
                 )
             }
         }
     }
 }
 
+/** Where the printer is at, plus anything the kid needs to fix, as banners. */
 @Composable
-private fun PrinterDetails(state: HomeUiState) {
-    state.batteryPercent?.let { percent ->
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text =
-                if (state.batteryLow) {
-                    stringResource(R.string.home_battery_low)
-                } else {
-                    stringResource(R.string.home_battery, percent)
+private fun PrinterStatus(state: HomeUiState) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(PugSpacing.small)) {
+        StatusBanner(
+            kind = state.printerStatus.bannerKind(),
+            text = printerStatusLabel(state.printerStatus, state.printerName, state.offlineReason),
+            hint =
+                state.batteryPercent?.takeUnless { state.batteryLow }?.let {
+                    stringResource(
+                        R.string.home_battery,
+                        it,
+                    )
                 },
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (state.batteryLow) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+            progress = state.printProgress,
         )
-    }
-    if (state.paperOrLidProblem) {
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.home_paper_or_lid),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.error,
-        )
-    }
-    state.printProgress?.let { progress ->
-        Spacer(Modifier.height(16.dp))
-        LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+        if (state.batteryLow) {
+            StatusBanner(kind = BannerKind.Problem, text = stringResource(R.string.home_battery_low))
+        }
+        if (state.paperOrLidProblem) {
+            StatusBanner(kind = BannerKind.Problem, text = stringResource(R.string.home_paper_or_lid))
+        }
     }
 }
 
-@Composable
-private fun BigButton(
-    text: String,
-    enabled: Boolean,
-    onClick: () -> Unit,
-) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(64.dp),
-    ) {
-        Text(text = text, style = MaterialTheme.typography.titleLarge)
+private fun PrinterStatus.bannerKind(): BannerKind =
+    when (this) {
+        PrinterStatus.NoPrinter -> BannerKind.Info
+        PrinterStatus.Connecting, PrinterStatus.Printing -> BannerKind.Working
+        PrinterStatus.Connected -> BannerKind.Success
+        PrinterStatus.Offline -> BannerKind.Problem
     }
-}
 
 private fun messageRes(message: HomeMessage): Int =
     when (message) {
