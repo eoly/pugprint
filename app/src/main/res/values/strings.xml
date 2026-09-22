@@ -49,6 +49,7 @@
     <string name="editor_title_loading">Opening your picture…</string>
     <string name="editor_title_failed">Oops</string>
     <string name="editor_title_crop">Make it fit</string>
+    <string name="editor_title_words">Add words</string>
     <string name="editor_title_preview">Ready to print?</string>
     <string name="editor_failed_body">Couldn\'t open that picture. Try another one.</string>
     <string name="editor_back">Back</string>
@@ -63,6 +64,12 @@
     <string name="editor_style_photo">Photo</string>
     <string name="editor_style_drawing">Drawing</string>
     <string name="editor_preview_description">How your sticker will print</string>
+    <string name="editor_add_words">Add words</string>
+    <string name="editor_change_words">Change the words</string>
+    <string name="editor_words_placeholder">Write something…</string>
+    <string name="editor_words_top">Top</string>
+    <string name="editor_words_bottom">Bottom</string>
+    <string name="editor_words_done">Done</string>
     <string name="editor_darkness">How dark?</string>
     <string name="editor_density_light">Lighter</string>
     <string name="editor_density_medium">Normal</string>

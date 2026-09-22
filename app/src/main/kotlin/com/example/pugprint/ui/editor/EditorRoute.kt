@@ -25,19 +25,31 @@ fun EditorRoute(
         }
     }
     val inPreview = state.step == EditorStep.Preview
+    val inWords = state.step == EditorStep.Words
     BackHandler(enabled = inPreview) { viewModel.onBackToCropClicked() }
+    BackHandler(enabled = inWords) { viewModel.onWordsDoneClicked() }
 
     EditorScreen(
         state = state,
         actions =
             EditorActions(
-                onBack = { if (inPreview) viewModel.onBackToCropClicked() else onClose() },
+                onBack = {
+                    when {
+                        inWords -> viewModel.onWordsDoneClicked()
+                        inPreview -> viewModel.onBackToCropClicked()
+                        else -> onClose()
+                    }
+                },
                 onRotate = viewModel::onRotateClicked,
                 onShape = viewModel::onShapeSelected,
                 onTransform = viewModel::onTransform,
                 onNext = viewModel::onNextClicked,
                 onMode = viewModel::onModeSelected,
                 onDensity = viewModel::onDensitySelected,
+                onAddWords = viewModel::onAddWordsClicked,
+                onCaption = viewModel::onCaptionChanged,
+                onCaptionPlacement = viewModel::onCaptionPlacementSelected,
+                onWordsDone = viewModel::onWordsDoneClicked,
                 onPrint = viewModel::onPrintClicked,
             ),
     )

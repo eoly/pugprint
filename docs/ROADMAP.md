@@ -58,9 +58,11 @@
      `StatusBanner` with kid-readable words plus a "what to do" hint (`MessageBanner.kt`,
      `printerStatusHint`; the snackbar is gone), "Print it again" repeats the last sticker
      (`PrinterManager.lastPrint` / `printAgain`), printing shows "40% done".
-  4. **Sticker document + text captions** — `:core:imaging` `Sticker` / `Layer` model and a
-     pure-JVM `StickerRenderer` (golden PBMs); `TextLayer` via a `PixelFont` (bitmap glyphs,
-     integer-scaled) so words print crisp; "Add words" step in the editor.
+  4. ✅ **Sticker document + text captions** — `:core:imaging` `Sticker` (picture + crop + style +
+     `Caption`) rendered by `StickerRenderer` onto a `BitCanvas` (golden PBMs); `PixelFont` /
+     `FontCatalog` (5 × 7 "Blocky", glyphs drawn as `#`/`.` art, add a font = add an entry) and
+     `TextRasterizer` (wrap to 3 lines, auto-scale 6→2, chop giant words); "Add words" detour
+     from the preview with live dots, Top / Bottom; `BigTextField` in the kit.
   5. **Stamps** — `StampCatalog` (PBM assets + one line each), stamp layer, big stamp picker.
   6. **Drawing canvas** — `Stroke` model + pure `StrokeRasterizer` (goldens), "Draw a sticker"
      home entry with fat brushes, eraser and undo.

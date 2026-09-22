@@ -1,5 +1,7 @@
 package com.example.pugprint.ui.editor
 
+import com.example.pugprint.imaging.Caption
+import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropRect
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
@@ -7,6 +9,8 @@ import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.PhotoLoadException
 import com.example.pugprint.imaging.PhotoSource
+import com.example.pugprint.imaging.Sticker
+import com.example.pugprint.imaging.StickerRenderer
 import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.printer.InMemoryPairedPrinterStore
 import com.example.pugprint.printer.PrinterManager
@@ -25,6 +29,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -234,4 +239,42 @@ class EditorViewModelTest {
             assertEquals(20, transport.emulator.density) // public-factory light
             assertEquals(emptyList<String>(), transport.emulator.violations)
         }
+
+    @Test
+    fun `words are a detour from the preview that re-renders the dots live`() =
+        runTest {
+            val viewModel = opened()
+            viewModel.onAddWordsClicked() // ignored: not in the preview yet
+            assertEquals(EditorStep.Crop, viewModel.uiState.value.step)
+
+            viewModel.onNextClicked()
+            runCurrent()
+            val plain = viewModel.uiState.value.preview!!
+            viewModel.onAddWordsClicked()
+            assertEquals(EditorStep.Words, viewModel.uiState.value.step)
+
+            viewModel.onCaptionChanged("Woof")
+            runCurrent()
+            val state = viewModel.uiState.value
+            assertEquals("Woof", state.caption)
+            val expected =
+                StickerRenderer.render(
+                    Sticker(landscape, state.window!!.cropRect(), DitherMode.PHOTO, Caption("Woof")),
+                )
+            assertArrayEquals(expected.packed, state.preview!!.packed)
+            assertFalse(plain.packed.contentEquals(state.preview!!.packed))
+
+            viewModel.onCaptionPlacementSelected(CaptionPlacement.TOP)
+            runCurrent()
+            assertFalse(viewModel.uiState.value.isBlack(0, 0), "top band should be white")
+
+            viewModel.onWordsDoneClicked()
+            assertEquals(EditorStep.Preview, viewModel.uiState.value.step)
+            assertEquals("Woof", viewModel.uiState.value.caption)
+        }
+
+    private fun EditorUiState.isBlack(
+        x: Int,
+        y: Int,
+    ) = preview!!.isBlack(x, y)
 }

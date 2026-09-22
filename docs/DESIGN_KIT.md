@@ -16,7 +16,9 @@ ui/design/src/main/kotlin/com/example/pugprint/design/
 │   ├── KidScreen.kt      ← the frame: back button + title + padding (and HeroTitle)
 │   ├── BigButton.kt      ← Primary / Secondary / Quiet buttons
 │   ├── ChoiceRow.kt      ← "pick one" tiles (Square / Tall / Wide / Whole)
-│   └── StatusBanner.kt   ← Info / Working / Problem / Success cards
+│   ├── StatusBanner.kt   ← Info / Working / Problem / Success cards
+│   ├── ThemePicker.kt    ← "Pick a look": one tile per theme, painted in that theme's colours
+│   └── BigTextField.kt   ← one line of big typing (the "Add words" box)
 └── gallery/DesignGallery.kt ← every component on one screen, used for the pictures below
 ```
 
@@ -44,6 +46,16 @@ ui/design/src/main/kotlin/com/example/pugprint/design/
 | `secondary` / `onSecondary` | reserved for accents (stamps, drawing tools) |
 | `outline` | thin lines around the preview and tiles |
 | `error` / `errorSoft` | "fix this" banners |
+
+## Add a font for stickers (20 minutes)
+Fonts live in the picture code, not the kit: `core/imaging/src/main/kotlin/com/example/pugprint/imaging/FontCatalog.kt`.
+1. Copy the `Blocky` block, rename it, give it a new `id` and `displayName`, and pick a
+   `glyphHeight` (Blocky is 7 rows).
+2. Draw every letter as rows of `#` (dot) and `.` (no dot), all the same height, any width.
+   You need at least A–Z, 0–9, space and `. , ! ? ' -`; the test tells you what is missing.
+3. Add it to `all`, then run `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true`.
+   A sample sentence appears at `core/imaging/src/test/resources/font_<id>.pbm` (any image
+   viewer opens it). Commit it with the font.
 
 ## Change how big or round things are
 - Corners: `roundness` on each theme (buttons, tiles and banners all follow it).
