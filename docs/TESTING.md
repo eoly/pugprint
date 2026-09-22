@@ -58,7 +58,7 @@ nearest-neighbour image sampling, so `Screenshots.options` allows 0.05 % changed
 pairing so the whole flow can be clicked through; the "printed" rows live in the emulator object.
 
 ## Hardware checklist (run on the real printer before each release)
-Last run: **2026-09-21**, Pixel 10 Pro XL (Android 17) + Hello Blink `HB-0342` — all items below passed
+Last run: **2026-09-22**, Pixel 10 Pro XL (Android 17) + Hello Blink `HB-0342` — all items below passed
 unless marked.
 - [x] Pair via CDM on a fresh install ("Nearby devices" prompt on Android 12+, then the system picker lists `HB-nnnn`).
       Picker found the printer within ~1 s of the printer advertising.
@@ -66,8 +66,10 @@ unless marked.
 - [x] Print the test page: black band edge to edge, 1-dot bars resolved, all five bands, no missing rows.
       MTU negotiated 248 (247 requested). If rows drop, lowering `PrintTiming.BLOCK_GAP_MILLIS` is NOT the fix —
       see PRINTER_PROTOCOL.md.
-- [ ] Print a photo (Photo style) and a line drawing (Drawing style) from the Photo Picker; check
-      the crop frame matches what printed and the rotate button turns the sticker. *(Phase 4 — not yet run on hardware.)*
+- [x] Print a photo (Photo style) and a line drawing (Drawing style) from the Photo Picker; check
+      the crop frame matches what printed and the rotate button turns the sticker.
+      Run 2026-09-22 on the Phase 4 build (#22): pick → fit → preview → print worked end to end at the
+      default (medium) density.
 - [x] Out-of-paper and lid-open surface an error. **Finding:** the printer sends the same `err:` code (2) for
       both, even with the lid closed, so the app says "Close the lid and check the paper".
 - [ ] Low-battery warning surfaces. *(Not reproducible with a charged unit; threshold 7000 mV is provisional.)*

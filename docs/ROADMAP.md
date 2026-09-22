@@ -33,8 +33,8 @@
   negotiated, test page prints all five bands with no dropped rows at 20 ms pacing,
   auto-reconnect works. Finding: `err:` code 2 means lid open *or* paper out
   (see `docs/TESTING.md` § Hardware checklist).
-- **Phase 4 — Image pipeline + UI: ✅ DONE 2026-09-21 (hardware photo print still to tick off in
-  `docs/TESTING.md`).** `:core:imaging` gains `GrayImage` (8-bit luma, rotate / crop / box-filter
+- **Phase 4 — Image pipeline + UI: ✅ DONE 2026-09-21, hardware-verified 2026-09-22 (photo and
+  drawing printed from the Photo Picker on the Pixel + `HB-0342`).** `:core:imaging` gains `GrayImage` (8-bit luma, rotate / crop / box-filter
   scale), `Dither` (Floyd–Steinberg for photos, threshold for drawings, golden PBMs),
   `CropWindow` (the pure pan/zoom/shape maths behind the crop frame) and `ImagePipeline`
   (crop → 384 px → dither, capped at 1152 rows). App: system Photo Picker (no storage
