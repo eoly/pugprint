@@ -13,7 +13,9 @@
   identify, reconnect with backoff, `printImage`). `EditorViewModel` drives the edit:
   `PhotoSource` → `GrayImage` → `CropWindow` (pan/zoom/shape/rotate) → `ImagePipeline` →
   `MonoBitmap` → `PrinterManager.printImage`.
-- **Data**: `PrinterTransport` implementations, `PairedPrinterStore`,
+- **Data**: `PrinterTransport` implementations, `PairedPrinterStore`, `SettingsStore`
+  (`AppSettings`: theme id + print density, app-private preferences, exposed as a `StateFlow`
+  that `MainActivity` maps to the theme and the ViewModels fold into their state),
   `ContentResolverPhotoSource` (decodes a picked picture to ≤ 1600 px luma, EXIF-corrected).
 
 ## Modules

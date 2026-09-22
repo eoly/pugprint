@@ -142,16 +142,19 @@ class PrinterManager
         }
 
         /**
-         * Prints [bitmap] (one row per raster block, medium density for this printer's firmware);
-         * the result lands in [lastPrintResult]. Ignored unless the printer is connected and idle.
+         * Prints [bitmap] (one row per raster block, [density] looked up in this printer's firmware
+         * table); the result lands in [lastPrintResult]. Ignored unless the printer is connected and idle.
          */
-        fun printImage(bitmap: MonoBitmap) {
+        fun printImage(
+            bitmap: MonoBitmap,
+            density: DensityLevel = DensityLevel.MEDIUM,
+        ) {
             require(bitmap.width == PrinterSpec.DOTS_PER_LINE) {
                 "Print width must be ${PrinterSpec.DOTS_PER_LINE} dots, got ${bitmap.width}"
             }
             scope.launch {
                 val connected = state.value as? PrinterState.Connected ?: return@launch
-                print(printJobFor(bitmap, connected.identity.densityProfile))
+                print(printJobFor(bitmap, connected.identity.densityProfile, density))
             }
         }
 
@@ -228,16 +231,18 @@ class PrinterManager
         }
     }
 
-/** One row per raster block at medium density, plus the speed command old private-factory firmware needs. */
+/** One row per raster block at [level] density, plus the speed command old private-factory firmware needs. */
 private fun printJobFor(
     bitmap: MonoBitmap,
     profile: DensityProfile,
+    level: DensityLevel,
 ): PrintJob =
     PrintJob(
         rows = List(bitmap.height, bitmap::row),
-        density = profile.value(DensityLevel.MEDIUM),
+        density = profile.value(level),
         options = PrintOptions(speed = profile.legacySpeed),
     )
 
 /** Prints the built-in test page; the result lands in [PrinterManager.lastPrintResult]. */
-fun PrinterManager.printTestPage(): Unit = printImage(TestPattern.render())
+fun PrinterManager.printTestPage(density: DensityLevel = DensityLevel.MEDIUM): Unit =
+    printImage(TestPattern.render(), density)

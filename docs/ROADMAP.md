@@ -49,9 +49,11 @@
      `KidScreen` / `BigButton` / `ChoiceRow` / `StatusBanner`, WCAG contrast tests over the
      catalog, one gallery golden per theme; home + editor rebuilt on the kit;
      `docs/DESIGN_KIT.md`.
-  2. **Settings + theme picker + darkness** — `SettingsStore` (theme id, `DensityLevel`), "Pick
-     a look" on the home screen, Light / Medium / Dark choice on the preview step,
-     `PrinterManager.printImage(bitmap, density)`; `PrintJob` golden per level.
+  2. ✅ **Settings + theme picker + darkness** — `SettingsStore` (theme id, `DensityLevel`) in
+     app-private preferences, "Pick a look" `ThemePicker` on the home screen (each tile in its
+     own colours), "How dark?" Lighter / Normal / Darker on the preview step,
+     `PrinterManager.printImage(bitmap, density)`; density asserted per level against the
+     emulator.
   3. **Friendly error UX + print again** — every `PrintFailure` / offline reason mapped to a
      kid-readable line plus a "what to do" hint in a `StatusBanner` (no more snackbars),
      "Print again" for the last sticker, printing progress with a percentage.

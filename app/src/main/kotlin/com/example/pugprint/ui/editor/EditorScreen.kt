@@ -33,6 +33,7 @@ import com.example.pugprint.design.components.StatusBanner
 import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
+import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.ui.home.PrinterStatus
 import com.example.pugprint.ui.home.printerStatusLabel
 import com.example.pugprint.ui.imaging.toImageBitmap
@@ -170,6 +171,20 @@ private fun ColumnScope.PreviewStep(
         onSelect = actions.onMode,
         label = { stringResource(modeLabel(it)) },
     )
+    Spacer(Modifier.height(PugSpacing.small))
+    Text(
+        text = stringResource(R.string.editor_darkness),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(PugSpacing.tiny))
+    ChoiceRow(
+        options = DensityLevel.entries,
+        selected = state.density,
+        onSelect = actions.onDensity,
+        label = { stringResource(densityLabel(it)) },
+    )
     Spacer(Modifier.height(PugSpacing.medium))
     StatusBanner(
         kind = if (state.paperOrLidProblem) BannerKind.Problem else state.printerStatus.bannerKind(),
@@ -199,6 +214,13 @@ private fun modeLabel(mode: DitherMode): Int =
     when (mode) {
         DitherMode.PHOTO -> R.string.editor_style_photo
         DitherMode.DRAWING -> R.string.editor_style_drawing
+    }
+
+private fun densityLabel(level: DensityLevel): Int =
+    when (level) {
+        DensityLevel.LIGHT -> R.string.editor_density_light
+        DensityLevel.MEDIUM -> R.string.editor_density_medium
+        DensityLevel.DARK -> R.string.editor_density_dark
     }
 
 /** The preview sits a little in from the edges so it reads as a sticker, not a full-bleed picture. */

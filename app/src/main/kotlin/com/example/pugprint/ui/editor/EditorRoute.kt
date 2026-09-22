@@ -37,6 +37,7 @@ fun EditorRoute(
                 onTransform = viewModel::onTransform,
                 onNext = viewModel::onNextClicked,
                 onMode = viewModel::onModeSelected,
+                onDensity = viewModel::onDensitySelected,
                 onPrint = viewModel::onPrintClicked,
             ),
     )

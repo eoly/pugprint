@@ -34,7 +34,7 @@ class HomeScreenScreenshotTest {
 
     @Test
     fun homeScreen_connected() =
-        snap(HomeUiState(PrinterStatus.Connected, printerName = "HB-1234", batteryPercent = 64))
+        snap(HomeUiState(PrinterStatus.Connected, printerName = "HB-1234", batteryPercent = 64, themeId = "ocean"))
 
     @Test
     fun homeScreen_connected_lowBattery_paperOrLid() =

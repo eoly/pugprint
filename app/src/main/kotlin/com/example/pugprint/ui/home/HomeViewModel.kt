@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.IntentSender
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pugprint.design.theme.ThemeCatalog
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.printer.PairingStart
 import com.example.pugprint.printer.PrinterManager
@@ -12,6 +13,8 @@ import com.example.pugprint.printer.PrinterState
 import com.example.pugprint.printer.printTestPage
 import com.example.pugprint.printer.transport.PrintFailure
 import com.example.pugprint.printer.transport.PrintResult
+import com.example.pugprint.settings.SettingsStore
+import com.example.pugprint.settings.setTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -56,6 +59,8 @@ data class HomeUiState(
     val printProgress: Float? = null,
     val pairingInProgress: Boolean = false,
     val message: HomeMessage? = null,
+    /** The chosen look, a [ThemeCatalog] id. */
+    val themeId: String = ThemeCatalog.default.id,
 ) {
     val canPrint: Boolean get() = printerStatus == PrinterStatus.Connected && !paperOrLidProblem
     val hasPrinter: Boolean get() = printerStatus != PrinterStatus.NoPrinter
@@ -67,6 +72,7 @@ class HomeViewModel
     constructor(
         private val printer: PrinterManager,
         private val pairing: PrinterPairing,
+        private val settings: SettingsStore,
     ) : ViewModel() {
         private val message = MutableStateFlow<HomeMessage?>(null)
         private val pairingInProgress = MutableStateFlow(false)
@@ -81,10 +87,12 @@ class HomeViewModel
                 printer.lastPrintResult,
                 message,
                 pairingInProgress,
-            ) { state, print, msg, pairingNow ->
+                settings.settings,
+            ) { state, print, msg, pairingNow, prefs ->
                 state.toUiState().copy(
                     pairingInProgress = pairingNow,
                     message = msg ?: print?.toMessage(),
+                    themeId = prefs.themeId,
                 )
             }.stateIn(viewModelScope, SharingStarted.Eagerly, HomeUiState())
 
@@ -130,7 +138,9 @@ class HomeViewModel
         /** Permission was just granted (or the user asked to try again). */
         fun onRetryClicked() = printer.retry()
 
-        fun onPrintTestPageClicked() = printer.printTestPage()
+        fun onPrintTestPageClicked() = printer.printTestPage(settings.settings.value.density)
+
+        fun onThemeSelected(themeId: String) = settings.setTheme(ThemeCatalog.byId(themeId).id)
 
         fun onForgetClicked() = printer.forget()
 

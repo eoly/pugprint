@@ -8,4 +8,5 @@ data class HomeActions(
     val onRetry: () -> Unit = {},
     val onForget: () -> Unit = {},
     val onMessageShown: () -> Unit = {},
+    val onThemeSelected: (themeId: String) -> Unit = {},
 )
