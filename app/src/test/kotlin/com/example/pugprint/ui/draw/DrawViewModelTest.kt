@@ -45,7 +45,6 @@ class DrawViewModelTest {
                 Stroke(listOf(DrawPoint(0.1f, 0.1f), DrawPoint(0.2f, 0.2f)), BrushSize.FAT),
                 viewModel.uiState.value.current,
             )
-            assertFalse(viewModel.uiState.value.canFinish)
 
             viewModel.onStrokeEnded()
             viewModel.onToolSelected(DrawTool.ERASER)
@@ -76,10 +75,22 @@ class DrawViewModelTest {
         }
 
     @Test
+    fun `a blank sheet can go to the editor too, for words and stamps only`() =
+        runTest {
+            val viewModel = viewModel()
+            assertTrue(viewModel.uiState.value.canFinish)
+            viewModel.onNextClicked()
+            runCurrent()
+
+            val image = handoff.image!!
+            assertTrue(image.luma.all { (it.toInt() and 0xFF) == 255 }, "blank sheet should be all white")
+            assertTrue(viewModel.finished.value)
+        }
+
+    @Test
     fun `next renders the drawing into the hand-off and flags finished once`() =
         runTest {
             val viewModel = viewModel()
-            viewModel.onNextClicked() // nothing drawn: ignored
             assertNull(handoff.image)
             assertFalse(viewModel.finished.value)
 

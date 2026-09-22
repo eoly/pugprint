@@ -31,7 +31,9 @@ data class DrawUiState(
     val rendering: Boolean = false,
 ) {
     val canUndo: Boolean get() = !drawing.isEmpty
-    val canFinish: Boolean get() = !drawing.isEmpty && !rendering
+
+    /** A blank sheet is fine too: words and stamps go on it in the editor. */
+    val canFinish: Boolean get() = !rendering
 }
 
 @HiltViewModel

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pugprint.R
 import com.example.pugprint.design.components.BigButton
@@ -54,7 +56,14 @@ fun DrawScreen(
         onHome = actions.onHome,
     ) {
         DrawingCanvas(state, actions)
-        Spacer(Modifier.height(PugSpacing.medium))
+        Spacer(Modifier.height(PugSpacing.small))
+        Text(
+            text = stringResource(if (state.drawing.isEmpty) R.string.draw_hint_empty else R.string.draw_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(PugSpacing.small))
         ChoiceRow(
             options = BrushSize.entries,
             selected = state.brush,

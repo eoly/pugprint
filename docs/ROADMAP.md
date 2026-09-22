@@ -70,7 +70,8 @@
   6. ✅ **Drawing canvas** — `Drawing` / `Stroke` / `BrushSize` and a pure `StrokeRasterizer`
      (round-capped strokes as discs, eraser paints white; golden `drawing_face.pbm`); "Draw a
      sticker" on the home screen → a square sheet with Thin / Medium / Fat, Pen / Eraser, Undo,
-     Start over; Next hands the 384 × 384 picture to the editor through `DrawingHandoff`, so
+     Start over; Next (also on a blank sheet, for words-and-stamps-only stickers) hands the
+     384 × 384 picture to the editor through `DrawingHandoff`, which skips the crop step for it;
      words, stamps, darkness and printing all work on drawings unchanged.
   7. **Accessibility pass** — content descriptions, TalkBack order, 1.5× font-scale goldens,
      lint accessibility checks on.

@@ -7,6 +7,7 @@ import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.CropWindow
 import com.example.pugprint.imaging.DitherMode
+import com.example.pugprint.imaging.DrawingHandoff
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.ImagingDispatcher
 import com.example.pugprint.imaging.MonoBitmap
@@ -140,22 +141,29 @@ class EditorViewModel
                 )
             }.stateIn(viewModelScope, SharingStarted.Eagerly, EditorUiState())
 
-        /** Loads the picture at [uri]; a repeat call for the same picture is a no-op (configuration change). */
+        /**
+         * Loads the picture at [uri]; a repeat call for the same picture is a no-op (configuration
+         * change). A drawing ([DrawingHandoff.URI]) is already one sticker, so it skips "Make it fit"
+         * and opens on the preview in Drawing style.
+         */
         fun open(uri: String) {
             if (openedUri == uri) return
             openedUri = uri
             renderJob?.cancel()
             edit.value = EditState()
+            val isDrawing = uri == DrawingHandoff.URI
             viewModelScope.launch {
                 try {
                     val image = withContext(dispatcher) { photos.load(uri) }
                     edit.update {
                         it.copy(
-                            step = EditorStep.Crop,
+                            step = if (isDrawing) EditorStep.Preview else EditorStep.Crop,
                             image = image,
                             window = CropWindow(image.width, image.height),
+                            mode = if (isDrawing) DitherMode.DRAWING else it.mode,
                         )
                     }
+                    if (isDrawing) render()
                 } catch (_: PhotoLoadException) {
                     edit.update { it.copy(step = EditorStep.Failed) }
                 }

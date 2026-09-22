@@ -49,6 +49,8 @@
 
     <string name="draw_title">Draw a sticker</string>
     <string name="draw_canvas_description">Your drawing</string>
+    <string name="draw_hint_empty">Draw something — or tap Next to use just words and stamps</string>
+    <string name="draw_hint">Words and stamps come next</string>
     <string name="draw_brush_thin">Thin</string>
     <string name="draw_brush_medium">Medium</string>
     <string name="draw_brush_fat">Fat</string>
