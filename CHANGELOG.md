@@ -17,7 +17,7 @@ All notable changes to PugPrint are documented here. The format follows
   drawing skips "Make it fit": it opens straight on "Ready to print?" in Drawing style, without
   the Photo / Drawing row (both give the same dots on a black-and-white picture).
 - Phase 5 stamps. `StampCatalog` (heart, star, paw, smiley, sun, zap, pizza, flower, car, fish,
-  ghost, football, basketball, balloon, cat, unicorn — 16 × 16 art drawn as
+  ghost, football, basketball, balloon, cat — 16 × 16 art drawn as
   `#`/`.`, add a stamp by adding an entry), `StampPlacement` on the `Sticker` (centre as
   fractions of the sticker, Small / Medium / Big) and `StampRasterizer` (one-dot white halo so
   a stamp reads over a photo); golden PBM per stamp and for a stamped sticker. Editor: "Add
