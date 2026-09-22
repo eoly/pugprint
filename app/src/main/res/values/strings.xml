@@ -72,6 +72,8 @@
     <string name="editor_next">Next</string>
     <string name="editor_print">Print</string>
     <string name="editor_crop_hint">Pinch to zoom, drag to move</string>
+    <string name="editor_crop_description">Your picture inside the sticker. Pinch to zoom, drag to move</string>
+    <string name="editor_stamps_canvas_description">Your sticker. Drag to move the newest stamp</string>
     <string name="editor_shape_square">Square</string>
     <string name="editor_shape_tall">Tall</string>
     <string name="editor_shape_wide">Wide</string>

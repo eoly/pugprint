@@ -78,6 +78,14 @@ Edit the file in `components/`; every screen picks it up. Then re-record the pic
 (`./gradlew recordRoborazziDebug`) and look at the diffs in `ui/design/screenshots/` and
 `app/screenshots/` before committing.
 
+## Rules for anything a kid can tap
+- It says what it is: a label, or a `contentDescription` for a picture. TalkBack reads it.
+- It is at least 48 dp tall and wide (`PugTouch.minimum`); the big things are 56 or 64 dp.
+- Labels fit at the "Largest" font setting: `ChoiceRow` and `ThemePicker` shrink long words,
+  and screens that can grow tall (home) scroll (`KidScreen(scrollable = true)`).
+`AccessibilityAuditTest` in `app/src/test` checks the first two on every screen; the
+`*_bigText` goldens show the third.
+
 ## Rules the tests enforce
 - Theme ids are unique, lowercase and not blank; every theme has a name.
 - Every text/background pair in the palette meets WCAG AA (4.5:1; 3:1 for outlines).

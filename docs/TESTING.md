@@ -27,6 +27,12 @@ verified on Linux CI; the two Skia builds differ by a few dozen pixels in anti-a
 nearest-neighbour image sampling, so `Screenshots.options` allows 0.05 % changed pixels
 (≈ 1 600 px) — enough to absorb that, far below any real UI change.
 
+## Accessibility
+`AccessibilityAuditTest` (`:app`, Robolectric) renders every screen state and asserts each node
+with a click action has text or a content description and bounds of at least 48 dp. It is the
+accessibility lint for Compose; add a case when you add a screen. `Screenshots.BigText` wraps a
+screen at font scale 1.5 for the `*_bigText` goldens, which catch clipped or truncated labels.
+
 ## Golden tests (highest ROI)
 - `:core:printer`: `PrintJobGoldenTest` asserts `PrintJob.writes()` reproduces the vendor
   jobs in `core/printer/src/test/resources/print_job/*.vendor.hex` byte-for-byte, and

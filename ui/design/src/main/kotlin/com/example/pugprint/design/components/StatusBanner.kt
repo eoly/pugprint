@@ -21,6 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.pugprint.design.theme.PugSpacing
 
@@ -36,6 +39,8 @@ fun StatusBanner(
     hint: String? = null,
     /** 0.0–1.0 for a [BannerKind.Working] banner that knows how far along it is. */
     progress: Float? = null,
+    /** True for a banner that appears in response to something (a print finished, an error): TalkBack reads it out. */
+    announce: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
     val (container, accent) =
@@ -46,7 +51,10 @@ fun StatusBanner(
             BannerKind.Success -> colors.primaryContainer to colors.primary
         }
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .semantics(mergeDescendants = true) { if (announce) liveRegion = LiveRegionMode.Polite },
         shape = MaterialTheme.shapes.large,
         color = container,
         contentColor = colors.onSurface,

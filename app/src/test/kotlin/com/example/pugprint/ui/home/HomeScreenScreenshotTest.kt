@@ -21,10 +21,30 @@ class HomeScreenScreenshotTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private fun snap(state: HomeUiState) {
-        compose.setContent { PugPrintTheme { HomeScreen(state = state) } }
+    private fun snap(
+        state: HomeUiState,
+        bigText: Boolean = false,
+    ) {
+        compose.setContent {
+            PugPrintTheme {
+                if (bigText) Screenshots.BigText { HomeScreen(state = state) } else HomeScreen(state = state)
+            }
+        }
         compose.onRoot().captureRoboImage(roborazziOptions = Screenshots.options)
     }
+
+    @Test
+    fun homeScreen_printed_printAgain_bigText() =
+        snap(
+            HomeUiState(
+                PrinterStatus.Connected,
+                printerName = "HB-1234",
+                batteryPercent = 64,
+                hasLastPrint = true,
+                message = HomeMessage.PrintDone,
+            ),
+            bigText = true,
+        )
 
     @Test
     fun homeScreen_noPrinter() = snap(HomeUiState())

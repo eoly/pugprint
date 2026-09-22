@@ -18,6 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.design.theme.PugTouch
@@ -52,7 +55,11 @@ private fun RowScope.StampTile(
     val bitmap = remember(stamp) { StampRasterizer.render(stamp, StampSize.SMALL).toImageBitmap() }
     Surface(
         onClick = onClick,
-        modifier = Modifier.weight(1f).heightIn(min = PugTouch.secondary),
+        modifier =
+            Modifier
+                .weight(1f)
+                .heightIn(min = PugTouch.secondary)
+                .semantics { role = Role.Button },
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.surfaceVariant,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),

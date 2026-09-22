@@ -14,9 +14,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.example.pugprint.R
 import com.example.pugprint.imaging.CropWindow
 import kotlin.math.roundToInt
 
@@ -33,9 +37,11 @@ fun CropFrame(
 ) {
     val transform by rememberUpdatedState(onTransform)
     val shape = RoundedCornerShape(12.dp)
+    val description = stringResource(R.string.editor_crop_description)
     Canvas(
         modifier =
             modifier
+                .semantics { contentDescription = description }
                 .aspectRatio(1f / window.frameAspect)
                 .clip(shape)
                 .border(3.dp, MaterialTheme.colorScheme.primary, shape)
