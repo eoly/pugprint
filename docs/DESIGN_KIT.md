@@ -74,6 +74,21 @@ Stamps live next to the fonts: `core/imaging/src/main/kotlin/com/example/pugprin
    Your stamp appears at `core/imaging/src/test/resources/stamp_<id>.pbm` and in the
    "Add stamps" picker. Commit the picture with the stamp.
 
+## Add a coloring page (15 minutes)
+Coloring pages are pictures with thick outlines that print white inside, for crayons. They live
+at `core/imaging/src/main/kotlin/com/example/pugprint/imaging/ColoringPageCatalog.kt`.
+1. Copy the `Star` block, rename it, give it a new `id` and `displayName`.
+2. Draw it inside `Outline.build { ... }` with `circle`, `ellipse`, `arc`, `line`, `path`
+   (points joined in order), `loop` (a path that closes) `star` and `dot`. Positions are
+   fractions of the page: `0f` is the left or top edge, `1f` the right or bottom, `0.5f` the
+   middle. Use `MEDIUM` lines for the outline a crayon stays inside and `THIN` for details.
+   Keep everything inside a circle of radius `0.47f` around the middle, so the page also prints
+   whole on round stickers (the test tells you if a line pokes out).
+3. Add it to `all`, then run `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true`.
+   Your page appears at `core/imaging/src/test/resources/coloring_<id>.pbm` (any image viewer
+   opens it) and in the "Colour a picture" picker. Look at it, fix, re-record, then commit the
+   picture with the page.
+
 ## Change how big or round things are
 - Corners: `roundness` on each theme (buttons, tiles and banners all follow it).
 - Spacing: `PugSpacing` in `Tokens.kt`.

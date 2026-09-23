@@ -32,8 +32,9 @@
   (Floyd–Steinberg, threshold), `CropWindow` (crop-frame maths), `ImagePipeline`, `MonoBitmap`
   1bpp packing, `TestPattern`; the sticker document — `Sticker` (picture + crop + style +
   `Caption`), `StickerRenderer` (pipeline → `BitCanvas` → overlays → dots), `PixelFont` /
-  `FontCatalog` / `TextRasterizer`, `StampCatalog` / `StampRasterizer`, `Drawing` / `StrokeRasterizer`, `StickerRoll` /
-  `StickerRollCatalog` (label geometry + placement); golden PBM tests.
+  `FontCatalog` / `TextRasterizer`, `StampCatalog` / `StampRasterizer`, `Drawing` / `StrokeRasterizer`,
+  `ColoringPageCatalog` / `Outline` (ADR 0008), `StickerRoll` / `StickerRollCatalog` (label geometry +
+  placement); golden PBM tests.
 - `:core:bluetooth` — Android: Kable `BleTransport`, `CompanionPairing` (CDM), `BluetoothPermissions`.
   The only module allowed to import Android Bluetooth APIs; no protocol bytes (ADR 0006).
 - `:ui:design`     — the design kit (ADR 0007): theme tokens (`PugTheme`, `PugSpacing`,
@@ -112,6 +113,8 @@ as a cap inside the curve and clears everything outside the inscribed circle bef
 size and shape); the crop frame, preview and draw sheet draw the same circle as a guide.
 A drawing is not a layer but a picture: `StrokeRasterizer` turns `Drawing` strokes into a
 black-on-white `GrayImage` that enters the same pipeline, so captions and stamps work on it.
+A coloring page (`ColoringPageCatalog`, ADR 0008) is a ready-made `Drawing` built with `Outline`,
+so it prints through exactly that path and fits every roll by construction.
 `:core:printer` never changes for a new kid feature (ADR 0007).
 
 ## Threading
