@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test
 class StickerRendererTest {
     private val photo = SyntheticPhoto.render()
 
+    /** The synthetic photo is 128 × 96; round stickers want a square. */
+    private val squareCrop = CropRect(0, 0, 96, 96)
+
     @Test
     fun `without a caption the sticker is the plain pipeline output`() {
         val plain = ImagePipeline.render(photo, null, DitherMode.PHOTO)
@@ -71,6 +74,76 @@ class StickerRendererTest {
         // A dot inside the heart is black.
         assertTrue(sticker.isBlack(heartLeft + 8 * 8, heartTop + 5 * 8))
         Pbm.assertMatchesGolden("sticker_stamps", sticker)
+    }
+
+    @Test
+    fun `a round sticker is white outside the inscribed circle and unchanged inside`() {
+        val square = StickerRenderer.render(Sticker(photo, crop = squareCrop))
+        val round = StickerRenderer.render(Sticker(photo, crop = squareCrop), shape = LabelShape.CIRCLE)
+        assertEquals(square.width, round.width)
+        assertEquals(square.width, round.height)
+        val r = square.width / 2.0
+        var kept = 0
+        for (y in 0 until square.height) {
+            for (x in 0 until square.width) {
+                val inside = (x + 0.5 - r).let { it * it } + (y + 0.5 - r).let { it * it } <= r * r
+                if (inside) {
+                    assertEquals(square.isBlack(x, y), round.isBlack(x, y), "dot $x,$y should be untouched")
+                    kept++
+                } else {
+                    assertFalse(round.isBlack(x, y), "dot $x,$y is outside the circle")
+                }
+            }
+        }
+        // About π/4 of the square survives.
+        assertTrue(kept in (0.78 * square.width * square.height).toInt()..(0.79 * square.width * square.height).toInt())
+    }
+
+    @Test
+    fun `on a round sticker the caption is a white cap whose letters fit inside the curve`() {
+        val sticker =
+            StickerRenderer.render(
+                Sticker(
+                    photo,
+                    crop = squareCrop,
+                    caption = Caption("WOOF WOOF"),
+                    stamps = listOf(StampPlacement("heart", 0.5f, 0.3f)),
+                ),
+                width = 365,
+                maxRows = 365,
+                shape = LabelShape.CIRCLE,
+            )
+        assertEquals(365, sticker.width)
+        assertEquals(365, sticker.height)
+        // Every black dot in the caption region lies inside the circle, and none touches the last row.
+        val r = 365 / 2.0
+        assertTrue((0 until 365).none { sticker.isBlack(it, 364) })
+        for (y in 300 until 365) {
+            for (x in 0 until 365) {
+                if (sticker.isBlack(x, y)) {
+                    assertTrue((x + 0.5 - r).let { it * it } + (y + 0.5 - r).let { it * it } <= r * r, "$x,$y")
+                }
+            }
+        }
+        // There are letters: something is black in the bottom third but above the white cap's edge.
+        assertTrue((300 until 365).any { y -> (100 until 265).any { x -> sticker.isBlack(x, y) } })
+        Pbm.assertMatchesGolden("sticker_circle_caption", sticker)
+    }
+
+    @Test
+    fun `on a round sticker a top caption is a cap at the top`() {
+        val sticker =
+            StickerRenderer.render(
+                Sticker(photo, crop = squareCrop, caption = Caption("Hi", CaptionPlacement.TOP)),
+                width = 365,
+                maxRows = 365,
+                shape = LabelShape.CIRCLE,
+            )
+        assertTrue((0 until 365).none { sticker.isBlack(it, 0) })
+        // The first rows inside the circle are white (the cap), then letters, then picture.
+        val firstBlackRow = (0 until 365).first { y -> (0 until 365).any { x -> sticker.isBlack(x, y) } }
+        assertTrue(firstBlackRow >= StickerRenderer.CAPTION_PADDING, "cap starts at row $firstBlackRow")
+        assertTrue(firstBlackRow < 100, "letters should sit near the top, first black row is $firstBlackRow")
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.imaging.DrawingHandoff
 import com.example.pugprint.imaging.GrayImage
+import com.example.pugprint.imaging.LabelShape
 import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.PhotoLoadException
 import com.example.pugprint.imaging.PhotoSource
@@ -387,6 +388,33 @@ class EditorViewModelTest {
                     .all { it == 0.toByte() },
                 "top margin row should be white",
             )
+        }
+
+    @Test
+    fun `on the round roll the shape is locked, the dots are cut to a circle and the print is one padded label`() =
+        runTest {
+            settings.update { it.copy(rollId = "circle-49") }
+            val printer = printer()
+            printer.connect(device)
+            val viewModel = viewModel(printer)
+            viewModel.open("content://photo/1")
+            runCurrent()
+            assertTrue(viewModel.uiState.value.shapeLocked)
+            assertEquals(LabelShape.CIRCLE, viewModel.uiState.value.labelShape)
+
+            viewModel.onNextClicked()
+            runCurrent()
+            viewModel.onCaptionChanged("Woof")
+            runCurrent()
+            val preview = viewModel.uiState.value.preview!!
+            assertEquals(365, preview.width)
+            assertEquals(365, preview.height)
+            assertFalse(preview.isBlack(0, 0), "the corner outside the circle is white")
+            assertFalse(preview.isBlack(364, 364))
+
+            viewModel.onPrintClicked()
+            advanceTimeBy(60_000)
+            assertEquals(384, transport.emulator.rows.size)
         }
 
     @Test

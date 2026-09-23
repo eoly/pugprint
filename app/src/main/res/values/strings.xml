@@ -51,6 +51,7 @@
 
     <string name="draw_title">Draw a sticker</string>
     <string name="draw_canvas_description">Your drawing</string>
+    <string name="draw_canvas_round_description">Your drawing on a round sticker; the faded corners will not print</string>
     <string name="draw_hint_empty">Draw something — or tap Next to use just words and stamps</string>
     <string name="draw_hint">Words and stamps come next</string>
     <string name="draw_brush_thin">Thin</string>
@@ -75,6 +76,7 @@
     <string name="editor_print">Print</string>
     <string name="editor_crop_hint">Pinch to zoom, drag to move</string>
     <string name="editor_crop_description">Your picture inside the sticker. Pinch to zoom, drag to move</string>
+    <string name="editor_crop_round_description">Your picture inside the round sticker; the faded corners will not print. Pinch to zoom, drag to move</string>
     <string name="editor_stamps_canvas_description">Your sticker. Drag to move the newest stamp</string>
     <string name="editor_shape_square">Square</string>
     <string name="editor_shape_tall">Tall</string>

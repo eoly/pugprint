@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,8 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -39,6 +42,7 @@ import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.imaging.CaptionPlacement
 import com.example.pugprint.imaging.CropShape
 import com.example.pugprint.imaging.DitherMode
+import com.example.pugprint.imaging.LabelShape
 import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.ui.home.PrinterStatus
@@ -119,7 +123,7 @@ private fun ColumnScope.CropStep(
         contentAlignment = Alignment.Center,
     ) {
         // Loose constraints: aspectRatio picks the largest frame that fits both width and height.
-        CropFrame(image = bitmap, window = window, onTransform = actions.onTransform)
+        CropFrame(image = bitmap, window = window, onTransform = actions.onTransform, labelShape = state.labelShape)
     }
     Spacer(Modifier.height(PugSpacing.small))
     Text(
@@ -168,6 +172,8 @@ private fun ColumnScope.Dots(
             CircularProgressIndicator()
         } else {
             val bitmap = remember(preview) { preview.toImageBitmap() }
+            // A round sticker is shown round: the dots outside the circle are already white.
+            val outline = if (state.labelShape == LabelShape.CIRCLE) CircleShape else RectangleShape
             Image(
                 bitmap = bitmap,
                 contentDescription =
@@ -186,8 +192,9 @@ private fun ColumnScope.Dots(
                     Modifier
                         .padding(horizontal = PREVIEW_INSET)
                         .aspectRatio(preview.width.toFloat() / preview.height)
+                        .clip(outline)
                         .background(Color.White)
-                        .border(1.dp, MaterialTheme.colorScheme.outline)
+                        .border(1.dp, MaterialTheme.colorScheme.outline, outline)
                         .then(
                             if (onDrag == null) {
                                 Modifier

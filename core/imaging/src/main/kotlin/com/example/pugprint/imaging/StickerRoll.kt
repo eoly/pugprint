@@ -15,13 +15,21 @@ public data class PrintPlacement(
     }
 }
 
+/** The outline of one sticker. A plain roll and a square label are rectangles; a round label is a circle. */
+public enum class LabelShape {
+    RECTANGLE,
+
+    /** The picture is clipped to the circle inscribed in its square, so nothing prints on the backing. */
+    CIRCLE,
+}
+
 /**
  * One kind of paper. A die-cut label roll fixes the sticker's size and shape; a plain roll
  * lets the picture be as tall as it likes. **To add a roll, add one [StickerRoll] to
  * [StickerRollCatalog.all]** with a ruler in hand.
  *
  * @property id stable key saved in settings; never rename once shipped.
- * @property labelMm the label's printable face, or `null` for continuous paper.
+ * @property labelMm the label's printable face (and its outline), or `null` for continuous paper.
  * @property gapMm paper between two labels (informational; the firmware feeds to the next label itself).
  * @property placement where the picture sits on the canvas so it prints centred.
  */
@@ -32,13 +40,22 @@ public data class StickerRoll(
     val gapMm: Float = 0f,
     val placement: PrintPlacement = PrintPlacement(),
 ) {
-    /** A label's printable face in millimetres. */
+    /** A label's printable face in millimetres; a [LabelShape.CIRCLE] is [widthMm] across. */
     public data class LabelSize(
         val widthMm: Float,
         val heightMm: Float,
-    )
+        val shape: LabelShape = LabelShape.RECTANGLE,
+    ) {
+        init {
+            require(widthMm > 0f && heightMm > 0f) { "A label must have a size" }
+            require(shape != LabelShape.CIRCLE || widthMm == heightMm) { "A round label is as tall as it is wide" }
+        }
+    }
 
     public val isLabel: Boolean get() = labelMm != null
+
+    /** The sticker's outline; [LabelShape.RECTANGLE] for plain paper. */
+    public val shape: LabelShape get() = labelMm?.shape ?: LabelShape.RECTANGLE
 
     /** Dots across the picture: the head minus the insets. */
     public val contentWidth: Int = HEAD_DOTS - placement.leftInsetDots - placement.rightInsetDots
@@ -52,7 +69,14 @@ public data class StickerRoll(
 
     init {
         require(contentWidth > 0 && contentHeight > 0) { "$id: placement leaves no room to print" }
+        require(shape != LabelShape.CIRCLE || contentWidth == contentHeight) {
+            "$id: a round label needs square content"
+        }
     }
+
+    /** The dots for [sticker] on this roll: rendered at the roll's size and cut to its [shape]; see [place]. */
+    public fun render(sticker: Sticker): MonoBitmap =
+        StickerRenderer.render(sticker, width = contentWidth, maxRows = contentHeight, shape = shape)
 
     /**
      * Pads [content] (exactly [contentWidth] wide) onto the head-wide canvas: white to the left,
@@ -96,11 +120,26 @@ public object StickerRollCatalog {
             placement = PrintPlacement(topMarginRows = SQUARE_TOP_ROWS, rightInsetDots = SQUARE_RIGHT_DOTS),
         )
 
+    /**
+     * Round stickers on the same 58 mm web as [SquareStandard]: 49.2 mm across, so the label sits
+     * where the square one does and the picture gets the same 365-dot placement, then is cut to the
+     * inscribed circle. **Not yet measured on paper** (2026-09-22): if a print lands off-centre,
+     * adjust this roll's [PrintPlacement] with a ruler, not the square roll's.
+     */
+    public val CircleStandard: StickerRoll =
+        StickerRoll(
+            id = "circle-49",
+            displayName = "Round stickers",
+            labelMm = StickerRoll.LabelSize(widthMm = 49.2f, heightMm = 49.2f, shape = LabelShape.CIRCLE),
+            gapMm = 12.7f,
+            placement = PrintPlacement(topMarginRows = SQUARE_TOP_ROWS, rightInsetDots = SQUARE_RIGHT_DOTS),
+        )
+
     /** Plain 58 mm thermal paper: any shape, up to the pipeline's length cap. */
     public val Continuous: StickerRoll = StickerRoll(id = "continuous", displayName = "Plain roll")
 
     /** In picker order. */
-    public val all: List<StickerRoll> = listOf(SquareStandard, Continuous)
+    public val all: List<StickerRoll> = listOf(SquareStandard, CircleStandard, Continuous)
 
     public val default: StickerRoll = SquareStandard
 

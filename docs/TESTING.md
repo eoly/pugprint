@@ -45,7 +45,8 @@ screen at font scale 1.5 for the `*_bigText` goldens, which catch clipped or tru
   `TextRasterizerTest` records `font_<id>.pbm` (a pangram per `FontCatalog` font) and
   `StickerRendererTest` records `sticker_caption_bottom.pbm` / `sticker_caption_top.pbm` /
   `sticker_stamps.pbm`; `StampCatalogTest` records `stamp_<id>.pbm` per stamp; `StrokeRasterizerTest` records
-  `drawing_face.pbm`; `StickerRollCatalogTest` records `roll_square_placement.pbm`.
+  `drawing_face.pbm`; `StickerRollCatalogTest` records `roll_square_placement.pbm` / `roll_circle_placement.pbm`;
+  round-sticker rendering is `sticker_circle_caption.pbm`.
   Re-record with `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true` and eyeball the
   PBMs (any image viewer opens P1 PBM). `GrayImageTest`, `CropWindowTest` and
   `ImagePipelineTest` pin the rotate/crop/scale maths and the crop-frame geometry.
@@ -88,6 +89,10 @@ unless marked.
       are gone (lines mid-print mean rows arrived late).
 - [x] On the square sticker roll the picture lands centred on the label (run 2026-09-22 after
       the 365-dot placement; "works well").
+- [ ] On the round sticker roll ("Round stickers" on home) a photo with words lands centred on the
+      label with no ink on the backing. The roll reuses the square roll's placement unmeasured; if
+      it is off, adjust `CircleStandard`'s `PrintPlacement` in `StickerRoll.kt` and re-record
+      `roll_circle_placement.pbm`.
 - [ ] Low-battery warning surfaces. *(Not reproducible with a charged unit; threshold 7000 mV is provisional.)*
 - [x] Disconnect (printer off / asleep) then auto-reconnect: link loss → "trying again" → reconnected ~10 s later.
 - [ ] Print immediately after device wake from sleep.
