@@ -1,5 +1,6 @@
 package com.example.pugprint.imaging
 
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -93,7 +94,7 @@ public class Outline private constructor() {
         size: BrushSize = BrushSize.MEDIUM,
     ): Unit = arc(cx, cy, rx, ry, fromDegrees = 0f, toDegrees = FULL_TURN, size = size)
 
-    /** The part of an ellipse from [fromDegrees] to [toDegrees]. */
+    /** The part of an ellipse from [fromDegrees] to [toDegrees], either way round. */
     @Suppress("LongParameterList") // a shape is its geometry
     public fun arc(
         cx: Float,
@@ -105,7 +106,7 @@ public class Outline private constructor() {
         size: BrushSize = BrushSize.MEDIUM,
     ) {
         val sweep = toDegrees - fromDegrees
-        val steps = (sweep / DEGREES_PER_SEGMENT).roundToInt().coerceAtLeast(1)
+        val steps = (abs(sweep) / DEGREES_PER_SEGMENT).roundToInt().coerceAtLeast(1)
         val points =
             (0..steps).map { i ->
                 val a = Math.toRadians((fromDegrees + sweep * i / steps).toDouble())

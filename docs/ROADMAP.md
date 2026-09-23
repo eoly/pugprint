@@ -102,8 +102,8 @@
      curve. Crop frame, preview and draw sheet all show the circle.
 - **Phase 5b — Coloring pages** (ADR 0008): pre-made outline pictures a kid prints and colours in
   with crayons. Each task is one PR.
-  1. ✅ **Catalog + goldens** — `ColoringPage` / `ColoringPageCatalog` in `:core:imaging` (six pages:
-     pug, star, flower, fish, butterfly, rocket) drawn with the `Outline` builder (`circle`,
+  1. ✅ **Catalog + goldens** — `ColoringPage` / `ColoringPageCatalog` in `:core:imaging` (twelve pages:
+     pug, heart, star, cat, sun, flower, rainbow, ice cream, cupcake, fish, butterfly, rocket) drawn with the `Outline` builder (`circle`,
      `ellipse`, `arc`, `path`, `loop`, `star`, `dot` in page fractions; `BrushSize` picks the line
      weight); a page is a `Drawing`, rendered by `StrokeRasterizer`. `ColoringPageCatalogTest`
      enumerates the catalog: ids, names, outlines only (3–30 % ink), all ink inside
