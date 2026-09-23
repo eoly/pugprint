@@ -7,8 +7,9 @@ All notable changes to PugPrint are documented here. The format follows
 
 ### Added
 - Round stickers. `LabelShape` (`RECTANGLE` / `CIRCLE`) on a `StickerRoll`'s label and a "Round
-  stickers" roll (`circle-49`: measured on the same liner as the square roll — 1/8 in beside,
-  1/4 in above and below — so 49.2 mm across with the square roll's placement). `StickerRenderer.render` takes the shape:
+  stickers" roll (`circle-49`, 49.2 mm across on the square roll's liner; hardware-tuned over
+  five prints: a 356-dot circle with no top margin, 18 dots free on the left and 10 on the right,
+  because the printer starts a round label 1/16–1/8 in below its top and the head cannot start higher). `StickerRenderer.render` takes the shape:
   on a circle the caption becomes a white cap whose letters are shrunk a step at a time until
   they fit inside the curve (≤ 70 % of the width, cap ≤ 40 % of the height) and everything
   outside the inscribed circle is cleared (`BitCanvas.clearOutsideEllipse`), so nothing prints

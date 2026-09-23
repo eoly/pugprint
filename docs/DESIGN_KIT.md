@@ -104,7 +104,8 @@ Edit the file in `components/`; every screen picks it up. Then re-record the pic
 Rolls live at `core/imaging/src/main/kotlin/com/example/pugprint/imaging/StickerRoll.kt`
 (`StickerRollCatalog`). Copy the `SquareStandard` block (or `CircleStandard` for round labels),
 give it an `id`, a `displayName` and the label's width and height in mm; for a round label add
-`shape = LabelShape.CIRCLE` (width and height must match). Print one sticker, measure the white
+`shape = LabelShape.CIRCLE` (width and height must match; the picture is a circle as wide as the
+head minus the left and right insets, so shrink it with the insets if the printer starts too low). Print one sticker, measure the white
 gaps on each side, and set `PrintPlacement`: white rows to add on top and dots to leave free on
 the right (the head cannot print further left or higher than it does). Add it to `all`; it
 appears under "Which stickers are in the printer?" by itself. A round roll gets the circle guide

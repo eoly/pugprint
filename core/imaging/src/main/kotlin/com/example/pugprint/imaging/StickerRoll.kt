@@ -61,16 +61,21 @@ public data class StickerRoll(
     public val contentWidth: Int = HEAD_DOTS - placement.leftInsetDots - placement.rightInsetDots
 
     /**
-     * Rows the picture may take: for a label, what is left of one canvas after the top margin
-     * (the canvas is [HEAD_DOTS] rows, which the standard roll proved fits one label); for a plain
-     * roll, the pipeline's safety cap.
+     * Rows the picture may take: for a round label, as many as it is wide (a circle is square); for
+     * another label, what is left of one canvas after the top margin (the canvas is [HEAD_DOTS] rows,
+     * which the standard roll proved fits one label); for a plain roll, the pipeline's safety cap.
      */
-    public val contentHeight: Int = if (isLabel) HEAD_DOTS - placement.topMarginRows else ImagePipeline.MAX_ROWS
+    public val contentHeight: Int =
+        when {
+            shape == LabelShape.CIRCLE -> contentWidth
+            isLabel -> HEAD_DOTS - placement.topMarginRows
+            else -> ImagePipeline.MAX_ROWS
+        }
 
     init {
         require(contentWidth > 0 && contentHeight > 0) { "$id: placement leaves no room to print" }
-        require(shape != LabelShape.CIRCLE || contentWidth == contentHeight) {
-            "$id: a round label needs square content"
+        require(!isLabel || contentHeight + placement.topMarginRows <= HEAD_DOTS) {
+            "$id: placement pushes the picture off the label"
         }
     }
 
@@ -121,11 +126,13 @@ public object StickerRollCatalog {
         )
 
     /**
-     * Round stickers, measured 2026-09-22: the label sits on the web with 1/8 in (3.2 mm) of liner
-     * on each side and 1/4 in (6.35 mm) above and below — the same liner as [SquareStandard], so the
-     * label is 49.2 mm across with the same 12.7 mm gap and gets the same 365-dot placement, then is
-     * cut to the inscribed circle. If a print lands off-centre, adjust this roll's [PrintPlacement]
-     * with a ruler, not the square roll's.
+     * Round stickers: 49.2 mm (394 dots) across, on the same liner as [SquareStandard] (1/8 in of
+     * liner each side, 1/4 in above and below, 12.7 mm gap). Five prints on 2026-09-22 fixed the
+     * geometry: even with no top margin the printer starts a round label's picture 1/16–1/8 in
+     * (13–25 rows, it varies print to print) below the top edge (the square roll starts flush — the
+     * gap sensor must sit off-centre and see the circle's edge late), and the head's left edge sits
+     * about 7 dots inside the label's left edge. Neither can move, so the picture is a 356-dot
+     * (44.5 mm) circle placed to leave about 19 dots (2.4 mm) of white on every side.
      */
     public val CircleStandard: StickerRoll =
         StickerRoll(
@@ -133,7 +140,8 @@ public object StickerRollCatalog {
             displayName = "Round stickers",
             labelMm = StickerRoll.LabelSize(widthMm = 49.2f, heightMm = 49.2f, shape = LabelShape.CIRCLE),
             gapMm = 12.7f,
-            placement = PrintPlacement(topMarginRows = SQUARE_TOP_ROWS, rightInsetDots = SQUARE_RIGHT_DOTS),
+            placement =
+                PrintPlacement(topMarginRows = 0, leftInsetDots = CIRCLE_LEFT_DOTS, rightInsetDots = CIRCLE_RIGHT_DOTS),
         )
 
     /** Plain 58 mm thermal paper: any shape, up to the pipeline's length cap. */
@@ -149,4 +157,8 @@ public object StickerRollCatalog {
 
     private const val SQUARE_TOP_ROWS = 19
     private const val SQUARE_RIGHT_DOTS = 19
+
+    /** 394-dot label, 19 white each side → 356-dot circle; the head is ~7 dots in on the left; 384 - 18 - 356. */
+    private const val CIRCLE_LEFT_DOTS = 18
+    private const val CIRCLE_RIGHT_DOTS = 10
 }

@@ -72,25 +72,28 @@ class StickerRollCatalogTest {
     }
 
     @Test
-    fun `the round roll shares the square roll's placement and cuts the picture to a circle`() {
+    fun `the round roll is a 356-dot circle with no top margin, 18 dots free on the left and 10 on the right`() {
         val roll = StickerRollCatalog.CircleStandard
         assertTrue(roll.isLabel)
         assertEquals(LabelShape.CIRCLE, roll.shape)
-        assertEquals(StickerRollCatalog.SquareStandard.placement, roll.placement)
-        assertEquals(365, roll.contentWidth)
-        assertEquals(365, roll.contentHeight)
+        assertEquals(PrintPlacement(topMarginRows = 0, leftInsetDots = 18, rightInsetDots = 10), roll.placement)
+        assertEquals(356, roll.contentWidth)
+        assertEquals(356, roll.contentHeight, "a circle is as tall as it is wide")
 
         val dots = roll.render(Sticker(SyntheticPhoto.render(), crop = squareCrop, mode = DitherMode.DRAWING))
-        assertEquals(365, dots.width)
-        assertEquals(365, dots.height)
-        // Corners are white whatever the picture; the edge midpoints are inside the circle.
+        assertEquals(356, dots.width)
+        assertEquals(356, dots.height)
+        // Corners are white whatever the picture.
         assertFalse(dots.isBlack(0, 0))
-        assertFalse(dots.isBlack(364, 0))
-        assertFalse(dots.isBlack(0, 364))
-        assertFalse(dots.isBlack(364, 364))
+        assertFalse(dots.isBlack(355, 0))
+        assertFalse(dots.isBlack(0, 355))
+        assertFalse(dots.isBlack(355, 355))
         val placed = roll.place(dots)
         assertEquals(384, placed.width)
         assertEquals(384, placed.height)
+        // The circle's leftmost dots start 18 in; the left inset and the rows below the circle are white.
+        assertTrue((0 until 18).none { x -> (0 until 384).any { y -> placed.isBlack(x, y) } })
+        assertTrue((356 until 384).none { y -> (0 until 384).any { x -> placed.isBlack(x, y) } })
         Pbm.assertMatchesGolden("roll_circle_placement", placed)
     }
 
@@ -101,7 +104,7 @@ class StickerRollCatalogTest {
     }
 
     @Test
-    fun `a round label must be as tall as it is wide, with square content`() {
+    fun `a round label must be as tall as it is wide, and its circle must fit under the top margin`() {
         assertThrows(IllegalArgumentException::class.java) {
             StickerRoll.LabelSize(widthMm = 50f, heightMm = 30f, shape = LabelShape.CIRCLE)
         }
@@ -110,7 +113,7 @@ class StickerRollCatalogTest {
                 id = "oval",
                 displayName = "Oval",
                 labelMm = StickerRoll.LabelSize(49.2f, 49.2f, LabelShape.CIRCLE),
-                placement = PrintPlacement(topMarginRows = 100),
+                placement = PrintPlacement(topMarginRows = 100), // 384-dot circle + 100 rows > one canvas
             )
         }
     }

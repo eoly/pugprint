@@ -407,10 +407,10 @@ class EditorViewModelTest {
             viewModel.onCaptionChanged("Woof")
             runCurrent()
             val preview = viewModel.uiState.value.preview!!
-            assertEquals(365, preview.width)
-            assertEquals(365, preview.height)
+            assertEquals(356, preview.width)
+            assertEquals(356, preview.height)
             assertFalse(preview.isBlack(0, 0), "the corner outside the circle is white")
-            assertFalse(preview.isBlack(364, 364))
+            assertFalse(preview.isBlack(355, 355))
 
             viewModel.onPrintClicked()
             advanceTimeBy(60_000)
