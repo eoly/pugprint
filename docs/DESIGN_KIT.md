@@ -22,6 +22,7 @@ ui/design/src/main/kotlin/com/example/pugprint/design/
 │   └── Contrast.kt       ← the readability maths the tests use
 ├── components/           ← the building blocks every screen uses
 │   ├── KidScreen.kt      ← the frame: back button + title + padding (and HeroTitle)
+│   ├── PugLogo.kt        ← the pug (res/drawable/pug_logo.xml), hero or small size
 │   ├── BigButton.kt      ← Primary / Secondary / Quiet buttons
 │   ├── ChoiceRow.kt      ← "pick one" tiles (Square / Tall / Wide / Whole)
 │   ├── StatusBanner.kt   ← Info / Working / Problem / Success cards

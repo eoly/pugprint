@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Monochrome launcher layer (themed icons): the pug silhouette with the paper strip cut out. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <group android:name="launcher" android:pivotX="144" android:pivotY="144" android:scaleX="0.95" android:scaleY="0.95">
+        <group android:name="root" android:pivotX="144" android:pivotY="144" android:scaleX="0.93" android:scaleY="0.93">
+            <path
+                android:pathData="M84,122 A60,52 0 1,0 204,122 A60,52 0 1,0 84,122 Z"
+                android:fillColor="#000000"
+                android:strokeColor="#000000"
+                android:strokeWidth="12"
+                android:strokeLineJoin="round"
+                android:strokeLineCap="round" />
+            <path
+                android:pathData="M74,146 A30,30 0 1,0 134,146 A30,30 0 1,0 74,146 Z"
+                android:fillColor="#000000"
+                android:strokeColor="#000000"
+                android:strokeWidth="12"
+                android:strokeLineJoin="round"
+                android:strokeLineCap="round" />
+            <path
+                android:pathData="M154,146 A30,30 0 1,0 214,146 A30,30 0 1,0 154,146 Z"
+                android:fillColor="#000000"
+                android:strokeColor="#000000"
+                android:strokeWidth="12"
+                android:strokeLineJoin="round"
+                android:strokeLineCap="round" />
+            <path
+                android:pathData="M122,72 C110,64 90,68 79,80 C72,88 74,102 83,111 C89,105 97,98 105,94 C113,89 119,82 122,72 Z"
+                android:fillColor="#000000"
+                android:strokeColor="#000000"
+                android:strokeWidth="12"
+                android:strokeLineJoin="round"
+                android:strokeLineCap="round" />
+            <path
+                android:pathData="M166,72 C178,64 198,68 209,80 C216,88 214,102 205,111 C199,105 191,98 183,94 C175,89 169,82 166,72 Z"
+                android:fillColor="#000000"
+                android:strokeColor="#000000"
+                android:strokeWidth="12"
+                android:strokeLineJoin="round"
+                android:strokeLineCap="round" />
+            <group android:name="paper_clip">
+                <clip-path android:pathData="M100,162 H188 V250 H100 Z" />
+                <path
+                    android:pathData="M118,150 H170 V228 L168,232 L166,228 L164,232 L162,228 L160,232 L158,228 L156,232 L154,228 L152,232 L150,228 L148,232 L146,228 L144,232 L142,228 L140,232 L138,228 L136,232 L134,228 L132,232 L130,228 L128,232 L126,228 L124,232 L122,228 L120,232 L118,228 Z"
+                    android:fillColor="#000000"
+                    android:fillAlpha="0.45" />
+            </group>
+        </group>
+    </group>
+</vector>

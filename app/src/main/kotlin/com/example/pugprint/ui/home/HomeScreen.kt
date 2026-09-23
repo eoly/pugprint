@@ -19,6 +19,7 @@ import com.example.pugprint.design.components.ButtonEmphasis
 import com.example.pugprint.design.components.ChoiceRow
 import com.example.pugprint.design.components.HeroTitle
 import com.example.pugprint.design.components.KidScreen
+import com.example.pugprint.design.components.PugLogo
 import com.example.pugprint.design.components.StatusBanner
 import com.example.pugprint.design.components.ThemePicker
 import com.example.pugprint.design.theme.PugPrintTheme
@@ -43,7 +44,9 @@ fun HomeScreen(
         }
     }
     KidScreen(modifier = modifier, scrollable = true) {
-        Spacer(Modifier.height(PugSpacing.huge))
+        Spacer(Modifier.height(PugSpacing.large))
+        PugLogo()
+        Spacer(Modifier.height(PugSpacing.small))
         HeroTitle(stringResource(R.string.home_title))
         Spacer(Modifier.height(PugSpacing.large))
         PrinterStatus(state)

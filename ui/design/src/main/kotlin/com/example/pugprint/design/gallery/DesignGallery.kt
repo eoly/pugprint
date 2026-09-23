@@ -20,9 +20,11 @@ import com.example.pugprint.design.components.ButtonEmphasis
 import com.example.pugprint.design.components.ChoiceRow
 import com.example.pugprint.design.components.HeroTitle
 import com.example.pugprint.design.components.KidScreen
+import com.example.pugprint.design.components.PugLogo
 import com.example.pugprint.design.components.StatusBanner
 import com.example.pugprint.design.components.ThemePicker
 import com.example.pugprint.design.theme.LocalPugTheme
+import com.example.pugprint.design.theme.PugLayout
 import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.design.theme.PugTheme
@@ -44,6 +46,10 @@ fun DesignGallery(
     var choice by remember { mutableStateOf("Square") }
     KidScreen(modifier = modifier, title = theme.displayName, onBack = onBack, onHome = onHome) {
         Column(verticalArrangement = Arrangement.spacedBy(PugSpacing.medium), modifier = Modifier.fillMaxWidth()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(PugSpacing.medium)) {
+                PugLogo()
+                PugLogo(size = PugLayout.smallLogo)
+            }
             HeroTitle("PugPrint")
             Text("Body text and a hint below it.", style = MaterialTheme.typography.bodyLarge)
             Text(

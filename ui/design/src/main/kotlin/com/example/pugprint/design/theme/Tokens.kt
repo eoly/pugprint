@@ -31,4 +31,10 @@ object PugLayout {
 
     /** Space between the content and the screen edge. */
     val screenPadding: Dp = PugSpacing.large
+
+    /** The pug logo above a hero title. */
+    val heroLogo: Dp = 128.dp
+
+    /** The pug logo tucked into a header or a row. */
+    val smallLogo: Dp = 56.dp
 }
