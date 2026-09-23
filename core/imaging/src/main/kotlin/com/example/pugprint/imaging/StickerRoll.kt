@@ -121,10 +121,11 @@ public object StickerRollCatalog {
         )
 
     /**
-     * Round stickers on the same 58 mm web as [SquareStandard]: 49.2 mm across, so the label sits
-     * where the square one does and the picture gets the same 365-dot placement, then is cut to the
-     * inscribed circle. **Not yet measured on paper** (2026-09-22): if a print lands off-centre,
-     * adjust this roll's [PrintPlacement] with a ruler, not the square roll's.
+     * Round stickers, measured 2026-09-22: the label sits on the web with 1/8 in (3.2 mm) of liner
+     * on each side and 1/4 in (6.35 mm) above and below — the same liner as [SquareStandard], so the
+     * label is 49.2 mm across with the same 12.7 mm gap and gets the same 365-dot placement, then is
+     * cut to the inscribed circle. If a print lands off-centre, adjust this roll's [PrintPlacement]
+     * with a ruler, not the square roll's.
      */
     public val CircleStandard: StickerRoll =
         StickerRoll(

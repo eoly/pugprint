@@ -90,9 +90,10 @@ unless marked.
 - [x] On the square sticker roll the picture lands centred on the label (run 2026-09-22 after
       the 365-dot placement; "works well").
 - [ ] On the round sticker roll ("Round stickers" on home) a photo with words lands centred on the
-      label with no ink on the backing. The roll reuses the square roll's placement unmeasured; if
-      it is off, adjust `CircleStandard`'s `PrintPlacement` in `StickerRoll.kt` and re-record
-      `roll_circle_placement.pbm`.
+      label with no ink on the backing. The roll's liner measured the same as the square roll's
+      (1/8 in each side, 1/4 in above and below, 2026-09-22) so it shares that placement; if a
+      print is still off, adjust `CircleStandard`'s `PrintPlacement` in `StickerRoll.kt` and
+      re-record `roll_circle_placement.pbm`.
 - [ ] Low-battery warning surfaces. *(Not reproducible with a charged unit; threshold 7000 mV is provisional.)*
 - [x] Disconnect (printer off / asleep) then auto-reconnect: link loss → "trying again" → reconnected ~10 s later.
 - [ ] Print immediately after device wake from sleep.
