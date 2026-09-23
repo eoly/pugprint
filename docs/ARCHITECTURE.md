@@ -8,11 +8,13 @@
   permission prompt and the Companion Device Manager picker (`IntentSender`).
   `HomeRoute` also launches the system Photo Picker; `EditorRoute` owns the editor's
   back-stack behaviour: Back returns to where the picture came from, while a finished print and
-  the header's Home button pop to `home` (progress and "Print it again" live there). `PugPrintNavHost` (navigation-compose, string routes) holds four
-  screens: `home`, `draw`, `editor/{photo}` and `gallery` (debug builds only: the design kit's
+  the header's Home button pop to `home` (progress and "Print it again" live there). `PugPrintNavHost` (navigation-compose, string routes) holds five
+  screens: `home`, `draw`, `coloring`, `editor/{photo}` and `gallery` (debug builds only: the design kit's
   `DesignGallery` in any theme, a preview that saves nothing). `DrawRoute` / `DrawViewModel` keep a `Drawing`
   (strokes as fractions of the sheet) and, on Next, rasterise it into `DrawingHandoff`; the
-  editor opens `DrawingHandoff.URI` like any picture via `HandoffPhotoSource`.
+  editor opens `DrawingHandoff.URI` like any picture via `HandoffPhotoSource`. `ColoringRoute` /
+  `ColoringViewModel` show `ColoringPageCatalog` as tiles and hand a tapped page to the editor
+  the same way (ADR 0008).
 - **Domain**: `PrinterManager` — the app-wide connection state machine (pair, connect,
   identify, reconnect with backoff, `printImage`). `EditorViewModel` drives the edit:
   `PhotoSource` → `GrayImage` → `CropWindow` (pan/zoom/shape/rotate) → `Sticker` (+ caption)

@@ -24,6 +24,7 @@
     <string name="home_connect">Connect a printer</string>
     <string name="home_print_photo">Print a photo</string>
     <string name="home_draw">Draw a sticker</string>
+    <string name="home_color">Color a picture</string>
     <string name="home_print_again">Print it again</string>
     <string name="home_print_test">Print a test page</string>
     <string name="home_forget">Forget printer</string>
@@ -48,6 +49,9 @@
     <string name="message_pairing_unavailable_hint">Ask a grown-up to try another phone or tablet</string>
     <string name="message_permission_denied">Bluetooth is needed to talk to the printer</string>
     <string name="message_permission_denied_hint">Tap Connect a printer and say yes to Bluetooth</string>
+
+    <string name="coloring_title">Color a picture</string>
+    <string name="coloring_hint">Tap a picture to print it, then color it in with crayons</string>
 
     <string name="draw_title">Draw a sticker</string>
     <string name="draw_canvas_description">Your drawing</string>

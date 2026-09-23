@@ -23,6 +23,7 @@ import com.example.pugprint.bluetooth.BluetoothPermissions
 fun HomeRoute(
     onPhotoPicked: (Uri) -> Unit,
     onDraw: () -> Unit,
+    onColor: () -> Unit,
     onDesignGallery: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -73,6 +74,7 @@ fun HomeRoute(
                     photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
                 onDraw = onDraw,
+                onColor = onColor,
                 onDesignGallery = onDesignGallery,
                 onPrintTestPage = viewModel::onPrintTestPageClicked,
                 onPrintAgain = viewModel::onPrintAgainClicked,

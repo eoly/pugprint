@@ -109,10 +109,12 @@
      enumerates the catalog: ids, names, outlines only (3–30 % ink), all ink inside
      `SAFE_RADIUS` so the page prints whole on round labels, a golden `coloring_<id>.pbm` each.
      Handbook recipe "Add a coloring page".
-  2. **Picker screen** — "Colour a picture" on home → `ColoringRoute`: a grid of page previews on
-     kit tiles (`PugTouch` sizes, round guide on a round roll); tapping one renders it into
-     `DrawingHandoff` and opens the editor on the preview in Drawing style, so words, stamps and
-     the roll all work unchanged. Roborazzi golden (+ `_bigText`), a11y audit, ViewModel test.
+  2. ✅ **Picker screen** — "Color a picture" on home → `ColoringRoute` / `ColoringViewModel` /
+     `ColoringScreen`: the pages two to a row as big tiles (preview + name, the round guide on a
+     round roll); tapping one renders it into `DrawingHandoff` and opens the editor on the
+     preview in Drawing style, so words, stamps and the roll all work unchanged. Roborazzi
+     goldens (+ `_bigText`, round roll), a11y audit (now measures a tile's laid-out size, so a
+     scrolled-off tile counts), ViewModel test.
   3. **Colour it on the tablet** — a page can open on the draw sheet with its outline already
      there (`DrawViewModel` takes a starting `Drawing`; Undo stops at the outline), for kids
      who want to add their own lines before printing.
