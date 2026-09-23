@@ -6,6 +6,17 @@ All notable changes to PugPrint are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Round stickers. `LabelShape` (`RECTANGLE` / `CIRCLE`) on a `StickerRoll`'s label and a "Round
+  stickers" roll (`circle-49`, 49.2 mm across on the square roll's liner; hardware-tuned over
+  five prints: a 356-dot circle with no top margin, 18 dots free on the left and 10 on the right,
+  because the printer starts a round label 1/16–1/8 in below its top and the head cannot start higher). `StickerRenderer.render` takes the shape:
+  on a circle the caption becomes a white cap whose letters are shrunk a step at a time until
+  they fit inside the curve (≤ 70 % of the width, cap ≤ 40 % of the height) and everything
+  outside the inscribed circle is cleared (`BitCanvas.clearOutsideEllipse`), so nothing prints
+  on the backing; `StickerRoll.render(sticker)` wraps it. The crop frame fades the corners
+  outside the circle and draws its edge, the preview is shown round, and the draw sheet shows
+  the same circle guide (`drawRoundStickerGuide`; `DrawViewModel` now reads the roll setting).
+  Goldens `sticker_circle_caption.pbm` / `roll_circle_placement.pbm`.
 - Phase 5 designer tools. Debug builds show a "Design gallery" button on the home screen:
   every kit component in any theme, switchable in place without touching the saved look
   (`GalleryRoute` / `GalleryViewModel`; `DesignGallery` gained callbacks). `docs/DESIGN_KIT.md`

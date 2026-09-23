@@ -39,8 +39,10 @@ import com.example.pugprint.design.components.KidScreen
 import com.example.pugprint.design.theme.PugSpacing
 import com.example.pugprint.imaging.BrushSize
 import com.example.pugprint.imaging.DrawPoint
+import com.example.pugprint.imaging.LabelShape
 import com.example.pugprint.imaging.Stroke
 import com.example.pugprint.imaging.StrokeRasterizer
+import com.example.pugprint.ui.imaging.drawRoundStickerGuide
 import androidx.compose.ui.graphics.drawscope.Stroke as StrokeStyle
 
 @Composable
@@ -99,13 +101,19 @@ fun DrawScreen(
     }
 }
 
-/** A square white sheet the size of one sticker; strokes are drawn as they will print. */
+/**
+ * A square white sheet the size of one sticker; strokes are drawn as they will print. On a round
+ * roll the corners outside the circle are faded: they will not print.
+ */
 @Composable
 private fun ColumnScope.DrawingCanvas(
     state: DrawUiState,
     actions: DrawActions,
 ) {
-    val description = stringResource(R.string.draw_canvas_description)
+    val round = state.labelShape == LabelShape.CIRCLE
+    val description =
+        stringResource(if (round) R.string.draw_canvas_round_description else R.string.draw_canvas_description)
+    val guideColour = MaterialTheme.colorScheme.outline
     Box(
         modifier =
             Modifier
@@ -139,6 +147,7 @@ private fun ColumnScope.DrawingCanvas(
         ) {
             state.drawing.strokes.forEach { drawStroke(it) }
             state.current?.let { drawStroke(it) }
+            if (round) drawRoundStickerGuide(guideColour)
         }
     }
 }

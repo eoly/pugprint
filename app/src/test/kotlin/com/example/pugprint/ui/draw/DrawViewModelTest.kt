@@ -4,7 +4,10 @@ import com.example.pugprint.imaging.BrushSize
 import com.example.pugprint.imaging.Dither
 import com.example.pugprint.imaging.DrawPoint
 import com.example.pugprint.imaging.DrawingHandoff
+import com.example.pugprint.imaging.LabelShape
 import com.example.pugprint.imaging.Stroke
+import com.example.pugprint.settings.AppSettings
+import com.example.pugprint.settings.InMemorySettingsStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -25,6 +28,7 @@ import org.junit.jupiter.api.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class DrawViewModelTest {
     private val handoff = DrawingHandoff()
+    private val settings = InMemorySettingsStore()
 
     @BeforeEach
     fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -32,7 +36,7 @@ class DrawViewModelTest {
     @AfterEach
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun TestScope.viewModel() = DrawViewModel(handoff, UnconfinedTestDispatcher(testScheduler))
+    private fun TestScope.viewModel() = DrawViewModel(handoff, settings, UnconfinedTestDispatcher(testScheduler))
 
     @Test
     fun `a stroke is the finger's path with the brush and tool at the time`() =
@@ -106,5 +110,18 @@ class DrawViewModelTest {
             assertTrue(viewModel.finished.value)
             viewModel.onFinishedHandled()
             assertFalse(viewModel.finished.value)
+        }
+
+    @Test
+    fun `the sheet is round on the round roll and square otherwise`() =
+        runTest {
+            val viewModel = viewModel()
+            assertEquals(LabelShape.RECTANGLE, viewModel.uiState.value.labelShape)
+            settings.update { AppSettings(rollId = "circle-49") }
+            runCurrent()
+            assertEquals(LabelShape.CIRCLE, viewModel.uiState.value.labelShape)
+            settings.update { AppSettings(rollId = "continuous") }
+            runCurrent()
+            assertEquals(LabelShape.RECTANGLE, viewModel.uiState.value.labelShape)
         }
 }

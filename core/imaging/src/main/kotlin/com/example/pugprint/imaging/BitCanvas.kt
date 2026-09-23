@@ -55,9 +55,27 @@ public class BitCanvas(
         }
     }
 
+    /**
+     * Paints white everything outside the ellipse inscribed in the canvas (a circle when it is
+     * square), so a round sticker gets no ink on its backing. A dot is kept when its centre is inside.
+     */
+    public fun clearOutsideEllipse() {
+        val rx = width / 2.0
+        val ry = height / 2.0
+        for (y in 0 until height) {
+            val dy = (y + HALF - ry) / ry
+            for (x in 0 until width) {
+                val dx = (x + HALF - rx) / rx
+                if (dx * dx + dy * dy > 1.0) black[y * width + x] = false
+            }
+        }
+    }
+
     public fun toMonoBitmap(): MonoBitmap = MonoBitmap.fromPixels(width, height, black)
 
     public companion object {
+        private const val HALF = 0.5
+
         public fun from(bitmap: MonoBitmap): BitCanvas {
             val canvas = BitCanvas(bitmap.width, bitmap.height)
             for (y in 0 until bitmap.height) {

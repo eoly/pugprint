@@ -7,13 +7,19 @@ import com.example.pugprint.imaging.DrawPoint
 import com.example.pugprint.imaging.Drawing
 import com.example.pugprint.imaging.DrawingHandoff
 import com.example.pugprint.imaging.ImagingDispatcher
+import com.example.pugprint.imaging.LabelShape
+import com.example.pugprint.imaging.StickerRollCatalog
 import com.example.pugprint.imaging.Stroke
 import com.example.pugprint.imaging.StrokeRasterizer
+import com.example.pugprint.settings.SettingsStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,6 +35,8 @@ data class DrawUiState(
     val brush: BrushSize = BrushSize.MEDIUM,
     val tool: DrawTool = DrawTool.PEN,
     val rendering: Boolean = false,
+    /** The sticker's outline: on a round roll the sheet shows the circle the drawing must stay in. */
+    val labelShape: LabelShape = LabelShape.RECTANGLE,
 ) {
     val canUndo: Boolean get() = !drawing.isEmpty
 
@@ -41,12 +49,16 @@ class DrawViewModel
     @Inject
     constructor(
         private val handoff: DrawingHandoff,
+        private val settings: SettingsStore,
         @ImagingDispatcher private val dispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         private val mutableState = MutableStateFlow(DrawUiState())
         private val mutableFinished = MutableStateFlow(false)
 
-        val uiState: StateFlow<DrawUiState> = mutableState.asStateFlow()
+        val uiState: StateFlow<DrawUiState> =
+            combine(mutableState, settings.settings) { state, prefs ->
+                state.copy(labelShape = StickerRollCatalog.byId(prefs.rollId).shape)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, DrawUiState())
 
         /** Set once the drawing is in [DrawingHandoff]; the route opens the editor and calls [onFinishedHandled]. */
         val finished: StateFlow<Boolean> = mutableFinished.asStateFlow()

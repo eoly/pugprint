@@ -11,10 +11,12 @@ import com.example.pugprint.imaging.CropWindow
 import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.ImagePipeline
+import com.example.pugprint.imaging.LabelShape
 import com.example.pugprint.imaging.StampPlacement
 import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.imaging.Sticker
 import com.example.pugprint.imaging.StickerRenderer
+import com.example.pugprint.imaging.StickerRollCatalog
 import com.example.pugprint.printer.DensityLevel
 import com.example.pugprint.printer.OfflineReason
 import com.example.pugprint.ui.Screenshots
@@ -97,6 +99,44 @@ class EditorScreenScreenshotTest {
                 shapeLocked = true,
             ),
         )
+
+    @Test
+    fun editorScreen_crop_round_labelRoll() =
+        snap(
+            EditorUiState(
+                step = EditorStep.Crop,
+                image = photo,
+                window = CropWindow(photo.width, photo.height),
+                shapeLocked = true,
+                labelShape = LabelShape.CIRCLE,
+            ),
+        )
+
+    @Test
+    fun editorScreen_preview_round_labelRoll() {
+        val window = CropWindow(photo.width, photo.height)
+        snap(
+            EditorUiState(
+                step = EditorStep.Preview,
+                image = photo,
+                window = window,
+                caption = "Woof",
+                preview =
+                    StickerRollCatalog.CircleStandard.render(
+                        Sticker(
+                            photo,
+                            window.cropRect(),
+                            caption = Caption("Woof"),
+                            stamps = listOf(StampPlacement("star", 0.5f, 0.3f)),
+                        ),
+                    ),
+                shapeLocked = true,
+                labelShape = LabelShape.CIRCLE,
+                printerStatus = PrinterStatus.Connected,
+                printerName = "HB-1234",
+            ),
+        )
+    }
 
     @Test
     fun editorScreen_crop_tall_zoomed() =

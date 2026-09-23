@@ -94,5 +94,11 @@
      walkthrough and recipes for themes, fonts, stamps, rolls, brushes, words and components;
      debug builds show a **Design gallery** button on home (`GalleryRoute`, every kit component
      in any theme, preview only).
+  10. ✅ **Round stickers** — `LabelShape` on a roll's label; "Round stickers" (`circle-49`, 49.2 mm on the
+     square roll's liner; hardware-tuned 2026-09-22 over five prints to a 356-dot circle with
+     no top margin, 18 dots free left / 10 right — the printer starts a round label 1/16–1/8 in
+     below its top and the head cannot start higher, so a slightly smaller circle is centred) renders through `StickerRoll.render`,
+     which clips the dots to the inscribed circle and fits the caption as a cap inside the
+     curve. Crop frame, preview and draw sheet all show the circle.
 - **Phase 6 — Play:** internal track to the friend group → (if going public) closed test
   (12 testers/14 days) → production.

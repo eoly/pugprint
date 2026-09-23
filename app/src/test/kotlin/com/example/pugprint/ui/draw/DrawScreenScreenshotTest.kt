@@ -7,6 +7,7 @@ import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.imaging.BrushSize
 import com.example.pugprint.imaging.DrawPoint
 import com.example.pugprint.imaging.Drawing
+import com.example.pugprint.imaging.LabelShape
 import com.example.pugprint.imaging.Stroke
 import com.example.pugprint.ui.Screenshots
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -40,6 +41,21 @@ class DrawScreenScreenshotTest {
 
     @Test
     fun drawScreen_empty() = snap(DrawUiState())
+
+    @Test
+    fun drawScreen_roundRoll() =
+        snap(
+            DrawUiState(
+                drawing =
+                    Drawing().plus(
+                        Stroke(
+                            listOf(DrawPoint(0.05f, 0.05f), DrawPoint(0.5f, 0.5f), DrawPoint(0.95f, 0.2f)),
+                            BrushSize.FAT,
+                        ),
+                    ),
+                labelShape = LabelShape.CIRCLE,
+            ),
+        )
 
     @Test
     fun drawScreen_doodle() =

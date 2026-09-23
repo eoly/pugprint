@@ -106,6 +106,10 @@ editor its `contentWidth` / `contentHeight` (365 × 365 for the standard square 
 and up to `MAX_ROWS` for a plain roll) and locks the crop shape for labels; at print time
 `StickerRoll.place` pads the dots onto the 384-dot canvas with the roll's measured
 `PrintPlacement` (white on top and right for the square roll) so the picture lands centred.
+A label also has a `LabelShape`: for a `CIRCLE` (the round roll) `StickerRenderer` fits the caption
+as a cap inside the curve and clears everything outside the inscribed circle before the dots leave
+`:core:imaging`, so the preview is exactly what lands on the sticker (`StickerRoll.render` bundles
+size and shape); the crop frame, preview and draw sheet draw the same circle as a guide.
 A drawing is not a layer but a picture: `StrokeRasterizer` turns `Drawing` strokes into a
 black-on-white `GrayImage` that enters the same pipeline, so captions and stamps work on it.
 `:core:printer` never changes for a new kid feature (ADR 0007).

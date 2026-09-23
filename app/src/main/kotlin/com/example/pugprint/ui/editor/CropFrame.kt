@@ -22,11 +22,14 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.example.pugprint.R
 import com.example.pugprint.imaging.CropWindow
+import com.example.pugprint.imaging.LabelShape
+import com.example.pugprint.ui.imaging.drawRoundStickerGuide
 import kotlin.math.roundToInt
 
 /**
  * The sticker outline with the picture inside it. Pinch and drag move the picture; the maths
- * lives in [CropWindow], this only converts screen pixels to frame widths and draws.
+ * lives in [CropWindow], this only converts screen pixels to frame widths and draws. On a round
+ * sticker ([labelShape]) the corners outside the circle are dimmed: they will not print.
  */
 @Composable
 fun CropFrame(
@@ -34,10 +37,19 @@ fun CropFrame(
     window: CropWindow,
     onTransform: (zoomBy: Float, panDx: Float, panDy: Float, focalX: Float, focalY: Float) -> Unit,
     modifier: Modifier = Modifier,
+    labelShape: LabelShape = LabelShape.RECTANGLE,
 ) {
     val transform by rememberUpdatedState(onTransform)
     val shape = RoundedCornerShape(12.dp)
-    val description = stringResource(R.string.editor_crop_description)
+    val description =
+        stringResource(
+            if (labelShape == LabelShape.CIRCLE) {
+                R.string.editor_crop_round_description
+            } else {
+                R.string.editor_crop_description
+            },
+        )
+    val outlineColour = MaterialTheme.colorScheme.primary
     Canvas(
         modifier =
             modifier
@@ -72,5 +84,6 @@ fun CropFrame(
             dstSize = IntSize((image.width * pixel).roundToInt(), (image.height * pixel).roundToInt()),
             filterQuality = FilterQuality.Medium,
         )
+        if (labelShape == LabelShape.CIRCLE) drawRoundStickerGuide(outlineColour)
     }
 }

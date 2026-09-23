@@ -10,6 +10,7 @@ import com.example.pugprint.imaging.DitherMode
 import com.example.pugprint.imaging.DrawingHandoff
 import com.example.pugprint.imaging.GrayImage
 import com.example.pugprint.imaging.ImagingDispatcher
+import com.example.pugprint.imaging.LabelShape
 import com.example.pugprint.imaging.MonoBitmap
 import com.example.pugprint.imaging.PhotoLoadException
 import com.example.pugprint.imaging.PhotoSource
@@ -17,7 +18,6 @@ import com.example.pugprint.imaging.Rotation
 import com.example.pugprint.imaging.StampPlacement
 import com.example.pugprint.imaging.StampSize
 import com.example.pugprint.imaging.Sticker
-import com.example.pugprint.imaging.StickerRenderer
 import com.example.pugprint.imaging.StickerRoll
 import com.example.pugprint.imaging.StickerRollCatalog
 import com.example.pugprint.printer.DensityLevel
@@ -77,6 +77,8 @@ data class EditorUiState(
     val density: DensityLevel = DensityLevel.MEDIUM,
     /** A die-cut label is one shape, so the Square / Tall / Wide / Whole row is hidden. */
     val shapeLocked: Boolean = false,
+    /** The sticker's outline: the crop frame and the dots are shown round on a round roll. */
+    val labelShape: LabelShape = LabelShape.RECTANGLE,
     val printerStatus: PrinterStatus = PrinterStatus.NoPrinter,
     val printerName: String? = null,
     val offlineReason: OfflineReason? = null,
@@ -143,6 +145,7 @@ class EditorViewModel
                     rendering = edit.rendering,
                     density = prefs.density,
                     shapeLocked = StickerRollCatalog.byId(prefs.rollId).isLabel,
+                    labelShape = StickerRollCatalog.byId(prefs.rollId).shape,
                     printerStatus = printerState.status(),
                     printerName = printerState.deviceName(),
                     offlineReason = (printerState as? PrinterState.Offline)?.reason,
@@ -329,10 +332,7 @@ class EditorViewModel
             edit.update { it.copy(rendering = true, preview = if (it.isDetour) it.preview else null) }
             renderJob =
                 viewModelScope.launch {
-                    val dots =
-                        withContext(dispatcher) {
-                            StickerRenderer.render(sticker, width = roll.contentWidth, maxRows = roll.contentHeight)
-                        }
+                    val dots = withContext(dispatcher) { roll.render(sticker) }
                     edit.update { it.copy(preview = dots, rendering = false) }
                 }
         }
