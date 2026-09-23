@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.pugprint.design.theme.PugPrintTheme
 import com.example.pugprint.imaging.BrushSize
+import com.example.pugprint.imaging.ColoringPageCatalog
 import com.example.pugprint.imaging.DrawPoint
 import com.example.pugprint.imaging.Drawing
 import com.example.pugprint.imaging.LabelShape
@@ -41,6 +42,12 @@ class DrawScreenScreenshotTest {
 
     @Test
     fun drawScreen_empty() = snap(DrawUiState())
+
+    @Test
+    fun drawScreen_coloringPage() {
+        val outline = ColoringPageCatalog.Cat.drawing
+        snap(DrawUiState(drawing = outline, base = outline, pageName = "Cat"))
+    }
 
     @Test
     fun drawScreen_roundRoll() =

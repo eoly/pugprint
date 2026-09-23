@@ -24,6 +24,7 @@
     <string name="home_connect">Connect a printer</string>
     <string name="home_print_photo">Print a photo</string>
     <string name="home_draw">Draw a sticker</string>
+    <string name="home_color">Color a picture</string>
     <string name="home_print_again">Print it again</string>
     <string name="home_print_test">Print a test page</string>
     <string name="home_forget">Forget printer</string>
@@ -49,11 +50,15 @@
     <string name="message_permission_denied">Bluetooth is needed to talk to the printer</string>
     <string name="message_permission_denied_hint">Tap Connect a printer and say yes to Bluetooth</string>
 
+    <string name="coloring_title">Color a picture</string>
+    <string name="coloring_hint">Tap a picture to print it and color it in with crayons</string>
+
     <string name="draw_title">Draw a sticker</string>
     <string name="draw_canvas_description">Your drawing</string>
     <string name="draw_canvas_round_description">Your drawing on a round sticker; the faded corners will not print</string>
     <string name="draw_hint_empty">Draw something — or tap Next to use just words and stamps</string>
     <string name="draw_hint">Words and stamps come next</string>
+    <string name="draw_hint_page">Draw on it if you like, or tap Next to print it as it is</string>
     <string name="draw_brush_thin">Thin</string>
     <string name="draw_brush_medium">Medium</string>
     <string name="draw_brush_fat">Fat</string>

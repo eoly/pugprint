@@ -5,6 +5,8 @@ data class HomeActions(
     val onConnect: () -> Unit = {},
     val onPickPhoto: () -> Unit = {},
     val onDraw: () -> Unit = {},
+    /** Open the coloring-page picker. */
+    val onColor: () -> Unit = {},
     /** Debug builds: open the design gallery. */
     val onDesignGallery: () -> Unit = {},
     val onPrintTestPage: () -> Unit = {},

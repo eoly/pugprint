@@ -56,6 +56,11 @@ fun HomeScreen(
                     onClick = actions.onDraw,
                     emphasis = ButtonEmphasis.Secondary,
                 )
+                BigButton(
+                    text = stringResource(R.string.home_color),
+                    onClick = actions.onColor,
+                    emphasis = ButtonEmphasis.Secondary,
+                )
                 if (state.hasLastPrint) {
                     BigButton(
                         text = stringResource(R.string.home_print_again),

@@ -8,20 +8,25 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.pugprint.imaging.DrawingHandoff
+import com.example.pugprint.ui.coloring.ColoringRoute
 import com.example.pugprint.ui.draw.DrawRoute
+import com.example.pugprint.ui.draw.DrawViewModel
 import com.example.pugprint.ui.editor.EditorRoute
 import com.example.pugprint.ui.gallery.GalleryRoute
 import com.example.pugprint.ui.home.HomeRoute
 
 private const val HOME = "home"
 private const val DRAW = "draw"
+private const val DRAW_PAGE = "$DRAW?${DrawViewModel.PAGE_ARG}={${DrawViewModel.PAGE_ARG}}"
+private const val COLORING = "coloring"
 private const val GALLERY = "gallery"
 private const val EDITOR = "editor/{photo}"
 private const val PHOTO_ARG = "photo"
 
 /**
- * Three screens: home (printer + pick a photo / draw), the draw sheet, and the editor for a
- * picked photo or a finished drawing (which reaches it through [DrawingHandoff]).
+ * Home (printer + pick a photo / draw / color), the coloring-page picker, the draw sheet (blank,
+ * or started from a picked page), and the editor for a picked photo or a finished drawing (which
+ * reaches it through [DrawingHandoff]).
  */
 @Composable
 fun PugPrintNavHost() {
@@ -36,13 +41,31 @@ fun PugPrintNavHost() {
             HomeRoute(
                 onPhotoPicked = { uri -> openEditor(uri.toString()) },
                 onDraw = { navController.navigate(DRAW) },
+                onColor = { navController.navigate(COLORING) },
                 onDesignGallery = { navController.navigate(GALLERY) },
             )
         }
         composable(GALLERY) {
             GalleryRoute(onClose = { navController.popBackStack() })
         }
-        composable(DRAW) {
+        composable(COLORING) {
+            ColoringRoute(
+                onClose = { navController.popBackStack() },
+                onHome = { goHome() },
+                onPagePicked = { pageId -> navController.navigate("$DRAW?${DrawViewModel.PAGE_ARG}=$pageId") },
+            )
+        }
+        composable(
+            DRAW_PAGE,
+            arguments =
+                listOf(
+                    navArgument(DrawViewModel.PAGE_ARG) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                ),
+        ) {
             DrawRoute(
                 onClose = { navController.popBackStack() },
                 onHome = { goHome() },

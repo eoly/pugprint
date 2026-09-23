@@ -53,14 +53,14 @@ fun DrawScreen(
 ) {
     KidScreen(
         modifier = modifier,
-        title = stringResource(R.string.draw_title),
+        title = state.pageName ?: stringResource(R.string.draw_title),
         onBack = actions.onBack,
         onHome = actions.onHome,
     ) {
         DrawingCanvas(state, actions)
         Spacer(Modifier.height(PugSpacing.small))
         Text(
-            text = stringResource(if (state.drawing.isEmpty) R.string.draw_hint_empty else R.string.draw_hint),
+            text = stringResource(drawHint(state)),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -171,6 +171,13 @@ private fun DrawScope.drawStroke(stroke: Stroke) {
         }
     drawPath(path, colour, style = StrokeStyle(width = width, cap = StrokeCap.Round, join = StrokeJoin.Round))
 }
+
+private fun drawHint(state: DrawUiState): Int =
+    when {
+        state.pageName != null && state.isUntouched -> R.string.draw_hint_page
+        state.drawing.isEmpty -> R.string.draw_hint_empty
+        else -> R.string.draw_hint
+    }
 
 private fun brushLabel(brush: BrushSize): Int =
     when (brush) {

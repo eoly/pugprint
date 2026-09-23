@@ -8,11 +8,14 @@
   permission prompt and the Companion Device Manager picker (`IntentSender`).
   `HomeRoute` also launches the system Photo Picker; `EditorRoute` owns the editor's
   back-stack behaviour: Back returns to where the picture came from, while a finished print and
-  the header's Home button pop to `home` (progress and "Print it again" live there). `PugPrintNavHost` (navigation-compose, string routes) holds four
-  screens: `home`, `draw`, `editor/{photo}` and `gallery` (debug builds only: the design kit's
+  the header's Home button pop to `home` (progress and "Print it again" live there). `PugPrintNavHost` (navigation-compose, string routes) holds five
+  screens: `home`, `draw`, `coloring`, `editor/{photo}` and `gallery` (debug builds only: the design kit's
   `DesignGallery` in any theme, a preview that saves nothing). `DrawRoute` / `DrawViewModel` keep a `Drawing`
   (strokes as fractions of the sheet) and, on Next, rasterise it into `DrawingHandoff`; the
-  editor opens `DrawingHandoff.URI` like any picture via `HandoffPhotoSource`.
+  editor opens `DrawingHandoff.URI` like any picture via `HandoffPhotoSource`. `ColoringRoute` /
+  `ColoringViewModel` show `ColoringPageCatalog` as tiles; a tapped page opens the draw sheet at
+  `draw?page=<id>` with the page's outline as the sheet's `base`, so it prints through the same
+  path with whatever the kid adds (ADR 0008).
 - **Domain**: `PrinterManager` — the app-wide connection state machine (pair, connect,
   identify, reconnect with backoff, `printImage`). `EditorViewModel` drives the edit:
   `PhotoSource` → `GrayImage` → `CropWindow` (pan/zoom/shape/rotate) → `Sticker` (+ caption)
@@ -32,8 +35,9 @@
   (Floyd–Steinberg, threshold), `CropWindow` (crop-frame maths), `ImagePipeline`, `MonoBitmap`
   1bpp packing, `TestPattern`; the sticker document — `Sticker` (picture + crop + style +
   `Caption`), `StickerRenderer` (pipeline → `BitCanvas` → overlays → dots), `PixelFont` /
-  `FontCatalog` / `TextRasterizer`, `StampCatalog` / `StampRasterizer`, `Drawing` / `StrokeRasterizer`, `StickerRoll` /
-  `StickerRollCatalog` (label geometry + placement); golden PBM tests.
+  `FontCatalog` / `TextRasterizer`, `StampCatalog` / `StampRasterizer`, `Drawing` / `StrokeRasterizer`,
+  `ColoringPageCatalog` / `Outline` (ADR 0008), `StickerRoll` / `StickerRollCatalog` (label geometry +
+  placement); golden PBM tests.
 - `:core:bluetooth` — Android: Kable `BleTransport`, `CompanionPairing` (CDM), `BluetoothPermissions`.
   The only module allowed to import Android Bluetooth APIs; no protocol bytes (ADR 0006).
 - `:ui:design`     — the design kit (ADR 0007): theme tokens (`PugTheme`, `PugSpacing`,
@@ -112,6 +116,8 @@ as a cap inside the curve and clears everything outside the inscribed circle bef
 size and shape); the crop frame, preview and draw sheet draw the same circle as a guide.
 A drawing is not a layer but a picture: `StrokeRasterizer` turns `Drawing` strokes into a
 black-on-white `GrayImage` that enters the same pipeline, so captions and stamps work on it.
+A coloring page (`ColoringPageCatalog`, ADR 0008) is a ready-made `Drawing` built with `Outline`,
+so it prints through exactly that path and fits every roll by construction.
 `:core:printer` never changes for a new kid feature (ADR 0007).
 
 ## Threading

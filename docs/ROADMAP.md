@@ -100,5 +100,25 @@
      below its top and the head cannot start higher, so a slightly smaller circle is centred) renders through `StickerRoll.render`,
      which clips the dots to the inscribed circle and fits the caption as a cap inside the
      curve. Crop frame, preview and draw sheet all show the circle.
+- **Phase 5b — Coloring pages** (ADR 0008): pre-made outline pictures a kid prints and colours in
+  with crayons. Each task is one PR.
+  1. ✅ **Catalog + goldens** — `ColoringPage` / `ColoringPageCatalog` in `:core:imaging` (twelve pages:
+     pug, heart, star, cat, sun, flower, rainbow, ice cream, cupcake, fish, butterfly, rocket) drawn with the `Outline` builder (`circle`,
+     `ellipse`, `arc`, `path`, `loop`, `star`, `dot` in page fractions; `BrushSize` picks the line
+     weight); a page is a `Drawing`, rendered by `StrokeRasterizer`. `ColoringPageCatalogTest`
+     enumerates the catalog: ids, names, outlines only (3–30 % ink), all ink inside
+     `SAFE_RADIUS` so the page prints whole on round labels, a golden `coloring_<id>.pbm` each.
+     Handbook recipe "Add a coloring page".
+  2. ✅ **Picker screen** — "Color a picture" on home → `ColoringRoute` / `ColoringViewModel` /
+     `ColoringScreen`: the pages two to a row as big tiles (preview + name, the round guide on a
+     round roll). Roborazzi goldens (+ `_bigText`, round roll), a11y audit (now measures a
+     tile's laid-out size, so a scrolled-off tile counts), ViewModel test.
+  3. ✅ **Draw on it first** — a tapped page opens the draw sheet at `draw?page=<id>` with its
+     outline already there (`DrawUiState.base`; the title is the page's name); Undo and Start
+     over stop at the outline, Next renders outline + the kid's lines into `DrawingHandoff` and
+     the editor opens it like any drawing, so words, stamps and the roll all work unchanged. A
+     kid who just wants the page taps Next straight away. Golden `drawScreen_coloringPage`.
+  4. **More pages** — designer session with the handbook recipe; a page is ~10 lines of Kotlin
+     and a recorded golden.
 - **Phase 6 — Play:** internal track to the friend group → (if going public) closed test
   (12 testers/14 days) → production.

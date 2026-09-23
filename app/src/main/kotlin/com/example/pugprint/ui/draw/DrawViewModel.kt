@@ -1,8 +1,10 @@
 package com.example.pugprint.ui.draw
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pugprint.imaging.BrushSize
+import com.example.pugprint.imaging.ColoringPageCatalog
 import com.example.pugprint.imaging.DrawPoint
 import com.example.pugprint.imaging.Drawing
 import com.example.pugprint.imaging.DrawingHandoff
@@ -30,6 +32,13 @@ enum class DrawTool { PEN, ERASER }
 
 data class DrawUiState(
     val drawing: Drawing = Drawing(),
+    /**
+     * What the sheet started with: blank, or a coloring page's outline. Undo and Start over never
+     * go past it, so the page stays whatever the kid draws.
+     */
+    val base: Drawing = Drawing(),
+    /** The coloring page's name when the sheet started from one; the screen's title. */
+    val pageName: String? = null,
     /** The stroke under the finger right now, drawn on top of [drawing]. */
     val current: Stroke? = null,
     val brush: BrushSize = BrushSize.MEDIUM,
@@ -38,7 +47,11 @@ data class DrawUiState(
     /** The sticker's outline: on a round roll the sheet shows the circle the drawing must stay in. */
     val labelShape: LabelShape = LabelShape.RECTANGLE,
 ) {
-    val canUndo: Boolean get() = !drawing.isEmpty
+    /** True once the kid has drawn something on top of [base]. */
+    val canUndo: Boolean get() = drawing.strokes.size > base.strokes.size
+
+    /** Nothing but the outline (or nothing at all) on the sheet yet. */
+    val isUntouched: Boolean get() = !canUndo
 
     /** A blank sheet is fine too: words and stamps go on it in the editor. */
     val canFinish: Boolean get() = !rendering
@@ -51,8 +64,9 @@ class DrawViewModel
         private val handoff: DrawingHandoff,
         private val settings: SettingsStore,
         @ImagingDispatcher private val dispatcher: CoroutineDispatcher,
+        savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
-        private val mutableState = MutableStateFlow(DrawUiState())
+        private val mutableState = MutableStateFlow(initialState(savedStateHandle.get<String>(PAGE_ARG)))
         private val mutableFinished = MutableStateFlow(false)
 
         val uiState: StateFlow<DrawUiState> =
@@ -81,9 +95,11 @@ class DrawViewModel
 
         fun onToolSelected(tool: DrawTool) = mutableState.update { it.copy(tool = tool) }
 
-        fun onUndoClicked() = mutableState.update { it.copy(drawing = it.drawing.undo()) }
+        /** Takes the newest of the kid's lines off; the outline underneath stays. */
+        fun onUndoClicked() = mutableState.update { if (it.canUndo) it.copy(drawing = it.drawing.undo()) else it }
 
-        fun onClearClicked() = mutableState.update { it.copy(drawing = Drawing(), current = null) }
+        /** Back to the blank sheet, or to the page's outline. */
+        fun onClearClicked() = mutableState.update { it.copy(drawing = it.base, current = null) }
 
         /** Renders the drawing to a picture and hands it to the editor. */
         fun onNextClicked() {
@@ -99,5 +115,15 @@ class DrawViewModel
 
         fun onFinishedHandled() {
             mutableFinished.value = false
+        }
+
+        companion object {
+            /** Navigation argument: a [ColoringPageCatalog] id to start the sheet from; absent for a blank sheet. */
+            const val PAGE_ARG = "page"
+
+            private fun initialState(pageId: String?): DrawUiState {
+                val page = pageId?.let(ColoringPageCatalog::byId) ?: return DrawUiState()
+                return DrawUiState(drawing = page.drawing, base = page.drawing, pageName = page.displayName)
+            }
         }
     }

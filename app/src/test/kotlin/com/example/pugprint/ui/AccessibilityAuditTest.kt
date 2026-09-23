@@ -18,6 +18,8 @@ import com.example.pugprint.imaging.StampPlacement
 import com.example.pugprint.imaging.Sticker
 import com.example.pugprint.imaging.StickerRenderer
 import com.example.pugprint.imaging.Stroke
+import com.example.pugprint.ui.coloring.ColoringScreen
+import com.example.pugprint.ui.coloring.ColoringUiState
 import com.example.pugprint.ui.draw.DrawScreen
 import com.example.pugprint.ui.draw.DrawUiState
 import com.example.pugprint.ui.editor.EditorScreen
@@ -76,12 +78,14 @@ class AccessibilityAuditTest {
                 "$screen: a tappable thing at ${node.boundsInRoot} has no words for TalkBack",
                 label.isNotEmpty(),
             )
-            val bounds = node.boundsInRoot
-            val widthDp = bounds.width / compose.density.density
-            val heightDp = bounds.height / compose.density.density
+            // The laid-out size, not the clipped bounds: a tile below the fold of a scrolling
+            // screen is still full-sized once scrolled to.
+            val size = node.size
+            val widthDp = size.width / compose.density.density
+            val heightDp = size.height / compose.density.density
             assertTrue(
                 "$screen: '$label' is ${widthDp}x$heightDp dp, smaller than $MIN_TARGET",
-                bounds.width >= minPx - TOLERANCE_PX && bounds.height >= minPx - TOLERANCE_PX,
+                size.width >= minPx - TOLERANCE_PX && size.height >= minPx - TOLERANCE_PX,
             )
         }
     }
@@ -170,6 +174,9 @@ class AccessibilityAuditTest {
         audit("draw") {
             DrawScreen(DrawUiState(drawing = Drawing().plus(Stroke(listOf(DrawPoint(0.5f, 0.5f)), BrushSize.FAT))))
         }
+
+    @Test
+    fun coloring() = audit("coloring") { ColoringScreen(ColoringUiState()) }
 
     private companion object {
         val MIN_TARGET = 48.dp
