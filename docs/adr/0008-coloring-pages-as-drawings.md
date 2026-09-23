@@ -23,10 +23,11 @@ Three ways to keep the pictures were considered:
    "add a thing = add a line" rule). Pages are authored with a small `Outline` builder
    (`circle`, `ellipse`, `arc`, `path`, `loop`, `star`, `dot`) in fractions of the page, with
    `BrushSize` picking the line weight. No pixels, no PNGs, no Android.
-2. **A page prints as a picture, through the drawing path.** `ColoringPage.render()` is
-   `StrokeRasterizer.render(drawing)`; the result enters the editor exactly the way a finished
-   drawing does (`DrawingHandoff`, Drawing style, straight to the preview) so captions, stamps,
-   rolls and round labels work on it with no editor or printer change.
+2. **A page prints as a picture, through the drawing path.** A picked page opens on the draw
+   sheet as its starting `Drawing` (Undo and Start over stop at the outline), and Next
+   rasterises outline plus the kid's own lines with `StrokeRasterizer` into `DrawingHandoff`,
+   exactly the way a finished drawing goes (Drawing style, straight to the preview), so
+   captions, stamps, rolls and round labels work on it with no editor or printer change.
 3. **Every page fits every roll.** All ink stays inside `ColoringPage.SAFE_RADIUS` of the page's
    centre, so the same page prints whole on square and round labels; the catalog test enforces
    it, along with "mostly white" (it is for colouring, not a stamp) and a golden PBM per page.
@@ -36,7 +37,7 @@ Three ways to keep the pictures were considered:
   recipe with no picture tools, and reviewers see the outline in the PBM diff.
 - Lines are as smooth as the stroke rasteriser makes them (round caps, 6/14/28-dot widths);
   curves are polylines of 48 segments, which at sticker size print as curves.
-- A page could later open on the draw sheet itself (add your own lines before printing), since
-  it is already a `Drawing` — no format change needed.
+- Because a page is a `Drawing`, opening it on the draw sheet needed no format or rasteriser
+  change; the sheet only learned what its starting point was.
 - Pages are square (`StrokeRasterizer.SIZE`); a rectangular page for the plain roll would need a
   size on the page, deferred until someone asks.

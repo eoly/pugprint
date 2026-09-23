@@ -86,7 +86,8 @@ at `core/imaging/src/main/kotlin/com/example/pugprint/imaging/ColoringPageCatalo
    whole on round stickers (the test tells you if a line pokes out).
 3. Add it to `all`, then run `./gradlew :core:imaging:test -Dpugprint.recordGoldens=true`.
    Your page appears at `core/imaging/src/test/resources/coloring_<id>.pbm` (any image viewer
-   opens it) and in the "Color a picture" picker. Look at it, fix, re-record, then commit the
+   opens it) and in the "Color a picture" picker (tapping it there opens the draw sheet with your
+   outline on it). Look at it, fix, re-record, then commit the
    picture with the page.
 
 ## Change how big or round things are

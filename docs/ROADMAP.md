@@ -111,13 +111,13 @@
      Handbook recipe "Add a coloring page".
   2. ✅ **Picker screen** — "Color a picture" on home → `ColoringRoute` / `ColoringViewModel` /
      `ColoringScreen`: the pages two to a row as big tiles (preview + name, the round guide on a
-     round roll); tapping one renders it into `DrawingHandoff` and opens the editor on the
-     preview in Drawing style, so words, stamps and the roll all work unchanged. Roborazzi
-     goldens (+ `_bigText`, round roll), a11y audit (now measures a tile's laid-out size, so a
-     scrolled-off tile counts), ViewModel test.
-  3. **Colour it on the tablet** — a page can open on the draw sheet with its outline already
-     there (`DrawViewModel` takes a starting `Drawing`; Undo stops at the outline), for kids
-     who want to add their own lines before printing.
+     round roll). Roborazzi goldens (+ `_bigText`, round roll), a11y audit (now measures a
+     tile's laid-out size, so a scrolled-off tile counts), ViewModel test.
+  3. ✅ **Draw on it first** — a tapped page opens the draw sheet at `draw?page=<id>` with its
+     outline already there (`DrawUiState.base`; the title is the page's name); Undo and Start
+     over stop at the outline, Next renders outline + the kid's lines into `DrawingHandoff` and
+     the editor opens it like any drawing, so words, stamps and the roll all work unchanged. A
+     kid who just wants the page taps Next straight away. Golden `drawScreen_coloringPage`.
   4. **More pages** — designer session with the handbook recipe; a page is ~10 lines of Kotlin
      and a recorded golden.
 - **Phase 6 — Play:** internal track to the friend group → (if going public) closed test

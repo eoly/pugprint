@@ -37,7 +37,7 @@ import com.example.pugprint.imaging.LabelShape
 import com.example.pugprint.ui.imaging.drawRoundStickerGuide
 import com.example.pugprint.ui.imaging.toImageBitmap
 
-/** Every coloring page as a big tappable tile, [PER_ROW] to a row; tap one to print it. */
+/** Every coloring page as a big tappable tile, [PER_ROW] to a row; tap one to open it on the draw sheet. */
 @Composable
 fun ColoringScreen(
     state: ColoringUiState,
@@ -65,7 +65,6 @@ fun ColoringScreen(
                         PageTile(
                             page = page,
                             round = state.labelShape == LabelShape.CIRCLE,
-                            enabled = !state.opening,
                             onClick = { actions.onPick(page.id) },
                         )
                     }
@@ -81,14 +80,12 @@ fun ColoringScreen(
 private fun RowScope.PageTile(
     page: ColoringPage,
     round: Boolean,
-    enabled: Boolean,
     onClick: () -> Unit,
 ) {
     val bitmap = remember(page) { page.render().toImageBitmap() }
     val guideColour = MaterialTheme.colorScheme.outline
     Surface(
         onClick = onClick,
-        enabled = enabled,
         modifier =
             Modifier
                 .weight(1f)

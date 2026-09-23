@@ -1,6 +1,8 @@
 package com.example.pugprint.ui.draw
 
+import androidx.lifecycle.SavedStateHandle
 import com.example.pugprint.imaging.BrushSize
+import com.example.pugprint.imaging.ColoringPageCatalog
 import com.example.pugprint.imaging.Dither
 import com.example.pugprint.imaging.DrawPoint
 import com.example.pugprint.imaging.DrawingHandoff
@@ -36,7 +38,65 @@ class DrawViewModelTest {
     @AfterEach
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun TestScope.viewModel() = DrawViewModel(handoff, settings, UnconfinedTestDispatcher(testScheduler))
+    private fun TestScope.viewModel(pageId: String? = null) =
+        DrawViewModel(
+            handoff,
+            settings,
+            UnconfinedTestDispatcher(testScheduler),
+            SavedStateHandle(if (pageId == null) emptyMap() else mapOf(DrawViewModel.PAGE_ARG to pageId)),
+        )
+
+    @Test
+    fun `a coloring page starts on the sheet, and undo and start over stop at its outline`() =
+        runTest {
+            val viewModel = viewModel("pug")
+            val outline = ColoringPageCatalog.Pug.drawing
+            val state = viewModel.uiState.value
+            assertEquals(outline, state.drawing)
+            assertEquals("Pug", state.pageName)
+            assertTrue(state.isUntouched)
+            assertFalse(state.canUndo)
+
+            viewModel.onUndoClicked() // nothing of the kid's to undo yet
+            assertEquals(outline, viewModel.uiState.value.drawing)
+
+            viewModel.onStrokeStarted(DrawPoint(0.5f, 0.5f))
+            viewModel.onStrokeEnded()
+            assertTrue(viewModel.uiState.value.canUndo)
+            assertFalse(viewModel.uiState.value.isUntouched)
+            viewModel.onUndoClicked()
+            assertEquals(outline, viewModel.uiState.value.drawing)
+
+            viewModel.onStrokeStarted(DrawPoint(0.5f, 0.5f))
+            viewModel.onStrokeEnded()
+            viewModel.onClearClicked()
+            assertEquals(outline, viewModel.uiState.value.drawing)
+            assertFalse(viewModel.uiState.value.canUndo)
+        }
+
+    @Test
+    fun `next renders the outline plus the kid's lines`() =
+        runTest {
+            val viewModel = viewModel("pug")
+            viewModel.onStrokeStarted(DrawPoint(0.5f, 0.42f)) // a dot between the pug's eyes
+            viewModel.onStrokeEnded()
+            viewModel.onNextClicked()
+            runCurrent()
+
+            val image = handoff.image!!
+            assertEquals(255, ColoringPageCatalog.Pug.render()[192, 161], "the page alone is white there")
+            assertTrue(image[192, 161] < Dither.DEFAULT_THRESHOLD, "the kid's dot")
+            assertTrue(image[192, (0.23f * 384).toInt()] < Dither.DEFAULT_THRESHOLD, "the page's outline (head top)")
+            assertTrue(viewModel.finished.value)
+        }
+
+    @Test
+    fun `an unknown page id is a blank sheet`() =
+        runTest {
+            val state = viewModel("dragon").uiState.value
+            assertTrue(state.drawing.isEmpty)
+            assertNull(state.pageName)
+        }
 
     @Test
     fun `a stroke is the finger's path with the brush and tool at the time`() =

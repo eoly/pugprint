@@ -13,8 +13,9 @@
   `DesignGallery` in any theme, a preview that saves nothing). `DrawRoute` / `DrawViewModel` keep a `Drawing`
   (strokes as fractions of the sheet) and, on Next, rasterise it into `DrawingHandoff`; the
   editor opens `DrawingHandoff.URI` like any picture via `HandoffPhotoSource`. `ColoringRoute` /
-  `ColoringViewModel` show `ColoringPageCatalog` as tiles and hand a tapped page to the editor
-  the same way (ADR 0008).
+  `ColoringViewModel` show `ColoringPageCatalog` as tiles; a tapped page opens the draw sheet at
+  `draw?page=<id>` with the page's outline as the sheet's `base`, so it prints through the same
+  path with whatever the kid adds (ADR 0008).
 - **Domain**: `PrinterManager` — the app-wide connection state machine (pair, connect,
   identify, reconnect with backoff, `printImage`). `EditorViewModel` drives the edit:
   `PhotoSource` → `GrayImage` → `CropWindow` (pan/zoom/shape/rotate) → `Sticker` (+ caption)
