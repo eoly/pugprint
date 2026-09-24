@@ -1,11 +1,15 @@
 package com.example.pugprint
 
+import android.graphics.drawable.Animatable
 import android.os.Bundle
-import android.os.SystemClock
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,10 +25,14 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var settings: SettingsStore
 
+    /** Wall-clock time this activity came up; stands in for the splash's start when the system reports none. */
+    private var createdAtMillis = 0L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
-        splash.setOnExitAnimationListener(::dismissSplashAfterAnimation)
+        createdAtMillis = System.currentTimeMillis()
+        splash.setOnExitAnimationListener(::holdSplash)
         enableEdgeToEdge()
         setContent {
             val current by settings.settings.collectAsStateWithLifecycle()
@@ -33,32 +41,65 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Compose is usually ready before the pug has finished printing its sticker, so let the icon
-     * animation (Android 12+) play to the end before the splash comes down. Older versions show a
-     * still frame and report no animation, so the splash goes straight away.
+     * Compose is ready long before [SPLASH_MILLIS] are up, so keep the splash on screen. On
+     * Android 12+ the system plays the icon animation once, on a surface the app cannot restart,
+     * so when that run ends the same animated vector is laid over the icon and replayed back to
+     * back: the pug keeps printing stickers instead of freezing on the last frame. Older versions
+     * show the still frame for the same length of time.
      */
-    private fun dismissSplashAfterAnimation(provider: SplashScreenViewProvider) {
-        val remaining = splashRemainingMillis(provider.iconAnimationStartMillis, provider.iconAnimationDurationMillis)
-        if (remaining <= 0) {
-            provider.remove()
-        } else {
-            provider.view.postDelayed(provider::remove, remaining)
+    private fun holdSplash(provider: SplashScreenViewProvider) {
+        val shownAt = provider.iconAnimationStartMillis.takeIf { it > 0 } ?: createdAtMillis
+        val endsAt = shownAt + SPLASH_MILLIS
+        val runMillis = provider.iconAnimationDurationMillis
+        val view = provider.view
+        var replay: Animatable? = null
+
+        fun tick() {
+            val now = System.currentTimeMillis()
+            when {
+                now >= endsAt -> provider.remove()
+                runMillis > 0 && now + runMillis <= endsAt -> {
+                    val animation = replay ?: replayIconOver(provider).also { replay = it }
+                    animation?.start()
+                    view.postDelayed(::tick, runMillis)
+                }
+                else -> view.postDelayed(::tick, endsAt - now)
+            }
         }
+        // Let the run the system started finish before doing anything. (Both times are wall clock.)
+        val currentRunEndsAt = provider.iconAnimationStartMillis + runMillis
+        view.postDelayed(::tick, (currentRunEndsAt - System.currentTimeMillis()).coerceAtLeast(0))
     }
 
-    private fun splashRemainingMillis(
-        animationStartMillis: Long,
-        animationDurationMillis: Long,
-    ): Long =
-        if (animationStartMillis <= 0 || animationDurationMillis <= 0) {
-            0
-        } else {
-            val endsAt = animationStartMillis + animationDurationMillis
-            (endsAt - SystemClock.uptimeMillis()).coerceIn(0, MAX_SPLASH_HOLD_MILLIS)
-        }
+    /**
+     * Covers the system's icon with an [ImageView] of the same drawable, drawn the way the system
+     * draws it: the 288 dp canvas scaled up so its 192 dp safe circle fills the icon view.
+     */
+    private fun replayIconOver(provider: SplashScreenViewProvider): Animatable? {
+        val container = provider.view as? ViewGroup
+        val drawable = ResourcesCompat.getDrawable(resources, R.drawable.avd_pug_splash, theme)
+        if (container == null || drawable == null) return null
+        val icon = provider.iconView
+        val size = (icon.width * SPLASH_ICON_CANVAS / SPLASH_ICON_SAFE_CIRCLE).toInt()
+        val cover =
+            ImageView(this).apply {
+                setImageDrawable(drawable)
+                scaleType = ImageView.ScaleType.FIT_XY
+                x = icon.x - (size - icon.width) / 2f
+                y = icon.y - (size - icon.height) / 2f
+            }
+        container.clipChildren = false
+        container.addView(cover, ViewGroup.LayoutParams(size, size))
+        icon.visibility = View.INVISIBLE
+        return drawable as? Animatable
+    }
 
     private companion object {
-        /** Never keep a kid waiting on the splash longer than this, whatever the clocks say. */
-        const val MAX_SPLASH_HOLD_MILLIS = 1_200L
+        /** How long the splash stays up, counted from when it appeared. */
+        const val SPLASH_MILLIS = 3_000L
+
+        /** Splash icons are drawn on a 288 dp canvas whose centred 192 dp circle is what shows. */
+        const val SPLASH_ICON_CANVAS = 288f
+        const val SPLASH_ICON_SAFE_CIRCLE = 192f
     }
 }
