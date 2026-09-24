@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Adaptive launcher foreground: the PugPrint pug (see ui/design pug_logo.xml). The viewport is the
-     splash canvas (288 == 108dp); the extra 0.95 keeps the paper strip inside the 66dp safe circle. -->
+<!-- PugPrint logo: the final frame of the splash animation (app/res/drawable/avd_pug_splash.xml).
+     Cropped to the 192-unit safe circle of the 288 splash canvas so it sits tight in a layout. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="288"
-    android:viewportHeight="288">
-    <group android:name="launcher" android:pivotX="144" android:pivotY="144" android:scaleX="0.95" android:scaleY="0.95">
+    android:width="192dp"
+    android:height="192dp"
+    android:viewportWidth="192"
+    android:viewportHeight="192">
+    <group android:name="crop" android:translateX="-48" android:translateY="-48">
         <group android:name="root" android:pivotX="144" android:pivotY="144" android:scaleX="0.93" android:scaleY="0.93">
             <group android:name="shadow" android:translateY="6">
                 <path

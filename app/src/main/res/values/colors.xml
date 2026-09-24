@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#FFF4D6</color>
+    <!-- The blue behind the pug on the splash screen and the launcher icon (same art, same ground). -->
+    <color name="pug_blue">#2D4CC8</color>
+    <color name="ic_launcher_background">@color/pug_blue</color>
+    <color name="splash_bg">@color/pug_blue</color>
 </resources>

@@ -90,6 +90,7 @@ dependencies {
     implementation(project(":ui:design"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.activity.compose)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
